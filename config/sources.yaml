@@ -1,0 +1,28 @@
+# sources.yaml — registre des entreprises à surveiller et de leur ATS.
+#
+# Chaque entrée a la forme :
+#   - nom: <nom lisible de l'entreprise>
+#     ats: <identifiant de l'adaptateur : greenhouse | lever | ashby | smartrecruiters | workable>
+#     token: <identifiant du board côté ATS — dépend de la plateforme>
+#       - greenhouse : le "board token" utilisé dans
+#         boards-api.greenhouse.io/v1/boards/{token}/jobs
+#       - lever      : le slug utilisé dans
+#         api.lever.co/v0/postings/{token}
+#       - ashby      : le nom du job board utilisé dans
+#         api.ashbyhq.com/posting-api/job-board/{token}
+#
+# Une entrée sans `token` (ou avec un `ats` inconnu) est ignorée et
+# journalisée par le Source Registry (voir Feature 2.1) — elle n'empêche
+# pas le chargement des autres sources.
+
+- nom: "GitLab"
+  ats: greenhouse
+  token: gitlab
+
+- nom: "Figma"
+  ats: lever
+  token: figma
+
+- nom: "Ramp"
+  ats: ashby
+  token: ramp

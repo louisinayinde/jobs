@@ -1,0 +1,66 @@
+# filters.yaml — règles de rétention et de scoring appliquées aux offres
+# collectées. Une offre qui ne passe pas la section `retention` est jetée
+# avant tout stockage : elle n'est jamais publiée comme fiche sur le
+# tableau GitHub Projects (voir "Retention Filter" dans l'architecture).
+
+# Nombre de jours au-delà duquel une fiche "Nouveau" (jamais retenue par
+# le candidat) est purgée du tableau par le Board Janitor (cron quotidien).
+# Optionnel — défaut : 7.
+retention_days: 7
+
+retention:
+  # Une offre est retenue si son titre contient AU MOINS un de ces termes
+  # (comparaison insensible à la casse, sous-chaîne). Liste vide ou absente
+  # = aucun filtre d'inclusion par titre (tout titre passe cette étape).
+  title_include:
+    - "software engineer"
+    - "backend engineer"
+    - "developer"
+
+  # Une offre dont le titre contient un de ces termes est rejetée, même si
+  # elle correspond à `title_include`. Prioritaire sur `title_include`.
+  title_exclude:
+    - "sales engineer"
+    - "engineering manager"
+    - "support engineer"
+
+  seniority:
+    # Niveaux de séniorité à garder. Vide ou absent = tous les niveaux
+    # sont acceptés à cette étape.
+    keep:
+      - "mid"
+      - "senior"
+      - "staff"
+    # Niveaux à toujours rejeter, même s'ils figurent aussi dans `keep`.
+    drop:
+      - "intern"
+      - "junior"
+
+  location:
+    # Une offre est retenue si sa localisation correspond à au moins une
+    # de ces valeurs (ex: "remote" pour le full-remote). Vide ou absent =
+    # aucune contrainte de localisation.
+    require_any:
+      - "remote"
+
+    # Zones géographiques acceptées pour une relocalisation, en plus du
+    # remote pur. Utilisées aussi par le Scorer pour la priorité géo.
+    relocation_regions:
+      - "asia"
+      - "europe"
+      - "france"
+
+  # Si non vide, l'offre doit mentionner au moins une de ces technologies
+  # (titre ou description) pour être retenue. Vide ou absente = filtre
+  # désactivé (no-op) : aucune offre n'est rejetée pour raison tech.
+  tech_include_any: []
+
+scoring:
+  # Score attribué selon la zone géographique de l'offre retenue. Plus le
+  # score est haut, plus l'offre est prioritaire dans le tri du tableau.
+  geo_priority:
+    remote_global: 100
+    asia_relocation: 80
+    europe: 60
+    france: 40
+    default: 0
