@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.venv-check/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+jobradar-backlog.md
+files/
+*.png
