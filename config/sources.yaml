@@ -10,19 +10,142 @@
 #         api.lever.co/v0/postings/{token}
 #       - ashby      : le nom du job board utilisé dans
 #         api.ashbyhq.com/posting-api/job-board/{token}
+#       - workable   : le slug utilisé dans
+#         apply.workable.com/api/v3/accounts/{token}/jobs
 #
 # Une entrée sans `token` (ou avec un `ats` inconnu) est ignorée et
 # journalisée par le Source Registry (voir Feature 2.1) — elle n'empêche
 # pas le chargement des autres sources.
+#
+# ⚠️ Le token n'est PAS déductible du nom de l'entreprise : il se lit dans
+# l'URL du board public, et une entreprise change parfois d'ATS. Les 26
+# tokens ci-dessous ont tous été vérifiés en direct le 2026-09-05
+# (2 904 offres, dont 1 016 postes techniques). Si un endpoint se met à
+# répondre 404, l'adaptateur le journalise sans casser le run — il faut
+# alors ré-ouvrir la page carrière pour relire le slug.
+#
+# Voir docs/sources-audit.md pour l'audit complet des sources de
+# website.md : ce qui est branché, ce qui reste à faire, ce qui est
+# inaccessible et pourquoi.
+
+# --- Greenhouse (13) ----------------------------------------------------
 
 - nom: "GitLab"
   ats: greenhouse
   token: gitlab
 
-- nom: "Figma"
-  ats: lever
-  token: figma
+- nom: "Stripe"
+  ats: greenhouse
+  token: stripe
+
+- nom: "Cloudflare"
+  ats: greenhouse
+  token: cloudflare
+
+- nom: "Elastic"
+  ats: greenhouse
+  token: elastic
+
+- nom: "Coinbase"
+  ats: greenhouse
+  token: coinbase
+
+- nom: "Remote.com"
+  ats: greenhouse
+  token: remotecom
+
+- nom: "Grafana Labs"
+  ats: greenhouse
+  token: grafanalabs
+
+- nom: "Vercel"
+  ats: greenhouse
+  token: vercel
+
+# Slug non intuitif : le board s'appelle bien « sourcegraph91 ».
+- nom: "Sourcegraph"
+  ats: greenhouse
+  token: sourcegraph91
+
+- nom: "Ahrefs"
+  ats: greenhouse
+  token: ahrefsjobs
+
+- nom: "Mattermost"
+  ats: greenhouse
+  token: mattermost
+
+- nom: "Turing"
+  ats: greenhouse
+  token: turing
+
+# Doctolib expose AUSSI un board Ashby « doctolib » (126 offres, mis à jour
+# le même jour). On ne garde que Greenhouse pour ne pas créer de doublons
+# inter-sources — le dédup (Feature 3.3) travaille sur `ats:entreprise:id`
+# et ne les rapprocherait pas.
+- nom: "Doctolib"
+  ats: greenhouse
+  token: doctolib
+
+# --- Ashby (9) ----------------------------------------------------------
+
+# Ashby accepte un nom de domaine comme identifiant de board : ici le point
+# fait partie du token, ce n'est pas une coquille.
+- nom: "Kraken"
+  ats: ashby
+  token: kraken.com
+
+- nom: "Zapier"
+  ats: ashby
+  token: zapier
 
 - nom: "Ramp"
   ats: ashby
   token: ramp
+
+- nom: "Linear"
+  ats: ashby
+  token: linear
+
+# Majuscule significative : « close » en minuscules renvoie un board vide.
+- nom: "Close"
+  ats: ashby
+  token: Close
+
+- nom: "Alan"
+  ats: ashby
+  token: alan
+
+- nom: "Ledger"
+  ats: ashby
+  token: ledger
+
+- nom: "Supabase"
+  ats: ashby
+  token: supabase
+
+- nom: "Buffer"
+  ats: ashby
+  token: buffer
+
+# --- Lever (3) ----------------------------------------------------------
+
+- nom: "Malt"
+  ats: lever
+  token: malt
+
+- nom: "Qonto"
+  ats: lever
+  token: qonto
+
+# Hotjar a été racheté par Contentsquare : les offres Hotjar sont publiées
+# sur le board Lever de Contentsquare.
+- nom: "Contentsquare"
+  ats: lever
+  token: contentsquare
+
+# --- Workable (1) -------------------------------------------------------
+
+- nom: "Hugging Face"
+  ats: workable
+  token: huggingface

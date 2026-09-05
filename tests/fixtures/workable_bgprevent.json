@@ -1,0 +1,57 @@
+{
+  "total": 1,
+  "results": [
+    {
+      "id": 6081338,
+      "shortcode": "E2C96AB706",
+      "title": "Software Engineer",
+      "remote": true,
+      "location": {
+        "country": "United States",
+        "countryCode": "US",
+        "city": "",
+        "region": "Arizona"
+      },
+      "locations": [
+        {
+          "country": "United States",
+          "countryCode": "US",
+          "city": "",
+          "region": "Arizona",
+          "hidden": false
+        },
+        {
+          "country": "United States",
+          "countryCode": "US",
+          "city": "",
+          "region": "Arkansas",
+          "hidden": false
+        },
+        {
+          "country": "United States",
+          "countryCode": "US",
+          "city": "",
+          "region": "Florida",
+          "hidden": false
+        },
+        {
+          "country": "United States",
+          "countryCode": "US",
+          "city": "",
+          "region": "Georgia",
+          "hidden": false
+        }
+      ],
+      "state": "published",
+      "isInternal": false,
+      "code": "",
+      "published": "2026-09-04T00:00:00.000Z",
+      "type": "full",
+      "language": "en",
+      "department": [],
+      "accountUid": "84361e6e-8d0a-4e4c-97ed-589bff99bea4",
+      "approvalStatus": "approved",
+      "workplace": "remote"
+    }
+  ]
+}

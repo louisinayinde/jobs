@@ -179,10 +179,15 @@ def test_title_exclude_absent_and_explicit_empty_are_equivalent(tmp_path: Path) 
 # ---------------------------------------------------------------------------
 
 
-def test_real_sources_yaml_has_three_entries_with_expected_values() -> None:
+def test_real_sources_yaml_loads_every_entry_with_expected_values() -> None:
+    raw = yaml.safe_load(REAL_SOURCES.read_text(encoding="utf-8"))
+
     sources = load_sources(REAL_SOURCES)
 
-    assert len(sources) == 3
+    # Le compte suit le fichier : ajouter une entreprise ne casse pas le test,
+    # mais une entrée silencieusement perdue au chargement, si.
+    assert len(sources) == len(raw)
+    assert [s.nom for s in sources] == [entry["nom"] for entry in raw]
     assert sources[0].nom == "GitLab"
     assert sources[0].ats == "greenhouse"
     assert sources[0].token == "gitlab"
