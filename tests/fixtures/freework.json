@@ -1,0 +1,481 @@
+{
+ "@context": "/contexts/JobPosting",
+ "@id": "/job_postings",
+ "@type": "hydra:Collection",
+ "hydra:totalItems": 3,
+ "hydra:view": {
+  "@id": "/job_postings?contracts=permanent&page=1",
+  "@type": "hydra:PartialCollectionView",
+  "hydra:first": "/job_postings?contracts=permanent&page=1",
+  "hydra:last": "/job_postings?contracts=permanent&page=147",
+  "hydra:next": "/job_postings?contracts=permanent&page=2"
+ },
+ "hydra:search": {
+  "@type": "hydra:IriTemplate",
+  "hydra:template": "/job_postings{?properties[],order[publishedAt],order[updatedAt],order[createdAt],order[status],order[viewsCount],order[applicationsCount],order[minDailySalary],contracts,title,reference,status,status[],createdAt[before],createdAt[strictly_before],createdAt[after],createdAt[strictly_after],updatedAt[before],updatedAt[strictly_before],updatedAt[after],updatedAt[strictly_after],q}",
+  "hydra:variableRepresentation": "BasicRepresentation",
+  "hydra:mapping": [
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "properties[]",
+    "property": null,
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "order[publishedAt]",
+    "property": "publishedAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "order[updatedAt]",
+    "property": "updatedAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "order[createdAt]",
+    "property": "createdAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "order[status]",
+    "property": "status",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "order[viewsCount]",
+    "property": "viewsCount",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "order[applicationsCount]",
+    "property": "applicationsCount",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "order[minDailySalary]",
+    "property": "minDailySalary",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "contracts",
+    "property": "contracts",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "title",
+    "property": "title",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "reference",
+    "property": "reference",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "status",
+    "property": "status",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "status[]",
+    "property": "status",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "createdAt[before]",
+    "property": "createdAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "createdAt[strictly_before]",
+    "property": "createdAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "createdAt[after]",
+    "property": "createdAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "createdAt[strictly_after]",
+    "property": "createdAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "updatedAt[before]",
+    "property": "updatedAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "updatedAt[strictly_before]",
+    "property": "updatedAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "updatedAt[after]",
+    "property": "updatedAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "updatedAt[strictly_after]",
+    "property": "updatedAt",
+    "required": false
+   },
+   {
+    "@type": "IriTemplateMapping",
+    "variable": "q",
+    "property": "title, reference",
+    "required": false
+   }
+  ]
+ },
+ "hydra:member": [
+  {
+   "@id": "/job_postings/acheteur-it-29",
+   "@type": "JobPosting",
+   "id": 661682,
+   "title": "Acheteur IT",
+   "slug": "acheteur-it-29",
+   "description": "<p></p>Notre client, large organisation du canton du Valais, recherche un·e Acheteur IT expérimenté.e pour rejoindre sa section Achats au sein du département informatique. <br /> <br /> Cette personne assurera la gestion opérationnelle des marchés et contrats IT, dans le respect du cadre légal applicable. <br />  <br /><br /><p></p><br /><p></p>Le poste est proposé en contrat permanent, à 100%, en présentiel dans les locaux du client. <br /> <br /> Une bonne connaissance des environnements IT ainsi qu&#039;une expérience confirmée dans les achats publics sont essentielles pour ce rôle.<br />  <br /><br /><p></p><br /><p>Tâches et responsabilités<br /></p><br /><p> <br /></p><br /><ul><br /> <li>Préparer et conduire les procédures d&#039;appels d&#039;offres<br /></li><br /> <li>Produire les documents d&#039;appel d&#039;offres (descriptif du marché, critères d&#039;évaluation, cahier des charges, matrice d&#039;analyse, etc.)<br /></li><br /> <li>Publier les appels d&#039;offres, répondre aux questions des soumissionnaires, publier les décisions d&#039;adjudication et notifier les parties concernées<br /></li><br /> <li>Participer à l&#039;évaluation des offres et à la préparation des décisions d&#039;adjudication<br /></li><br /> <li>Assurer la vérification et le suivi administratif des contrats IT (avec recours à un avis juridique externe si nécessaire)<br /></li><br /> <li>Suivre les échéances contractuelles (renouvellements, extensions, résiliations)<br /></li><br /> <li>Contribuer aux négociations contractuelles lors des renouvellements<br /></li><br /> <li>Rédiger les documents d&#039;engagement à la dépense et les projets de décision<br /></li><br /> <li>Traiter les commandes IT et en assurer le suivi auprès des fournisseurs<br /></li><br /> <li>Gérer et mettre à jour les processus de demandes standard liés aux prestations IT (matériel, logiciels, services) dans l&#039;outil de gestion des demandes en place<br /></li><br /> <li>Soutenir les utilisateurs dans le traitement de leurs demandes<br />  </li><br /></ul><br /><br /><br />Requirements<br /><p><br /></p><br /><ul><br /> <li>Expérience confirmée dans une fonction d&#039;achats IT (min. 5 ans)<br /></li><br /> <li>Compréhension des environnements IT (matériel, logiciels, services) et aptitude à collaborer avec des interlocuteurs techniques<br /></li><br /> <li>Bonnes connaissances de SAP dans la gestion des commandes fournisseurs (diplôme ou certificat requis)<br /></li><br /> <li>Expérience d&#039;utilisation d&#039;une plateforme de gestion des demandes de type ServiceNow (minimum 4 ans)<br /></li><br /> <li>Certification ITIL<br /></li><br /> <li>Une expérience dans le secteur public sera considérée comme un atout.<br /></li><br /></ul><br /><br />",
+   "candidateProfile": null,
+   "companyDescription": null,
+   "experienceLevel": null,
+   "minAnnualSalary": null,
+   "maxAnnualSalary": null,
+   "minDailySalary": null,
+   "maxDailySalary": null,
+   "currency": null,
+   "duration": null,
+   "durationValue": null,
+   "durationPeriod": null,
+   "renewable": null,
+   "remoteMode": null,
+   "applicationType": "turnover",
+   "applicationContact": null,
+   "applicationUrl": null,
+   "location": {
+    "@type": "Location",
+    "@id": "/.well-known/genid/bdd84038724201fd9248",
+    "street": null,
+    "locality": "Martigny",
+    "postalCode": null,
+    "adminLevel1": "Valais",
+    "adminLevel2": "Martigny",
+    "country": "Suisse",
+    "countryCode": "CH",
+    "latitude": "46.1031150",
+    "longitude": "7.0727354",
+    "key": "ch~valais~martigny~martigny",
+    "label": "Martigny, Valais, Suisse",
+    "shortLabel": "Martigny"
+   },
+   "startsAt": null,
+   "company": {
+    "@id": "/companies/avanda",
+    "@type": "Company",
+    "id": 35139,
+    "name": "Avanda",
+    "slug": "avanda",
+    "description": "Avanda est une ESN Franco Suisse. Nous accompagnons nos clients dans leurs transformations digitales. ",
+    "personalizedHtml": null,
+    "partnersWitUrl": null,
+    "location": {
+     "@type": "Location",
+     "@id": "/.well-known/genid/c99c20e7905c887eda22",
+     "street": null,
+     "locality": null,
+     "postalCode": null,
+     "adminLevel1": null,
+     "adminLevel2": null,
+     "country": null,
+     "countryCode": null,
+     "latitude": null,
+     "longitude": null,
+     "key": null,
+     "label": null,
+     "shortLabel": null
+    },
+    "logo": {
+     "small": "https://api.free-work.com/media/cache/resolve/company_logo_small/logo-t9ZFMuc64PPE7H6v",
+     "medium": "https://api.free-work.com/media/cache/resolve/company_logo_medium/logo-t9ZFMuc64PPE7H6v"
+    },
+    "directoryFreeWork": false,
+    "coverPicture": null,
+    "noIndexJobPostings": false,
+    "external": false
+   },
+   "job": {
+    "@id": "/jobs/184",
+    "@type": "Job",
+    "id": 184,
+    "nameForContribution": "Acheteur·euse",
+    "nameForContributionSlug": "acheteur-euse",
+    "nameForUser": "Acheteur·euse",
+    "nameForUserSlug": "acheteur-euse",
+    "shortName": "Acheteur·euse",
+    "name": "Acheteur·euse",
+    "slug": "acheteur-euse"
+   },
+   "skills": [],
+   "createdAt": "2026-08-14T12:05:40+02:00",
+   "updatedAt": "2026-09-05T13:02:56+02:00",
+   "publishedAt": "2026-09-05T13:02:56+02:00",
+   "status": "published",
+   "softSkills": [],
+   "expiredAt": "2026-11-04T13:02:56+01:00",
+   "modifiedByUserAt": null,
+   "locale": "fr_FR",
+   "premium": false,
+   "applicationForm": null,
+   "contracts": [
+    "permanent",
+    "contractor"
+   ],
+   "annualSalary": null,
+   "dailySalary": null,
+   "published": true,
+   "elasticHighlights": [],
+   "noIndex": false,
+   "external": false,
+   "externalSource": null
+  },
+  {
+   "@id": "/job_postings/senior-accountant-luxembourg",
+   "@type": "JobPosting",
+   "id": 662648,
+   "title": "Senior Accountant - Luxembourg",
+   "slug": "senior-accountant-luxembourg",
+   "description": "<p>We are looking for an experienced Senior Accountant to support the accounting function of an international corporate organisation in Luxembourg during a critical operational period. <br /><br />This is an, hands-on role covering A-Z accounting activities, including support for the year-end closing.<br /><br />This position required on-site presence in Luxembourg. The workload is 50% (part-time) and will be extended 80-100% from October 26. </p><br />Key Responsibilities<br /><br /><ul><br /> <li>Manage day-to-day bank accounting and reconciliations<br /></li><br /> <li>Handle vendor accounting, including invoice processing and bulk payment runs<br /></li><br /> <li>Oversee customer accounting and related follow-up<br /></li><br /> <li>Prepare and support monthly closing activities across the accounting cycle<br /></li><br /> <li>Contribute to the preparation of annual financial statements and provide hands-on support during year-end closing<br /></li><br /> <li>Support general accounting operations and help stabilise the department during a period of high workload<br /></li><br /></ul><br /><br /><br /><p><br /></p><br /><br /><br />Requirements<br /><ul><br /> <li>Strong accounting background with hands-on operational accounting experience<br /></li><br /> <li>Experience with Microsoft Dynamics 365 Business Central<br /></li><br /> <li>Strong IFRS knowledge<br /></li><br /> <li>Experience in international / complex corporate environments<br /></li><br /> <li>Experience with Document Capture solutions<br /></li><br /> <li>Knowledge of local GAAPs (especially Belgium and France)<br /></li><br /> <li>English: mandatory<br /></li><br /></ul><br /><br />",
+   "candidateProfile": null,
+   "companyDescription": null,
+   "experienceLevel": null,
+   "minAnnualSalary": null,
+   "maxAnnualSalary": null,
+   "minDailySalary": null,
+   "maxDailySalary": null,
+   "currency": null,
+   "duration": null,
+   "durationValue": null,
+   "durationPeriod": null,
+   "renewable": null,
+   "remoteMode": null,
+   "applicationType": "turnover",
+   "applicationContact": null,
+   "applicationUrl": null,
+   "location": {
+    "@type": "Location",
+    "@id": "/.well-known/genid/ac7d16d92226721bbb9c",
+    "street": null,
+    "locality": null,
+    "postalCode": null,
+    "adminLevel1": null,
+    "adminLevel2": null,
+    "country": "Luxembourg",
+    "countryCode": "LU",
+    "latitude": "49.6112768",
+    "longitude": "6.1297990",
+    "key": "lu~~~",
+    "label": "Luxembourg",
+    "shortLabel": "Luxembourg"
+   },
+   "startsAt": null,
+   "company": {
+    "@id": "/companies/avanda",
+    "@type": "Company",
+    "id": 35139,
+    "name": "Avanda",
+    "slug": "avanda",
+    "description": "Avanda est une ESN Franco Suisse. Nous accompagnons nos clients dans leurs transformations digitales. ",
+    "personalizedHtml": null,
+    "partnersWitUrl": null,
+    "location": {
+     "@type": "Location",
+     "@id": "/.well-known/genid/c99c20e7905c887eda22",
+     "street": null,
+     "locality": null,
+     "postalCode": null,
+     "adminLevel1": null,
+     "adminLevel2": null,
+     "country": null,
+     "countryCode": null,
+     "latitude": null,
+     "longitude": null,
+     "key": null,
+     "label": null,
+     "shortLabel": null
+    },
+    "logo": {
+     "small": "https://api.free-work.com/media/cache/resolve/company_logo_small/logo-t9ZFMuc64PPE7H6v",
+     "medium": "https://api.free-work.com/media/cache/resolve/company_logo_medium/logo-t9ZFMuc64PPE7H6v"
+    },
+    "directoryFreeWork": false,
+    "coverPicture": null,
+    "noIndexJobPostings": false,
+    "external": false
+   },
+   "job": {
+    "@id": "/jobs/183",
+    "@type": "Job",
+    "id": 183,
+    "nameForContribution": "Autre",
+    "nameForContributionSlug": "autre",
+    "nameForUser": "Autre",
+    "nameForUserSlug": "autre",
+    "shortName": "Autre",
+    "name": "Autre",
+    "slug": "autre"
+   },
+   "skills": [],
+   "createdAt": "2026-08-19T16:04:03+02:00",
+   "updatedAt": "2026-09-05T13:02:56+02:00",
+   "publishedAt": "2026-09-05T13:02:56+02:00",
+   "status": "published",
+   "softSkills": [],
+   "expiredAt": "2026-11-04T13:02:56+01:00",
+   "modifiedByUserAt": null,
+   "locale": "fr_FR",
+   "premium": false,
+   "applicationForm": null,
+   "contracts": [
+    "permanent",
+    "contractor"
+   ],
+   "annualSalary": null,
+   "dailySalary": null,
+   "published": true,
+   "elasticHighlights": [],
+   "noIndex": false,
+   "external": false,
+   "externalSource": null
+  },
+  {
+   "@id": "/job_postings/head-of-it-english-german-speaker",
+   "@type": "JobPosting",
+   "id": 661502,
+   "title": "Head of IT - English & German speaker",
+   "slug": "head-of-it-english-german-speaker",
+   "description": "<p>Head of IT - English and German speaker <br /></p>Our client is an international manufacturing company undergoing rapid growth.<br /><br /><p>As Head of IT, you will ensure the company&#039;s IT foundation is secure, reliable, scalable, and able to support rapid international growth. You will own core IT operations, infrastructure, enterprise applications, cybersecurity, workplace technology, and service delivery.<br /></p>Responsibilities  : <br /><ul><br /> <li>Define and execute the company&#039;s global IT roadmap, ensuring stable and scalable technology operations across multiple international locations<br /></li><br /> <li>Own enterprise applications and business systems, including ERP, collaboration platforms, identity management, endpoint management, and future MES integrations<br /></li><br /> <li>Establish and maintain secure, cloud-based infrastructure and workplace technology environments supporting global collaboration and operational continuity<br /></li><br /> <li>Lead cybersecurity, information security, risk management, business continuity, disaster recovery, and compliance initiatives<br /></li><br /> <li>Manage external IT service providers, technology vendors, MSPs, and cybersecurity partners<br /></li><br /> <li>Build and lead the internal IT organization (IT Operations, Service Management, Cybersecurity), defining future sourcing and staffing strategies<br /></li><br /> <li>Establish IT governance, service management processes, SLAs, asset management, and operational KPIs<br /></li><br /> <li>Partner closely with Operations, Supply Chain, PMO, Quality, Finance, and Commercial functions<br /></li><br /></ul><br /><br /><br />Requirements<br /><ul><br /> <li>Professional fluency in English and German<br /></li><br /> <li>Several years of leadership experience in IT, Infrastructure, Enterprise Applications, or Technology Operations, ideally within a manufacturing or industrial environment<br /></li><br /> <li>Strong experience managing enterprise applications, cloud infrastructure, cybersecurity, networks, and global technology operations<br /></li><br /> <li>Experience implementing and supporting ERP environments and business-critical systems<br /></li><br /> <li>Solid understanding of cybersecurity frameworks, IT governance, risk management, and compliance requirements<br /></li><br /> <li>Proven ability to manage external service providers, technology vendors, and outsourcing partners<br /></li><br /> <li>Experience with Microsoft Dynamics, MES environments, or industrial IoT integrations<br /></li><br /> <li>Knowledge of ISO 27001, NIST, TISAX, or similar security frameworks<br /></li><br /></ul><br /><br /><br />Benefits<br /><li>Competitive, market-aligned compensation<br /></li><br /><li>Swiss-standard social security, pension, and insurance coverage<br /></li><br /><li>Hybrid or flexible working arrangements<br /></li><br /><br />",
+   "candidateProfile": null,
+   "companyDescription": null,
+   "experienceLevel": null,
+   "minAnnualSalary": null,
+   "maxAnnualSalary": null,
+   "minDailySalary": null,
+   "maxDailySalary": null,
+   "currency": null,
+   "duration": null,
+   "durationValue": null,
+   "durationPeriod": null,
+   "renewable": null,
+   "remoteMode": null,
+   "applicationType": "turnover",
+   "applicationContact": null,
+   "applicationUrl": null,
+   "location": {
+    "@type": "Location",
+    "@id": "/.well-known/genid/282ad2216763c1caece8",
+    "street": null,
+    "locality": null,
+    "postalCode": null,
+    "adminLevel1": "Lucerne",
+    "adminLevel2": "Lucerne",
+    "country": "Suisse",
+    "countryCode": "CH",
+    "latitude": "47.0505452",
+    "longitude": "8.3054682",
+    "key": "ch~lucerne~lucerne~",
+    "label": "Lucerne, Suisse",
+    "shortLabel": "Lucerne"
+   },
+   "startsAt": null,
+   "company": {
+    "@id": "/companies/avanda",
+    "@type": "Company",
+    "id": 35139,
+    "name": "Avanda",
+    "slug": "avanda",
+    "description": "Avanda est une ESN Franco Suisse. Nous accompagnons nos clients dans leurs transformations digitales. ",
+    "personalizedHtml": null,
+    "partnersWitUrl": null,
+    "location": {
+     "@type": "Location",
+     "@id": "/.well-known/genid/c99c20e7905c887eda22",
+     "street": null,
+     "locality": null,
+     "postalCode": null,
+     "adminLevel1": null,
+     "adminLevel2": null,
+     "country": null,
+     "countryCode": null,
+     "latitude": null,
+     "longitude": null,
+     "key": null,
+     "label": null,
+     "shortLabel": null
+    },
+    "logo": {
+     "small": "https://api.free-work.com/media/cache/resolve/company_logo_small/logo-t9ZFMuc64PPE7H6v",
+     "medium": "https://api.free-work.com/media/cache/resolve/company_logo_medium/logo-t9ZFMuc64PPE7H6v"
+    },
+    "directoryFreeWork": false,
+    "coverPicture": null,
+    "noIndexJobPostings": false,
+    "external": false
+   },
+   "job": {
+    "@id": "/jobs/183",
+    "@type": "Job",
+    "id": 183,
+    "nameForContribution": "Autre",
+    "nameForContributionSlug": "autre",
+    "nameForUser": "Autre",
+    "nameForUserSlug": "autre",
+    "shortName": "Autre",
+    "name": "Autre",
+    "slug": "autre"
+   },
+   "skills": [],
+   "createdAt": "2026-08-13T16:04:38+02:00",
+   "updatedAt": "2026-09-05T13:02:55+02:00",
+   "publishedAt": "2026-09-05T13:02:55+02:00",
+   "status": "published",
+   "softSkills": [],
+   "expiredAt": "2026-11-04T13:02:55+01:00",
+   "modifiedByUserAt": null,
+   "locale": "fr_FR",
+   "premium": false,
+   "applicationForm": null,
+   "contracts": [
+    "permanent",
+    "contractor"
+   ],
+   "annualSalary": null,
+   "dailySalary": null,
+   "published": true,
+   "elasticHighlights": [],
+   "noIndex": false,
+   "external": false,
+   "externalSource": null
+  }
+ ]
+}

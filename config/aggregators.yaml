@@ -1,0 +1,87 @@
+# aggregators.yaml — registre des agrégateurs d'offres.
+#
+# Pourquoi un fichier séparé de `sources.yaml` ? Parce qu'une entrée n'y
+# désigne pas la même chose :
+#
+#   sources.yaml     : UNE entreprise + SON ATS + le token de SON board.
+#                      `RawJob.entreprise` vaut le `nom` de l'entrée.
+#   aggregators.yaml : UNE plateforme qui publie pour N entreprises, depuis
+#                      un endpoint global, SANS token.
+#                      `RawJob.entreprise` est lu dans chaque offre ; le
+#                      `nom` de l'entrée ne sert qu'à nommer la source dans
+#                      les journaux.
+#
+# Les mélanger ferait dire deux choses différentes au champ `nom`. Les deux
+# fichiers se chargent avec la même fonction (`load_registry`), qui accepte
+# une entrée sans `token` quand son adaptateur déclare ne pas en exiger.
+#
+# Ici le `token` est donc OPTIONNEL, et quand il est présent il ne désigne
+# pas un board mais un paramètre de recherche — la valeur par défaut de
+# chaque adaptateur est indiquée en commentaire.
+#
+# Les agrégateurs sont un FILET, pas la source principale : ils sont en
+# retard sur l'ATS direct et republient les mêmes offres. Le rapprochement
+# inter-sources est la responsabilité de la dédup (Feature 3.3).
+#
+# Voir docs/sources-audit.md pour les 12 sources retenues, les ~30 écartées
+# et la raison de chaque exclusion.
+
+# --- Priorité géo ① — télétravail international -------------------------
+
+# ⚠️ Répond en ~40 s : l'adaptateur porte un timeout dédié de 60 s.
+- nom: "RemoteOK"
+  ats: remoteok
+
+# Remotive n'autorise que 4 appels par jour (ses offres sont de toute façon
+# retardées de 24 h). Elle est donc collectée par `collect-slow.yml`, planifié
+# 4 fois par jour, et exclue de la boucle de 15 min — automatiquement : la
+# limite est déclarée par l'adaptateur (`max_calls_per_day`), pas ici, pour
+# qu'aucune édition de ce fichier ne puisse la faire sauter.
+# `token` = terme de recherche (défaut : engineer).
+- nom: "Remotive"
+  ats: remotive
+  token: engineer
+
+# `token` = catégorie du flux RSS (défaut : remote-programming-jobs).
+- nom: "We Work Remotely"
+  ats: weworkremotely
+  token: remote-programming-jobs
+
+# `token` = taille de page (défaut : 100).
+- nom: "Himalayas"
+  ats: himalayas
+  token: "100"
+
+- nom: "Working Nomads"
+  ats: workingnomads
+
+- nom: "NoDesk"
+  ats: nodesk
+
+- nom: "Jobspresso"
+  ats: jobspresso
+
+# Le fil « Ask HN: Who is hiring? » du mois courant est trouvé tout seul.
+- nom: "HN Who is Hiring"
+  ats: hackernews
+
+# --- Priorité géo ③ — Europe --------------------------------------------
+
+- nom: "Landing.jobs"
+  ats: landingjobs
+
+- nom: "EU Remote Jobs"
+  ats: euremotejobs
+
+# --- Priorité géo ④ — France --------------------------------------------
+
+# `token` = type de contrat (défaut : permanent ; aussi contractor,
+# fixed-term, apprenticeship, internship).
+- nom: "Free-Work"
+  ats: freework
+  token: permanent
+
+# `token` = mots-clés de recherche (défaut : developpeur).
+- nom: "APEC"
+  ats: apec
+  token: developpeur

@@ -1,0 +1,38 @@
+# Collecte à cadence réduite — 4 fois par jour, pas 96.
+#
+# Certaines plateformes plafonnent leurs appels quotidiens : Remotive en
+# autorise 4 (ses offres sont de toute façon retardées de 24 h). Les laisser
+# dans `collect.yml`, planifié toutes les 15 minutes, reviendrait à en faire
+# 96 par jour et à se faire couper l'accès.
+#
+# C'est le planificateur qui garantit le compte, et non un compteur dans le
+# code : le runner Actions est éphémère, il ne mémoriserait rien d'un run à
+# l'autre. `--cadence slow` sélectionne exactement les sources concernées ;
+# `collect.yml` prend le complément, sans recouvrement possible.
+#
+# La minute 7 plutôt que 0 : GitHub Actions retarde d'autant plus une tâche
+# planifiée qu'elle tombe à une heure ronde, très demandée. Une tâche
+# retardée reste dans le budget (Actions saute une occurrence, il n'en
+# duplique jamais), mais autant éviter les retards.
+#
+# ⚠️ Un déclenchement manuel (`workflow_dispatch`) s'ajoute à ces 4 appels.
+
+name: Collect (slow)
+
+on:
+  schedule:
+    - cron: "7 */6 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  collect-slow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install .
+      - run: python -m src.collect --cadence slow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

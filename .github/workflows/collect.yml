@@ -1,3 +1,10 @@
+# Collecte normale — toutes les 15 minutes, soit 96 appels par jour.
+#
+# `--cadence fast` exclut les sources qui plafonnent leurs appels
+# quotidiens ; celles-là sont collectées par `collect-slow.yml`. La
+# répartition se déduit de `Adapter.max_calls_per_day`, donc aucune source
+# ne peut se retrouver dans les deux workflows ni dans aucun.
+
 name: Collect
 
 on:
@@ -14,6 +21,6 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install .
-      - run: python -m src.collect
+      - run: python -m src.collect --cadence fast
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

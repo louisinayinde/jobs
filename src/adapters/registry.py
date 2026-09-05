@@ -30,8 +30,14 @@ def load_registry(path: str | Path) -> list[Source]:
     Une entrée est ignorée — avec un avertissement journalisé nommant la
     source quand son `nom` est exploitable — si :
     - ce n'est pas un mapping ;
-    - il lui manque `nom`, `ats` ou `token` (ou un type invalide) ;
-    - son `ats` n'est pas un adaptateur connu (`KNOWN_ATS`).
+    - il lui manque `nom` ou `ats` (ou leur type est invalide) ;
+    - son `ats` n'est pas un adaptateur connu (`KNOWN_ATS`) ;
+    - il lui manque `token` **alors que son adaptateur en exige un**.
+
+    Ce dernier point est ce qui distingue un ATS d'un agrégateur : le token
+    désigne le board d'une entreprise chez le premier, tandis que le second
+    n'a qu'un endpoint global et se déclare `requires_token = False`. Une
+    entrée d'agrégateur sans token est donc légitime, pas malformée.
 
     Les autres entrées du fichier chargent normalement.
     """
@@ -65,15 +71,88 @@ def load_registry(path: str | Path) -> list[Source]:
             logger.warning("source « %s » ignorée : « ats » manquant ou invalide", label)
             continue
 
-        token = entry.get("token")
-        if not isinstance(token, str) or not token:
-            logger.warning("source « %s » ignorée : « token » manquant", label)
-            continue
-
         if ats not in KNOWN_ATS:
             logger.warning("source « %s » ignorée : ats inconnu « %s »", label, ats)
+            continue
+
+        # Le token est vérifié après l'`ats`, car c'est l'adaptateur qui dit
+        # s'il en faut un : un ATS désigne le board d'une entreprise par son
+        # token, un agrégateur n'a qu'un endpoint global (US-2.3.0).
+        token = entry.get("token")
+        if token is None:
+            token = ""
+        if not isinstance(token, str):
+            logger.warning(
+                "source « %s » ignorée : « token » invalide, attendu une chaîne", label
+            )
+            continue
+        if not token and ADAPTERS[ats].requires_token:
+            logger.warning("source « %s » ignorée : « token » manquant", label)
             continue
 
         sources.append(Source(nom=nom, ats=ats, token=token))
 
     return sources
+
+
+# ---------------------------------------------------------------------------
+# Cadences de collecte
+# ---------------------------------------------------------------------------
+
+#: Période du cron de `collect.yml`, en minutes.
+COLLECT_INTERVAL_MINUTES = 15
+
+#: Appels par jour et par source dans la boucle de collecte normale.
+FAST_RUNS_PER_DAY = 24 * 60 // COLLECT_INTERVAL_MINUTES
+
+#: Appels par jour de `collect-slow.yml` (cron toutes les 6 heures).
+SLOW_RUNS_PER_DAY = 4
+
+#: Les deux cadences, telles qu'écrites en argument de `python -m src.collect`.
+FAST = "fast"
+SLOW = "slow"
+CADENCES = (FAST, SLOW)
+
+
+def cadence_of(source: Source) -> str:
+    """Cadence à laquelle `source` peut être interrogée.
+
+    `SLOW` dès que la plateforme plafonne ses appels sous ce que la boucle
+    de 15 min consommerait. C'est le cas de Remotive, qui n'en autorise que
+    quatre par jour : l'y laisser reviendrait à en faire 96 et à se faire
+    couper l'accès.
+    """
+    limite = ADAPTERS[source.ats].max_calls_per_day
+    if limite is not None and limite < FAST_RUNS_PER_DAY:
+        return SLOW
+    return FAST
+
+
+def split_by_cadence(sources: list[Source]) -> tuple[list[Source], list[Source]]:
+    """Répartit `sources` en `(rapides, lentes)`, ordre du fichier préservé."""
+    rapides = [source for source in sources if cadence_of(source) == FAST]
+    lentes = [source for source in sources if cadence_of(source) == SLOW]
+    return rapides, lentes
+
+
+def load_all(config_dir: str | Path = "config", *, cadence: str | None = None) -> list[Source]:
+    """Charge les deux registres — entreprises puis agrégateurs.
+
+    `cadence` restreint le résultat à `FAST` ou à `SLOW` ; `None` renvoie
+    tout. Les fichiers absents sont ignorés : un dépôt sans
+    `aggregators.yaml` collecte simplement ses ATS.
+    """
+    directory = Path(config_dir)
+    sources: list[Source] = []
+    for name in ("sources.yaml", "aggregators.yaml"):
+        path = directory / name
+        if not path.is_file():
+            logger.warning("registre absent, ignoré : %s", path)
+            continue
+        sources.extend(load_registry(path))
+
+    if cadence is None:
+        return sources
+    if cadence not in CADENCES:
+        raise ValueError(f"cadence inconnue « {cadence} » — attendu : {', '.join(CADENCES)}")
+    return [source for source in sources if cadence_of(source) == cadence]

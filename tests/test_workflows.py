@@ -1,7 +1,11 @@
 """Tests secrets & intégrité des workflows (US-1.3.T) — volet workflows.
 
-Vérifie que les 3 workflows sont du YAML valide et déclarent les bons
+Vérifie que les workflows sont du YAML valide et déclarent les bons
 déclencheurs, sans jamais exécuter GitHub Actions.
+
+Ce que ces workflows *collectent* — la répartition des sources entre la
+cadence normale et la cadence réduite, et le respect des plafonds d'appels
+des plateformes — est testé dans `test_cadences.py`.
 """
 
 from pathlib import Path
@@ -27,10 +31,20 @@ def _triggers(doc: dict[str, Any]) -> dict[str, Any]:
     return doc.get("on", doc.get(True))
 
 
-def test_all_three_workflow_files_are_valid_yaml() -> None:
-    for name in ("collect.yml", "purge.yml", "cv.yml"):
+WORKFLOWS = ("collect.yml", "collect-slow.yml", "purge.yml", "cv.yml")
+
+
+def test_every_workflow_file_is_valid_yaml() -> None:
+    for name in WORKFLOWS:
         doc = _load(name)
         assert isinstance(doc, dict)
+
+
+def test_no_workflow_file_is_left_untested() -> None:
+    """Un workflow ajouté sans être listé ici échapperait à ces contrôles."""
+    presents = {path.name for path in WORKFLOWS_DIR.glob("*.yml")}
+
+    assert presents == set(WORKFLOWS)
 
 
 def test_collect_workflow_declares_schedule_every_15_minutes() -> None:

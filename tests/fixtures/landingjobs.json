@@ -1,0 +1,101 @@
+[
+ {
+  "id": 19066,
+  "currency_code": "EUR",
+  "expires_at": "2027-03-02",
+  "main_requirements": "<ul><li>6-8 years of experience in software development with Java.</li><li>5+ years working with Spring Boot.</li><li>Experience with SQL.</li><li>Proactively solution oriented (Nothing is lost in the cracks).</li><li>Always on the ball.</li><li>Displays maturity and loyalty to the processes, organization, and decisions.</li><li>Dares and wants to challenge status quo.</li><li>Keeping cool and taking qualified decisions under pressure.</li><li>Able and willing to mentor and teach others.</li><li>Is very adept at managing own time and priorities.</li><li>Collaboration and help-seeking are seen as strength.</li></ul>",
+  "nice_to_have": "<ul><li>Experience with Cloud Native engineering.</li><li>Experience with Kafka.</li><li>Experience with Docker and Kubernetes.</li><li>Test Driven Development (TDD).</li></ul>",
+  "perks": "<ul><li>Permanent contract with Inscale</li><li>14 salaries</li><li>22 days vacation</li><li>Portugal Holidays</li><li>Health insurance</li><li>Flex benefits</li><li>Career plan&nbsp;</li></ul>",
+  "relocation_paid": false,
+  "role_description": "<div>Our client is a Global retail chain that brings Scandinavian design and quality to the world through an extensive range of quality products for sleeping and living. Known for its commitment to simplicity, functionality, and affordability.&nbsp;<br><br></div><div>Teamwork, innovation, and a customer-focused mindset as core values.&nbsp;<br><br></div><div>Our culture is built on Scandinavian roots, emphasizing respect, responsibility, and sustainable practices. We are proud to provide opportunities for career growth in a dynamic and supportive environment. <br><br>The Java team is responsible for a wide range of in-house developed applications. So, you will get the opportunity to work in different business areas and with different technologies. <br><br><strong>Responsibilities<br></strong><br></div><ul><li>Are passionate about IT and software development.</li><li>Are skilled Java developers, who continuously strives to improve their skills.</li><li>Write a clean code and create software architecture that are flexible.</li><li>Are experienced with Java web technologies.</li><li>Write thorough tests of the code and are familiar with test driven development.</li><li>Can drive and facilitate design discussions.</li><li>Have extensive knowledge of distributed systems and concurrency.</li></ul>",
+  "title": "Senior Java Software Developer",
+  "created_at": "2025-02-26T08:53:02.254Z",
+  "updated_at": "2026-09-02T07:19:49.719Z",
+  "published_at": "2025-02-26T09:38:38.127Z",
+  "type": "Full-time",
+  "remote": false,
+  "gross_salary_low": 50000,
+  "gross_salary_high": 67000,
+  "tags": [
+   "Spring Boot",
+   "Java",
+   "SQL",
+   "Apache Kafka",
+   "Kubernetes",
+   "Docker"
+  ],
+  "url": "https://landing.jobs/at/inscale/senior-java-software-developer-in-lisbon-2025",
+  "locations": [
+   {
+    "city": "Lisbon",
+    "country_code": "PT"
+   }
+  ]
+ },
+ {
+  "id": 19366,
+  "currency_code": "EUR",
+  "expires_at": "2027-05-12",
+  "main_requirements": "<div><strong>What you’ll bring&nbsp;<br></strong><br></div><div>They look for engineers who are motivated to learn new things, ship new features, and pursue new and interesting challenges. Their main stack is mainly focused around Ruby, however, if you’re passionate about learning new things, then prior experience with Ruby is not essential.&nbsp;<br><br>Next to this:<br><br></div><ul><li>At least, 7+ years of experience in software development, in specific with OOP (object-oriented programming) (agnostic to Ruby)&nbsp;</li><li>You have experience in designing, implementing and deploying backend services with a focus on high availability, low latency, and consistency.</li><li>You have proven experience of collaborating closely with other engineers to become a valued member of an autonomous, cross-functional team.</li><li>You have mentored junior engineers and you enjoy cooperating with engineers throughout the company.</li><li>You understand the value that you can add to the business, the product and the impact of your work on customers.</li><li>You feel comfortable documenting RFCS and describing problems, opportunities, pros and cons of solution alternatives.</li></ul><div><br>As a passionate engineer, you bring these values:<br><br></div><ul><li>You are a passionate experienced engineer with a strong eye for detail.</li><li>You strive to be a great team player and don’t shy away from new challenges.</li><li>You are comfortable in a startup environment and are ready to jump in and help if needed.</li><li>You keep the company's values close to your heart and enjoy being in a diverse environment.</li></ul>",
+  "nice_to_have": "",
+  "perks": "",
+  "relocation_paid": false,
+  "role_description": "<div>Damia Group is an international tech recruitment agency with 3 decades of experience. Our arrival in Portugal, 7 years later, was set on a mission to transform IT recruitment experiences and, through them, achieve better results. We believe in long-term relationships with a transparent and relaxed mindset. In a short period, we have reached the hearts of both scale-ups and larger organisations by delivering spot-on curated candidate shortlists, increased job offer acceptance rates and shorter time-to-fill.</div><div><strong>Damia handles direct hires on behalf of our clients.</strong></div><div>Every day brings the extraordinary! Whether it’s Daniel Ricciardo's Formula 1 Car, a Woolly Mammoth's Skeleton, Lady Gaga's Jumpsuit or Usain Bolt's running shoe, we encounter exceptional objects every day.<br><br></div><div>They are a one-of-a-kind marketplace for buying and selling special objects! Each week they offer over 75,000 unique items in auction<em>,</em> carefully curated by our passionate in-house experts.<br><br></div><div>Having sold over 20 million unique objects to date, they are on a mission to become the world’s most popular destination for special objects. As a growing, diverse and sustainable scale-up, they proudly live by our core values:&nbsp;<br><br></div><ul><li>Taking ownership and driving impact&nbsp;</li><li>Being open to change and feedback</li><li>Being passionate about our mission and our customers.&nbsp;</li></ul><div>If these values resonate with you, they would love to explore how you can join us on this exciting journey!&nbsp;<br><br></div><div>&nbsp;<br><br></div><div><strong>How they work<br></strong><br></div><div>As the biggest marketplace for special items, they operate in a domain that brings plenty of unusual challenges and opportunities. You will be developing, testing and scaling our microservices, mostly written in Ruby, to handle the high volume of requests served by the platform every single day. They do this by using Infrastructure as Code principles, collaborative peer reviews, Continuous Delivery, A/B testing every assumption and using the observability and monitoring tools already in place. They make mistakes and learn valuable lessons from them. Their focus is to be able to recover and iterate quickly.<br><br></div><div><strong>What you’ll do&nbsp; &nbsp;<br><br></strong>You will make an impact by improving and delivering product innovations for their platform. Along with other members of the Development team, you will build scalable microservices while measuring and monitoring system performance. In addition, you will use experimentation, backed by data analysis, to add product features and deliver the best user experience on the platform.<br><br></div><div><br><strong>Where you’ll be<br></strong><br></div><div>This role is based in Lisbon, Portugal. They also offer an excellent relocation package for people living outside of Portugal.&nbsp;</div><div><br><strong>Their Offices and Way of Working<br></strong><br></div><div>Their vibrant offices in Amsterdam, Paris and Lisbon are designed to inspire and connect. They are within commuting distance of one of our offices and enjoy the flexibility of a hybrid work model. This means that you will be in the office 2 out of 5 days (40% of your working time) to collaborate and connect with your colleagues. That said, some roles may be an exception: if the job description states that the position is fully remote or 100% office-based, that arrangement will apply instead.&nbsp;<br><br></div><div>&nbsp;</div>",
+  "title": "Backend Developer",
+  "created_at": "2025-08-27T10:40:00.497Z",
+  "updated_at": "2026-09-01T01:00:10.777Z",
+  "published_at": "2025-08-27T12:13:11.240Z",
+  "type": "Full-time",
+  "remote": false,
+  "tags": [
+   "REST APIs",
+   "Ruby",
+   "OOP",
+   "Test Driven Development",
+   "Unit Testing"
+  ],
+  "url": "https://landing.jobs/at/damia-group-portugal/backend-developer-in-lisbon-2025",
+  "locations": [
+   {
+    "city": "Lisbon",
+    "country_code": "PT"
+   }
+  ]
+ },
+ {
+  "id": 19410,
+  "currency_code": "EUR",
+  "expires_at": "2026-09-29",
+  "main_requirements": "<ul><li><strong>Experience &amp; Tech Stack</strong> → Several years of experience as a Data Engineer or in a similar role, ideally with a focus on Microsoft Azure</li><li><strong>Technical Expertise</strong> → Strong knowledge of Databricks, Spark, Kafka, and data modeling (Star Schema, Snowflake, Data Vault)<br><br></li><li><strong>Cloud &amp; Big Data Knowledge</strong> → Experience with Azure Data Factory, Azure Synapse Analytics, and Azure Databricks<br><br></li><li><strong>Performance Optimization</strong> → Understanding of how to scale data pipelines and optimize queries efficiently<br><br></li><li><strong>Business Understanding</strong> → Ability to develop solutions that are not only technically excellent but also create clear business value<br><br></li><li><strong>Communication &amp; Teamwork</strong> → Ability to explain complex technical concepts in a clear and understandable way and collaborate with interdisciplinary teams<br><br></li><li><strong>Language Skills</strong> → <strong>Fluent English (C1)</strong>;&nbsp;<br><br></li></ul>",
+  "nice_to_have": "",
+  "perks": "<div><strong>Why Join Us?<br></strong><br></div><ul><li><strong>State-of-the-Art Technologies</strong> → Work with Azure, Databricks, and leading cloud technologies on innovative Data &amp; AI projects<br><br></li><li><strong>High Performance &amp; Ambition</strong> → We are looking for driven professionals who want to make an impact<br><br></li><li><strong>Steep Learning Curve &amp; Development Opportunities</strong> → Benefit from regular training, certifications, and exciting projects<br><br></li><li><strong>Innovative Company Culture</strong> → We foster a hands-on mentality, team spirit, and data-driven excellence<br><br></li></ul>",
+  "relocation_paid": false,
+  "role_description": "<div>As a <strong>(Senior)</strong> <strong>Data Engineer</strong>, you will be the driving force behind the development and optimization of our <strong>cloud-based data platforms</strong>. Working at the intersection of business and technology, you will ensure that our data solutions are not only technically excellent but also provide real business value to our customers.<br><br>Using state-of-the-art technologies, you will develop robust <strong>data pipelines, ETL processes, and high-performance data models</strong> that enable scalable and efficient data utilization. Your goal: <strong>turning data into a strategic asset that empowers companies to make smarter decisions.<br></strong><br><strong>Your Responsibilities</strong></div><ul><li><strong>Data Architecture &amp; Development</strong> → Design and implementation of <strong>scalable data platforms using Microsoft Azure</strong> (Azure Data Lake, Azure SQL, Azure Synapse, Databricks)<br><br></li><li><strong>ETL &amp; Data Processing</strong> → Building, optimizing, and maintaining <strong>high-performance data pipelines with Databricks, Spark, and Kafka<br></strong><br></li><li><strong>Data Warehousing &amp; Modeling</strong> → Developing robust data models and optimizing performance for efficient queries<br><br></li><li><strong>Automation &amp; CI/CD</strong> → Implementing CI/CD pipelines to automate deployments and testing<br><br></li><li><strong>Collaboration with Business &amp; Tech Teams</strong> → Close coordination with Data Scientists, Analytics Teams, and Business Stakeholders to develop data-driven solutions<br><br></li><li><strong>Best Practices &amp; Scalability</strong> → Ensuring our data solutions are sustainable, maintainable, and future-proof</li></ul>",
+  "title": "(Senior) Data Engineer",
+  "created_at": "2025-09-29T14:49:19.836Z",
+  "updated_at": "2026-09-01T01:00:10.777Z",
+  "published_at": "2026-03-17T10:23:40.667Z",
+  "type": "Full-time",
+  "remote": false,
+  "tags": [
+   "Microsoft Azure",
+   "Databricks",
+   "Apache Spark"
+  ],
+  "url": "https://landing.jobs/at/ki-performance/senior-data-engineer-in-multiple-locations",
+  "locations": [
+   {
+    "city": "Munich",
+    "country_code": "DE"
+   },
+   {
+    "city": "Lisbon",
+    "country_code": "PT"
+   },
+   {
+    "city": "Cologne",
+    "country_code": "DE"
+   }
+  ]
+ }
+]

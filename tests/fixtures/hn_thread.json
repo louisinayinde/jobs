@@ -1,0 +1,166 @@
+{
+ "id": 49522897,
+ "created_at": "2026-09-01T15:01:17.000Z",
+ "created_at_i": 1788274877,
+ "type": "story",
+ "author": "whoishiring",
+ "title": "Ask HN: Who is hiring? (September 2026)",
+ "url": null,
+ "points": 247,
+ "parent_id": null,
+ "story_id": 49522897,
+ "text": "Please state the location and include REMOTE for remote work, REMOTE (US)\nor similar if the country is restricted, and ONSITE when remote work is <i>not</i> an option.<p>Please only post if you personally are part of the hiring company—no\nrecruiting firms or job boards. One post per company. If it isn&#x27;t a household name,\nexplain what your company does.<p>Please only post if you are actively filling a position and are committed\nto replying to applicants.<p>Commenters: please don&#x27;t reply to job posts to complain about\nsomething. It&#x27;s off topic here.<p>Readers: please only email if you are personally interested in the job.<p>Searchers: try <a href=\"https:&#x2F;&#x2F;nthesis.ai&#x2F;public&#x2F;hn-who-is-hiring\" rel=\"nofollow\">https:&#x2F;&#x2F;nthesis.ai&#x2F;public&#x2F;hn-who-is-hiring</a>, <a href=\"https:&#x2F;&#x2F;dheerajck.github.io&#x2F;hnwhoishiring&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;dheerajck.github.io&#x2F;hnwhoishiring&#x2F;</a>,\n<a href=\"http:&#x2F;&#x2F;nchelluri.github.io&#x2F;hnjobs&#x2F;\" rel=\"nofollow\">http:&#x2F;&#x2F;nchelluri.github.io&#x2F;hnjobs&#x2F;</a>, <a href=\"https:&#x2F;&#x2F;hnjobs.emilburzo.com\" rel=\"nofollow\">https:&#x2F;&#x2F;hnjobs.emilburzo.com</a>.<p>Don&#x27;t miss this other fine thread: <i>Who wants to be hired?</i> <a href=\"https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=49522896\">https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=49522896</a>",
+ "children": [
+  {
+   "id": 49522903,
+   "created_at": "2026-09-01T15:01:54.000Z",
+   "type": "comment",
+   "author": "thelastofthelas",
+   "text": "Modash.io | Senior Product Engineer | Remote (Europe) | Full-time | €75k–110k | <a href=\"https:&#x2F;&#x2F;modash.io\" rel=\"nofollow\">https:&#x2F;&#x2F;modash.io</a><p>Modash helps brands find, manage, and pay creators - and helps creators earn a living.<p>The product looks simple on the surface. Underneath, we index 380M+ public creator profiles across Instagram, TikTok, and YouTube so that 1,700+ brands search, evaluate, manage, and pay creators without drowning in spreadsheets and tabs.<p>We&#x27;re looking for Senior Product Engineers who like owning ambiguous problems end-to-end. No perfectly shaped tickets. You talk to customers, understand messy workflows, make product decisions, ship, and own whether it actually works.<p>The problems we care about:<p>- How do you make a 380M-profile dataset feel fast, trustworthy, and easy to explore?<p>- How do you turn chaotic influencer marketing workflows into product that feels obvious?<p>- How do you build tools that work for both small teams and brands like Stanley, Sennheiser, Birkenstock, and NordVPN??<p>We&#x27;re 85 people, raised an €11M Series A, and ARR is doubling every year. HQ is in Tallinn, engineering is fully remote across Europe.\nNo ticket factory. No seven layers of approval. Small teams, real ownership, hard product problems.<p>Engineering blog: <a href=\"https:&#x2F;&#x2F;modash.io&#x2F;engineering\" rel=\"nofollow\">https:&#x2F;&#x2F;modash.io&#x2F;engineering</a><p>Apply: <a href=\"https:&#x2F;&#x2F;apply.workable.com&#x2F;modash&#x2F;j&#x2F;C1507B65C3\" rel=\"nofollow\">https:&#x2F;&#x2F;apply.workable.com&#x2F;modash&#x2F;j&#x2F;C1507B65C3</a>",
+   "parent_id": 49522897,
+   "story_id": 49522897,
+   "children": []
+  },
+  {
+   "id": 49522929,
+   "created_at": "2026-09-01T15:03:02.000Z",
+   "type": "comment",
+   "author": "eterps",
+   "text": "Open Education Applications &#x2F; Neon | Senior&#x2F;Lead Platform &amp; DevOps Engineer, Senior Frontend Engineer, Senior Full-Stack Engineer | Utrecht, The Netherlands | HYBRID | DUTCH REQUIRED<p>Please note: working proficiency in Dutch is strictly required for these roles, and we kindly ask for no automated applications. The rest of this post will continue in Dutch.<p>Wij zijn een non-profit die zich inzet om lesmateriaal voor scholen beter, betaalbaarder en flexibeler te maken, in zowel digitale als gedrukte vorm.<p>Werktijden en kantoordagen zijn flexibel en worden in overleg bepaald op basis van de rol. Wij bieden een competitief salaris.<p>Technologiestack: Git monorepo, TypeScript, Yjs en React, een beetje Python, OpenTofu&#x2F;Terraform, Scaleway, managed PostgreSQL en managed Kubernetes.<p>Openstaande rollen:<p>- Senior&#x2F;Lead Platform &amp; DevOps Engineer<p>- Senior Backend Engineer&#x2F;Architect<p>- Senior Frontend Engineer<p>- Senior Full-Stack Engineer<p>E-mail jobs[at]openeducation.foundation met (HN) + de functienaam in het onderwerp, samen met een korte introductie en een link naar je LinkedIn-profiel en&#x2F;of GitHub. Als er van beide kanten een goede match lijkt te zijn, plan ik graag een kennismakingsgesprek in.<p><a href=\"https:&#x2F;&#x2F;openeducation.foundation\" rel=\"nofollow\">https:&#x2F;&#x2F;openeducation.foundation</a> | <a href=\"https:&#x2F;&#x2F;www.neon.nl\" rel=\"nofollow\">https:&#x2F;&#x2F;www.neon.nl</a>",
+   "parent_id": 49522897,
+   "story_id": 49522897,
+   "children": [
+    {
+     "author": "interactivecode",
+     "children": [],
+     "created_at": "2026-09-01T20:06:21.000Z",
+     "created_at_i": 1788293181,
+     "id": 49527377,
+     "options": [],
+     "parent_id": 49522929,
+     "points": null,
+     "story_id": 49522897,
+     "text": "competitief salaris? Is dat competitief met andere bedrijven op HN? Zet er anders even een echt bedrag bij.",
+     "title": null,
+     "type": "comment",
+     "url": null
+    },
+    {
+     "author": "mb2100",
+     "children": [],
+     "created_at": "2026-09-02T09:07:19.000Z",
+     "created_at_i": 1788340039,
+     "id": 49533720,
+     "options": [],
+     "parent_id": 49522929,
+     "points": null,
+     "story_id": 49522897,
+     "text": "Is understanding Dutch (reading and listening) good enough?",
+     "title": null,
+     "type": "comment",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": 49522989,
+   "created_at": "2026-09-01T15:06:48.000Z",
+   "type": "comment",
+   "author": "kcartmell",
+   "text": "Snout <a href=\"https:&#x2F;&#x2F;snout.com&#x2F;\" rel=\"nofollow\">https:&#x2F;&#x2F;snout.com&#x2F;</a> | Multiple Engineering + Product Roles | Remote US or Ontario, Canada | Full Time<p>Join us at Snout on our mission to ensure no one ever has to make a health decision for their pet based on the cash in their bank account. Snout plans pay for 100% of routine veterinary care, unlimited visits, and additional member benefits - think pet insurance, that you will actually use every year.<p>We&#x27;re growing the team and hiring across the board. Open roles:<p>Full-Stack Software Engineer - Build and ship every day across our web apps, payments, and data systems, from database to UI.<p>Across all roles we&#x27;re looking for at least three years of relevant experience, and we&#x27;re hiring senior and staff level engineers as well.<p>Our tech stack includes Node.js, React, PostgreSQL, AWS, Tailwind, and Python. We use both JavaScript and TypeScript heavily. Our team uses LLM-based tooling day to day, but we&#x27;re fundamentally a human-centric team, and our product itself does not heavily feature AI components.<p>Apply at <a href=\"https:&#x2F;&#x2F;jobs.gem.com&#x2F;snoutd\" rel=\"nofollow\">https:&#x2F;&#x2F;jobs.gem.com&#x2F;snoutd</a>",
+   "parent_id": 49522897,
+   "story_id": 49522897,
+   "children": [
+    {
+     "author": "jborden13",
+     "children": [
+      {
+       "author": "QuantumNomad_",
+       "children": [
+        {
+         "author": "Cheezmeister",
+         "children": [
+          {
+           "author": "QuantumNomad_",
+           "children": [],
+           "created_at": "2026-09-01T18:58:05.000Z",
+           "created_at_i": 1788289085,
+           "id": 49526388,
+           "options": [],
+           "parent_id": 49525002,
+           "points": null,
+           "story_id": 49522897,
+           "text": "&gt; a mitigation measure against botspam slopping it up<p>I find it hard to imagine that would be the case. They already link to the same page from their website without any typos, and they link to their website from the comment here.",
+           "title": null,
+           "type": "comment",
+           "url": null
+          }
+         ],
+         "created_at": "2026-09-01T17:23:08.000Z",
+         "created_at_i": 1788283388,
+         "id": 49525002,
+         "options": [],
+         "parent_id": 49523114,
+         "points": null,
+         "story_id": 49522897,
+         "text": "I imagine it was a mitigation measure against botspam slopping it up in Snout&#x27;s candidate pool.<p>Or maybe a typo, still, I&#x27;d have left the link unstated.<p>...Internet courtesy is weird these days :&#x2F;",
+         "title": null,
+         "type": "comment",
+         "url": null
+        }
+       ],
+       "created_at": "2026-09-01T15:16:17.000Z",
+       "created_at_i": 1788275777,
+       "id": 49523114,
+       "options": [],
+       "parent_id": 49523079,
+       "points": null,
+       "story_id": 49522897,
+       "text": "Looks like they have an accidental “d” at the end of the link.<p>Remove that and you get <a href=\"https:&#x2F;&#x2F;jobs.gem.com&#x2F;snout\" rel=\"nofollow\">https:&#x2F;&#x2F;jobs.gem.com&#x2F;snout</a>",
+       "title": null,
+       "type": "comment",
+       "url": null
+      }
+     ],
+     "created_at": "2026-09-01T15:13:15.000Z",
+     "created_at_i": 1788275595,
+     "id": 49523079,
+     "options": [],
+     "parent_id": 49522989,
+     "points": null,
+     "story_id": 49522897,
+     "text": "Apply @ link 404",
+     "title": null,
+     "type": "comment",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": 49523896,
+   "created_at": "2026-09-01T16:04:21.000Z",
+   "type": "comment",
+   "author": "yboris",
+   "text": "Please normalize <i>4DWW</i> - <i>Four Day Work Week</i><p>Whoever posts this monthly, please include the tag in your description. Employers need to know this is an in-demand feature we want. I for one will not be taking any non-4DWW jobs.",
+   "parent_id": 49522897,
+   "story_id": 49522897,
+   "children": [
+    {
+     "author": "okhobb",
+     "children": [],
+     "created_at": "2026-09-01T16:08:08.000Z",
+     "created_at_i": 1788278888,
+     "id": 49523951,
+     "options": [],
+     "parent_id": 49523896,
+     "points": null,
+     "story_id": 49522897,
+     "text": "It would also be nice to note if it&#x27;s 6DWW or 7DWW. I&#x27;ve been told GenZ is very into the these options.",
+     "title": null,
+     "type": "comment",
+     "url": null
+    }
+   ]
+  }
+ ]
+}

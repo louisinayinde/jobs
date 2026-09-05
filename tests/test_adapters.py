@@ -1,9 +1,14 @@
-"""Tests des adaptateurs ATS (US-2.2.T).
+"""Tests des adaptateurs ATS (US-2.2.T) et tests transverses de tous les
+adaptateurs branchés, agrégateurs compris (US-2.3.T).
 
-Le parsing est vérifié contre des **réponses réelles figées** (capturées le
-2026-09-05 sur les boards publics GitLab/Greenhouse, Malt/Lever,
-Ramp/Ashby, Ubisoft/SmartRecruiters, BG Prevent/Workable), rejouées via un
+Le parsing est vérifié contre des **réponses réelles figées**, capturées le
+2026-09-05 sur les endpoints publics et rejouées via un
 `httpx.MockTransport` : aucun test de ce fichier n'accède au réseau.
+
+Les tests transverses en fin de fichier sont paramétrés par
+`ALL_ADAPTERS` (voir `tests/adapter_cases.py`) : ils couvrent donc les
+douze agrégateurs comme les cinq ATS, sans une ligne de test en plus.
+Les tests propres aux agrégateurs vivent dans `test_aggregators.py`.
 """
 
 from __future__ import annotations
@@ -32,37 +37,22 @@ from src.adapters import (
 from src.adapters.base import USER_AGENT, html_to_text, to_iso_utc
 from src.adapters.registry import KNOWN_ATS
 from src.core.config import Source
+from tests.adapter_cases import (
+    ALL_ADAPTER_IDS,
+    ALL_ADAPTERS,
+    RAWJOB_KEYS,
+    fetch_body,
+    fetch_case,
+    responder,
+)
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
-
-#: Le schéma pivot : tout adaptateur doit produire exactement ces clés.
-RAWJOB_KEYS = {
-    "id",
-    "ats",
-    "entreprise",
-    "titre",
-    "localisation",
-    "remote_type",
-    "url",
-    "date",
-    "description",
-}
 
 GITLAB = Source(nom="GitLab", ats="greenhouse", token="gitlab")
 MALT = Source(nom="Malt", ats="lever", token="malt")
 RAMP = Source(nom="Ramp", ats="ashby", token="ramp")
 UBISOFT = Source(nom="Ubisoft", ats="smartrecruiters", token="Ubisoft2")
 BG_PREVENT = Source(nom="BG Prevent", ats="workable", token="bg-prevent")
-
-#: (classe d'adaptateur, fixture réelle, source) pour les tests transverses.
-ALL_ATS = [
-    (GreenhouseAdapter, "greenhouse_gitlab.json", GITLAB),
-    (LeverAdapter, "lever_malt.json", MALT),
-    (AshbyAdapter, "ashby_ramp.json", RAMP),
-    (SmartRecruitersAdapter, "smartrecruiters_ubisoft.json", UBISOFT),
-    (WorkableAdapter, "workable_bgprevent.json", BG_PREVENT),
-]
-ALL_ATS_IDS = [cls.ats for cls, _, _ in ALL_ATS]
 
 
 # ---------------------------------------------------------------------------
@@ -71,14 +61,7 @@ ALL_ATS_IDS = [cls.ats for cls, _, _ in ALL_ATS]
 
 
 def _responder(body: str, status: int = 200, recorder: list | None = None):
-    def handler(request: httpx.Request) -> httpx.Response:
-        if recorder is not None:
-            recorder.append(request)
-        return httpx.Response(
-            status, content=body, headers={"content-type": "application/json"}
-        )
-
-    return httpx.Client(transport=httpx.MockTransport(handler))
+    return responder(body, status=status, recorder=recorder)
 
 
 def _fetch(adapter_cls, fixture: str, source: Source, **kwargs) -> list[RawJob]:
@@ -291,6 +274,12 @@ def test_workable_fixture_is_fetched_with_post_and_parsed() -> None:
 # ---------------------------------------------------------------------------
 
 
+def test_the_catalogue_covers_every_registered_adapter() -> None:
+    """Garde-fou : un adaptateur branché mais absent du catalogue échapperait
+    silencieusement à tous les tests transverses."""
+    assert {case.adapter_cls.ats for case in ALL_ADAPTERS} == set(ADAPTERS)
+
+
 def test_greenhouse_and_lever_produce_the_same_rawjob_keys() -> None:
     greenhouse = _fetch(GreenhouseAdapter, "greenhouse_gitlab.json", GITLAB)[0]
     lever = _fetch(LeverAdapter, "lever_malt.json", MALT)[0]
@@ -299,9 +288,10 @@ def test_greenhouse_and_lever_produce_the_same_rawjob_keys() -> None:
     assert set(asdict(lever)) == RAWJOB_KEYS
 
 
-@pytest.mark.parametrize("adapter_cls, fixture, source", ALL_ATS, ids=ALL_ATS_IDS)
-def test_every_adapter_produces_the_common_schema(adapter_cls, fixture, source) -> None:
-    jobs = _fetch(adapter_cls, fixture, source)
+@pytest.mark.parametrize("case", ALL_ADAPTERS, ids=ALL_ADAPTER_IDS)
+def test_every_adapter_produces_the_common_schema(case) -> None:
+    """Le contrat `RawJob` vaut pour les 5 ATS **et** les 12 agrégateurs."""
+    jobs = fetch_case(case)
 
     assert jobs, "la fixture doit contenir au moins une offre"
     for job in jobs:
@@ -309,11 +299,15 @@ def test_every_adapter_produces_the_common_schema(adapter_cls, fixture, source) 
         assert set(fields) == RAWJOB_KEYS
         # Aucun champ ne vaut `None` : un manque se traduit par `""`.
         assert all(isinstance(value, str) for value in fields.values())
-        assert job.ats == adapter_cls.ats
-        assert job.entreprise == source.nom
+        assert job.ats == case.adapter_cls.ats
         assert job.id and job.titre and job.url
         assert job.remote_type in {"remote", "hybrid", "onsite", "unknown"}
         assert "<" not in job.description
+        # Toute offre a un employeur nommé — c'est `Source.nom` chez un ATS,
+        # un champ de l'offre chez un agrégateur (US-2.3.0).
+        assert job.entreprise
+        if not case.aggregator:
+            assert job.entreprise == case.source.nom
 
 
 # ---------------------------------------------------------------------------
@@ -321,15 +315,13 @@ def test_every_adapter_produces_the_common_schema(adapter_cls, fixture, source) 
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("adapter_cls, fixture, source", ALL_ATS, ids=ALL_ATS_IDS)
-def test_http_404_returns_an_empty_list_without_raising(
-    adapter_cls, fixture, source, caplog
-) -> None:
+@pytest.mark.parametrize("case", ALL_ADAPTERS, ids=ALL_ADAPTER_IDS)
+def test_http_404_returns_an_empty_list_without_raising(case, caplog) -> None:
     with caplog.at_level(logging.WARNING):
-        jobs = _fetch_body(adapter_cls, "Not Found", source, status=404)
+        jobs = fetch_body(case, "Not Found", status=404)
 
     assert jobs == []
-    assert any(source.nom in record.getMessage() for record in caplog.records)
+    assert any(case.source.nom in record.getMessage() for record in caplog.records)
 
 
 def test_job_without_location_field_falls_back_to_default_remote_type() -> None:
@@ -352,24 +344,21 @@ def test_null_location_is_treated_like_a_missing_one() -> None:
     assert jobs[0].description == ""
 
 
-@pytest.mark.parametrize("adapter_cls, fixture, source", ALL_ATS, ids=ALL_ATS_IDS)
-def test_malformed_json_raises_an_adapter_error_naming_the_source(
-    adapter_cls, fixture, source
-) -> None:
+@pytest.mark.parametrize("case", ALL_ADAPTERS, ids=ALL_ADAPTER_IDS)
+def test_malformed_payload_raises_an_adapter_error_naming_the_source(case) -> None:
+    """Un corps tronqué est inexploitable, qu'on attende du JSON ou du RSS."""
     with pytest.raises(AdapterError) as excinfo:
-        _fetch_body(adapter_cls, '{"jobs": [', source)
+        fetch_body(case, '{"jobs": [')
 
-    assert source.nom in str(excinfo.value)
+    assert case.source.nom in str(excinfo.value)
 
 
-@pytest.mark.parametrize("adapter_cls, fixture, source", ALL_ATS, ids=ALL_ATS_IDS)
-def test_server_error_raises_an_adapter_error_naming_the_source(
-    adapter_cls, fixture, source
-) -> None:
+@pytest.mark.parametrize("case", ALL_ADAPTERS, ids=ALL_ADAPTER_IDS)
+def test_server_error_raises_an_adapter_error_naming_the_source(case) -> None:
     with pytest.raises(AdapterError) as excinfo:
-        _fetch_body(adapter_cls, "boom", source, status=500)
+        fetch_body(case, "boom", status=500)
 
-    assert source.nom in str(excinfo.value)
+    assert case.source.nom in str(excinfo.value)
     assert "500" in str(excinfo.value)
 
 
