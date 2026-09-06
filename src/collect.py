@@ -23,8 +23,20 @@ qui bute sur un cas inédit ne doit jamais coûter la collecte des trente-six
 autres. Le run ne sort en erreur que si **toutes** les sources échouent :
 là, ce n'est plus une source qui a un problème, c'est nous.
 
-La suite du pipeline (normalisation, rétention, dédup, publication) arrive
-avec l'Epic 3 : ici, les offres collectées sont comptées et résumées.
+Les offres collectées sont ensuite **normalisées** (Feature 3.1) : les
+`RawJob` de dix-huit adaptateurs deviennent des `Job`, le schéma que toute
+la suite du pipeline manipule. Puis vient le **filtre de rétention**
+(Feature 3.2), la première étape qui jette : sur trois mille cinq cents
+offres collectées, quelques dizaines correspondent au poste cherché. Le
+bilan du run affiche le décompte par motif de rejet — sans lui, un filtre
+cassé qui rejette tout ressemblerait à un marché de l'emploi calme.
+
+`filters.yaml` est lu **avant** la première requête. Une configuration
+illisible arrête le run tout de suite plutôt qu'après trente-sept appels
+réseau, et surtout : collecter sans savoir quoi retenir n'a aucun intérêt.
+
+La suite — dédup, scoring, publication — arrive avec les Features 3.3
+à 4.3.
 """
 
 from __future__ import annotations
@@ -39,10 +51,17 @@ import httpx
 from src.adapters import RawJob, get_adapter
 from src.adapters.base import new_client
 from src.adapters.registry import CADENCES, FAST, load_all
-from src.core.config import Source
+from src.core.config import ConfigError, Source, load_filters
+from src.core.normalize import Job, normalize
+from src.core.retention import RetentionFilter
 from src.core.secrets import require_env
 
 logger = logging.getLogger(__name__)
+
+#: Emplacement par défaut des règles de rétention, surchargeable par
+#: `--filters` (les tests s'en servent pour ne pas dépendre du fichier du
+#: dépôt).
+DEFAULT_FILTERS_PATH = "config/filters.yaml"
 
 
 @dataclass(frozen=True)
@@ -176,11 +195,20 @@ def build_parser() -> argparse.ArgumentParser:
             "slow : sources qui limitent leurs appels quotidiens (toutes les 6 h)"
         ),
     )
+    parser.add_argument(
+        "--filters",
+        default=DEFAULT_FILTERS_PATH,
+        help="règles de rétention à appliquer (défaut : %(default)s)",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -> int:
-    """Collecte la cadence demandée. Retourne 0, ou 1 si tout a échoué.
+    """Collecte la cadence demandée. Retourne 0, ou 1 en cas d'échec.
+
+    Deux échecs possibles, et un seul est une panne : des règles de
+    rétention illisibles (avant toute requête), ou **toutes** les sources
+    en erreur.
 
     `client` n'est là que pour les tests : en production, le run ouvre le
     sien et le referme à la fin.
@@ -191,6 +219,18 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
     # double de la nôtre. On garde ses avertissements, pas son bavardage.
     logging.getLogger("httpx").setLevel(logging.WARNING)
     require_env("GITHUB_TOKEN")
+
+    # Avant la première requête : collecter sans savoir quoi retenir n'a
+    # aucun intérêt, et une erreur de config vaut mieux découverte tout de
+    # suite qu'après trente-sept appels réseau. Le filtre neutre du
+    # pré-filtre de slug (US-2.5.1) n'a pas d'équivalent ici : là-bas,
+    # laisser passer coûtait quelques requêtes ; ici, cela publierait le
+    # marché de l'emploi mondial sur le tableau de revue.
+    try:
+        filtre = RetentionFilter.from_config(load_filters(args.filters).retention)
+    except ConfigError as exc:
+        print(f"collect : règles de rétention illisibles — {exc}", file=sys.stderr)
+        return 1
 
     sources = load_all(cadence=args.cadence)
     if not sources:
@@ -252,8 +292,32 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
         )
         return 1
 
-    print("collect: offres brutes collectées — traitement à venir (Epic 3)")
+    # Le vocabulaire vient du filtre, pas du module de normalisation : c'est
+    # ce qui garantit qu'une techno sur laquelle on filtre ne puisse jamais
+    # être invisible au détecteur (US-3.2.4).
+    jobs = normalize(report.jobs, vocabulaire=filtre.vocabulaire)
+    print(
+        f"collect [{args.cadence}] : {len(jobs)} offre(s) normalisée(s)"
+        f"{_ecartees(report.jobs, jobs)}",
+        flush=True,
+    )
+
+    retention = filtre.appliquer(jobs)
+    print(f"collect [{args.cadence}] : {retention.resume}", flush=True)
+    print("collect: offres retenues — dédup et publication à venir (Features 3.3/4.x)")
     return 0
+
+
+def _ecartees(bruts: list[RawJob], jobs: list[Job]) -> str:
+    """Suffixe nommant les offres perdues à la normalisation, ou `""`.
+
+    Une offre écartée ici n'avait ni identifiant ni URL — le seul cas que
+    la normalisation refuse. C'est rare et cela vient toujours d'un
+    adaptateur : le signaler dans le bilan évite de chercher plus tard
+    pourquoi le compte ne tombe pas juste.
+    """
+    perdues = len(bruts) - len(jobs)
+    return f" ({perdues} écartée(s), sans identité)" if perdues else ""
 
 
 if __name__ == "__main__":

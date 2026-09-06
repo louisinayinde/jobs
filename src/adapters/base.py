@@ -437,6 +437,12 @@ def html_to_text(raw: str) -> str:
     return "\n".join(cleaned).strip()
 
 
+#: Un timestamp epoch servi comme chaîne. Neuf chiffres au minimum : en
+#: dessous, la valeur est plus probablement une année ou un numéro d'offre
+#: qu'une date (voir `to_iso_utc`).
+_EPOCH_STRING_RE = re.compile(r"-?\d{9,}")
+
+
 def to_iso_utc(value: Any) -> str:
     """Normalise une date ATS en ISO-8601 UTC à la seconde, ou `""`.
 
@@ -461,6 +467,13 @@ def to_iso_utc(value: Any) -> str:
             return ""
     elif isinstance(value, str):
         text = value.strip().replace("Z", "+00:00")
+        if _EPOCH_STRING_RE.fullmatch(text):
+            # Un timestamp servi comme chaîne (« "1785760723" ») : ni ISO,
+            # ni RFC-822, il ne vaut aujourd'hui que `""`. Le seuil de neuf
+            # chiffres est ce qui empêche de lire une année seule (« 2026 »)
+            # comme une date de 1970 — un repli bien pire que l'aveu de ne
+            # pas savoir.
+            return to_iso_utc(int(text))
         try:
             parsed = datetime.fromisoformat(text)
         except ValueError:
