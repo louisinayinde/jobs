@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import time
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -31,10 +32,29 @@ from src.core.config import Source
 
 logger = logging.getLogger(__name__)
 
-#: Timeout par requête, en secondes. Le backoff/retry arrive avec la
-#: Feature 2.4 (politesse réseau) ; ici on garantit juste qu'un ATS lent
-#: ne bloque pas le run indéfiniment.
+#: Timeout par requête, en secondes : un ATS lent ne doit pas bloquer le
+#: run indéfiniment. Surchargeable par adaptateur (`default_timeout`), car
+#: RemoteOK répond en ~40 s et ce défaut l'exclurait de fait.
 DEFAULT_TIMEOUT = 15.0
+
+#: Attentes avant chaque **nouvelle** tentative, en secondes (US-2.4.2).
+#:
+#: Un seul délai = une seule seconde tentative, soit deux appels au pire.
+#: Ajouter une valeur au tuple ajoute un essai de plus, et l'espacement
+#: croissant en fait un vrai backoff : c'est le seul endroit à toucher.
+RETRY_DELAYS: tuple[float, ...] = (2.0,)
+
+#: Nombre total de tentatives par requête, retry compris.
+MAX_ATTEMPTS = len(RETRY_DELAYS) + 1
+
+#: Statuts qui méritent une seconde tentative : ils disent « pas
+#: maintenant », pas « jamais ».
+#:
+#: Le 429 en est volontairement absent. Il signifie « vous appelez trop » :
+#: y répondre par un appel de plus deux secondes après est exactement le
+#: mauvais geste. La réponse du projet au débit, c'est
+#: `Adapter.max_calls_per_day` et la cadence lente — pas un retry.
+RETRYABLE_STATUS = frozenset({500, 502, 503, 504})
 
 #: User-Agent explicite : on s'identifie plutôt que de se faire passer
 #: pour un navigateur, pour ne pas se faire bloquer silencieusement.
@@ -150,11 +170,36 @@ class Adapter(ABC):
         """Retourne les offres publiées sur le board de `source`."""
 
 
+def new_client() -> httpx.Client:
+    """Client HTTP partageable par tous les adaptateurs d'un run.
+
+    Un seul client réutilise ses connexions au lieu d'en rouvrir une par
+    requête — c'est de la politesse autant que de la vitesse. Le timeout
+    n'est volontairement pas posé ici : il est propre à chaque adaptateur
+    et voyage donc avec la requête.
+    """
+    return httpx.Client(follow_redirects=True)
+
+
+def _wait(seconds: float) -> None:
+    """Attente entre deux tentatives.
+
+    Isolée dans une fonction pour que les tests la neutralisent — sinon la
+    suite passerait son temps à dormir — sans toucher à `time.sleep`
+    globalement.
+    """
+    time.sleep(seconds)
+
+
 class HttpAdapter(Adapter):
     """Base des adaptateurs qui interrogent une API HTTP (JSON ou XML).
 
     Le client `httpx` est injectable : les tests passent un
     `httpx.MockTransport` et tournent donc entièrement hors réseau.
+
+    Chaque requête est envoyée avec un timeout et, en cas de panne
+    passagère, une seconde tentative après backoff (US-2.4.2) : voir
+    `_request`.
     """
 
     #: Timeout appliqué quand l'appelant n'en impose pas. Surchargeable par
@@ -180,36 +225,30 @@ class HttpAdapter(Adapter):
         if self._client is not None:
             yield self._client
         else:
-            with httpx.Client(follow_redirects=True) as client:
+            with new_client() as client:
                 yield client
 
-    def _request(
-        self,
-        source: Source,
-        url: str,
-        *,
-        method: str = "GET",
-        json_body: Any | None = None,
-    ) -> httpx.Response | None:
-        """Appelle `url` et retourne la réponse, ou `None` sur 404.
+    def _send(self, url: str, method: str, json_body: Any | None) -> httpx.Response:
+        """Émet **une** requête. Toute panne réseau remonte en `httpx.HTTPError`.
 
-        Les en-têtes sont posés par requête (et non sur le client) pour que
-        le User-Agent parte aussi quand un client est injecté par un test.
+        Les en-têtes et le timeout sont posés par requête (et non sur le
+        client) pour deux raisons : le User-Agent part aussi quand un client
+        est injecté par un test, et un client partagé par tout un run peut
+        servir des adaptateurs aux timeouts différents.
         """
-        try:
-            with self._session() as client:
-                response = client.request(
-                    method,
-                    url,
-                    headers=self._request_headers(url),
-                    json=json_body,
-                    timeout=self._timeout,
-                )
-        except httpx.HTTPError as exc:
-            raise AdapterError(
-                f"source « {source.nom} » ({self.ats}) : échec de la requête {url} — {exc}"
-            ) from exc
+        with self._session() as client:
+            return client.request(
+                method,
+                url,
+                headers=self._request_headers(url),
+                json=json_body,
+                timeout=self._timeout,
+            )
 
+    def _interpret(
+        self, source: Source, url: str, response: httpx.Response
+    ) -> httpx.Response | None:
+        """Traduit un statut en valeur de retour, ou en `AdapterError`."""
         if response.status_code == 404:
             logger.warning(
                 "source « %s » (%s) : board introuvable (404) sur %s — "
@@ -228,6 +267,57 @@ class HttpAdapter(Adapter):
             )
 
         return response
+
+    def _request(
+        self,
+        source: Source,
+        url: str,
+        *,
+        method: str = "GET",
+        json_body: Any | None = None,
+    ) -> httpx.Response | None:
+        """Appelle `url` et retourne la réponse, ou `None` sur 404.
+
+        Une panne passagère — coupure réseau, timeout, 5xx — vaut une
+        nouvelle tentative après le délai de `RETRY_DELAYS` (US-2.4.2). Les
+        autres réponses ne sont **pas** réessayées : un 404 ou un 403 ne se
+        répare pas en rappelant deux secondes plus tard, et le retry ne
+        ferait qu'ajouter du bruit chez la plateforme.
+
+        Ce qui échoue encore à la dernière tentative remonte en
+        `AdapterError` nommant la source ; c'est le Collector qui décide
+        alors de continuer avec les autres (US-2.4.1).
+        """
+        for delai in RETRY_DELAYS:
+            try:
+                response = self._send(url, method, json_body)
+            except httpx.HTTPError as exc:
+                motif = f"{type(exc).__name__} — {exc}"
+            else:
+                if response.status_code not in RETRYABLE_STATUS:
+                    return self._interpret(source, url, response)
+                motif = f"statut HTTP {response.status_code}"
+
+            logger.warning(
+                "source « %s » (%s) : %s sur %s — nouvelle tentative dans %.1f s",
+                source.nom,
+                self.ats,
+                motif,
+                url,
+                delai,
+            )
+            _wait(delai)
+
+        # Dernière tentative : plus de filet, ce qui échoue ici remonte.
+        try:
+            response = self._send(url, method, json_body)
+        except httpx.HTTPError as exc:
+            raise AdapterError(
+                f"source « {source.nom} » ({self.ats}) : échec de la requête {url} "
+                f"après {MAX_ATTEMPTS} tentative(s) — {exc}"
+            ) from exc
+
+        return self._interpret(source, url, response)
 
     def _request_json(
         self,

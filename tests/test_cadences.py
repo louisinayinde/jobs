@@ -12,6 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 import yaml
 
@@ -226,6 +227,13 @@ def test_the_slow_workflow_is_valid_yaml_and_can_be_triggered_by_hand() -> None:
 # ---------------------------------------------------------------------------
 
 
+def empty_client() -> httpx.Client:
+    """Client hors réseau dont tous les boards répondent « introuvable »."""
+    return httpx.Client(
+        transport=httpx.MockTransport(lambda request: httpx.Response(404, text="nope"))
+    )
+
+
 def test_collect_defaults_to_the_fast_cadence() -> None:
     assert collect.build_parser().parse_args([]).cadence == FAST
 
@@ -242,7 +250,9 @@ def test_collect_runs_and_lists_only_its_own_cadence(
     monkeypatch.setenv("GITHUB_TOKEN", "jeton-de-test")
     monkeypatch.chdir(REPO_ROOT)
 
-    code = collect.main(["--cadence", cadence])
+    # Client hors réseau : tous les boards répondent 404, donc aucune offre
+    # et aucun échec — ce test ne juge que la **sélection** des sources.
+    code = collect.main(["--cadence", cadence], client=empty_client())
 
     assert code == 0
     sortie = capsys.readouterr().out

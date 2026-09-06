@@ -33,13 +33,82 @@ class Adapter(ABC):
 |---|---|
 | Board introuvable (**404**) | liste vide + avertissement journalisé, **aucune exception** (le token a changé) |
 | JSON malformé, schéma inattendu, statut ≥ 400 | `AdapterError` **nommant la source** |
-| Panne réseau / timeout | `AdapterError` **nommant la source** |
+| Panne passagère (réseau, timeout, 5xx) | **une** nouvelle tentative après backoff, puis `AdapterError` |
 | Une offre du board est incomplète | offre ignorée + journalisée, **les autres sont retournées** |
 | Un champ est absent | valeur par défaut sûre (`""`, `remote_type="unknown"`), **jamais de `KeyError`** |
 | Offre d'agrégateur sans employeur | offre **écartée** + rejet journalisé (règle anti-scam) |
 
-L'isolation par source (une source en échec n'arrête pas le run) est la
-responsabilité du Collector, pas de l'adaptateur — Feature 2.4.1.
+## Politesse réseau (US-2.4.2)
+
+`HttpAdapter._request` applique trois règles à **chaque** requête, y compris
+celles des adaptateurs qui paginent ou enchaînent plusieurs appels :
+
+| Règle | Valeur | Où la changer |
+|---|---|---|
+| Timeout | 15 s, **surchargeable par adaptateur** | `DEFAULT_TIMEOUT`, ou `default_timeout` sur la classe |
+| Nouvelles tentatives | 1, après 2 s | `RETRY_DELAYS` dans `base.py` |
+| User-Agent | `JobRadar/0.1` (ATS) · navigateur (agrégateurs) | `USER_AGENT` / `BROWSER_HEADERS` |
+
+Le retry est **ciblé** : il ne se déclenche que sur ce qui peut se réparer
+tout seul — panne réseau, timeout, et les statuts de `RETRYABLE_STATUS`
+(500, 502, 503, 504). Un 403 ou un 404 ne se répare pas en rappelant deux
+secondes plus tard ; le réessayer n'ajouterait que du bruit chez la
+plateforme.
+
+Le **429 en est volontairement absent**. Il signifie « vous appelez trop » :
+y répondre par un appel de plus est exactement le mauvais geste. La réponse
+du projet au débit, c'est `max_calls_per_day` et la cadence lente — voir
+plus bas.
+
+`RETRY_DELAYS` est un tuple de délais : une valeur = une seconde tentative,
+deux valeurs = deux, avec l'espacement qu'on y écrit. C'est le seul endroit
+à toucher pour changer la politique, et `MAX_ATTEMPTS` en découle.
+
+L'attente passe par `base._wait`, isolée exprès : `tests/conftest.py` la
+neutralise pour toute la suite, sinon chaque panne simulée coûterait deux
+secondes réelles.
+
+## Isolation par source (US-2.4.1)
+
+Une source en échec **n'arrête pas le run** — mais c'est la responsabilité du
+Collector (`src/collect.py`), pas de l'adaptateur, qui lui se contente de
+lever une `AdapterError` nommant la source.
+
+`collect_sources` interroge chaque source dans son propre `try/except`, et
+rend un `CollectReport` : `succeeded`, `failed`, `jobs`. Il attrape
+`Exception` et pas seulement `AdapterError` — l'échec attendu est bien
+`AdapterError`, mais un adaptateur qui bute sur un cas inédit lèvera un
+`KeyError`, et ce bug ne doit pas coûter la collecte des trente-six autres
+sources.
+
+Le run ne sort en erreur (code 1) que si **toutes** les sources échouent :
+là, ce n'est plus une source qui a un problème, c'est le runner, un secret
+ou nous. Un 404 n'est pas un échec : la source a répondu, elle n'a
+simplement plus ce board.
+
+### Le troisième état : la source tarie
+
+Une source qui répond **sans une seule offre** n'est ni un succès ni un
+échec, et c'est le trou par lequel une panne passe inaperçue : une API qui
+ferme en renvoyant une collection vide compte comme un succès dans un bilan
+« 37 collectées, 0 en échec ». C'est exactement ce qui est arrivé à
+Free-Work, dont l'endpoint répond `200` avec `hydra:totalItems: 0` quelle
+que soit la requête.
+
+D'où un état nommé — `SourceResult.empty`, `CollectReport.empty` — un
+avertissement journalisé, et une ligne dédiée dans le bilan du run qui
+**nomme** les sources concernées. Un board sans poste ouvert existe aussi,
+donc c'est un avertissement, jamais un échec : ce qui compte, c'est qu'une
+source qui se tarit ne puisse plus le faire en silence.
+
+Les trois états se lisent d'un coup d'œil dans le journal, à marqueurs de
+même largeur :
+
+```
+  ok   GitLab (greenhouse) : 229 offre(s)
+  vide Free-Work (freework) : 0 offre
+  KO   Malt (lever) : AdapterError: source « Malt » (lever) : statut HTTP 500 …
+```
 
 ## Le schéma `RawJob`
 
@@ -191,4 +260,14 @@ catalogue — il échapperait sinon silencieusement à ces tests.
 
 ```bash
 pytest tests/test_adapters.py tests/test_aggregators.py -q
+```
+
+Les tests de robustesse et de politesse vivent à part, dans
+`tests/test_robustness.py` : ils simulent pannes, lenteurs et 5xx via un
+`httpx.MockTransport` qui répond **selon l'URL appelée**, ce qui permet de
+faire tomber une plateforme sur trois et de vérifier que les deux autres
+sont bien collectées.
+
+```bash
+pytest tests/test_robustness.py -q
 ```
