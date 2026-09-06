@@ -17,7 +17,7 @@ import pytest
 import yaml
 
 from src import collect
-from src.adapters import ADAPTERS, RemotiveAdapter
+from src.adapters import ADAPTERS, JapanDevAdapter, RemotiveAdapter
 from src.adapters.registry import (
     CADENCES,
     FAST,
@@ -44,7 +44,18 @@ def test_remotive_declares_the_four_calls_a_day_its_terms_impose() -> None:
     assert RemotiveAdapter.max_calls_per_day == 4
 
 
-def test_remotive_is_the_only_rate_limited_platform_today() -> None:
+def test_a_crawled_source_caps_itself_at_the_slow_cadence() -> None:
+    """Le plafond n'est pas toujours imposé par la plateforme : il peut être
+    celui qu'on **s'impose**. Un crawl de sitemap coûte trois requêtes de
+    repérage par run à un site qui n'a rien demandé, là où un agrégateur
+    expose une API faite pour ça. Les sources crawlées se déclarent donc à
+    4 appels par jour, comme si la plateforme l'exigeait — la mécanique de
+    cadence est la même, et rien à retenir de plus pour en brancher une."""
+    assert JapanDevAdapter.max_calls_per_day == 4
+    assert cadence_of(Source(nom="Japan Dev", ats="japandev", token="")) == SLOW
+
+
+def test_the_rate_limited_platforms_are_exactly_those_two_today() -> None:
     """Si une autre plateforme se met à plafonner, ce test le rappelle — et
     le garde-fou du cron ci-dessous vérifiera que la cadence lente suffit."""
     plafonnees = {
@@ -53,7 +64,7 @@ def test_remotive_is_the_only_rate_limited_platform_today() -> None:
         if cls.max_calls_per_day is not None
     }
 
-    assert plafonnees == {"remotive": 4}
+    assert plafonnees == {"remotive": 4, "japandev": 4}
 
 
 def test_an_unlimited_platform_stays_in_the_fast_lane() -> None:
@@ -69,10 +80,10 @@ def test_a_rate_limited_platform_moves_to_the_slow_lane() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_the_real_registries_put_remotive_alone_in_the_slow_lane() -> None:
+def test_the_real_registries_split_the_two_capped_sources_out() -> None:
     rapides, lentes = split_by_cadence(load_all(CONFIG_DIR))
 
-    assert [source.nom for source in lentes] == ["Remotive"]
+    assert [source.nom for source in lentes] == ["Remotive", "Japan Dev"]
     assert len(rapides) == 37
 
 

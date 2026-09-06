@@ -1,12 +1,18 @@
 """Réglages partagés par toute la suite de tests.
 
-Un seul, mais indispensable : neutraliser l'attente du retry réseau
-(US-2.4.2). Sans lui, chaque test qui simule une panne dormirait deux
-secondes pour de vrai — la suite passerait de trois secondes à plusieurs
-minutes, et personne ne la lancerait plus.
+Deux, et chacun protège la suite d'une nuisance qu'un test isolé ne peut
+pas voir :
 
-La fixture rend la liste des délais demandés : un test qui veut vérifier
-le backoff lui-même n'a qu'à la prendre en argument.
+1. **L'attente du retry réseau est neutralisée** (US-2.4.2). Sans ça,
+   chaque test qui simule une panne dormirait deux secondes pour de vrai —
+   la suite passerait de trois secondes à plusieurs minutes, et personne ne
+   la lancerait plus. C'est la même fonction qui porte le délai de crawl
+   des sources sitemap (Feature 2.5), donc elle est couverte aussi.
+2. **L'état du crawl est redirigé vers un dossier temporaire**
+   (Feature 2.5). Un adaptateur construit sans état explicite lit
+   `state/crawl.json`, celui du dépôt : la suite écrirait alors un fichier
+   de production, et pire, un test lisant le curseur qu'un vrai run y a
+   laissé ne chargerait plus rien et passerait pour de mauvaises raisons.
 """
 
 from __future__ import annotations
@@ -14,6 +20,7 @@ from __future__ import annotations
 import pytest
 
 from src.adapters import base
+from src.core import state
 
 
 @pytest.fixture(autouse=True)
@@ -22,3 +29,11 @@ def backoff_delays(monkeypatch: pytest.MonkeyPatch) -> list[float]:
     delays: list[float] = []
     monkeypatch.setattr(base, "_wait", delays.append)
     return delays
+
+
+@pytest.fixture(autouse=True)
+def isolated_crawl_state(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    """Redirige l'état de crawl par défaut vers le dossier du test."""
+    chemin = tmp_path / "state" / "crawl.json"
+    monkeypatch.setattr(state, "DEFAULT_STATE_PATH", chemin)
+    return chemin

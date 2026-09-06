@@ -11,6 +11,9 @@ venv/
 htmlcov/
 *.log
 
+# Écriture atomique de l'état : le temporaire ne doit jamais être commité.
+state/*.tmp
+
 jobradar-backlog.md
 files/
 *.png

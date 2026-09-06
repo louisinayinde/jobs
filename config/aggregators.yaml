@@ -23,8 +23,16 @@
 # retard sur l'ATS direct et republient les mêmes offres. Le rapprochement
 # inter-sources est la responsabilité de la dédup (Feature 3.3).
 #
-# Voir docs/sources-audit.md pour les 12 sources retenues, les ~30 écartées
+# Voir docs/sources-audit.md pour les 13 sources retenues, les ~30 écartées
 # et la raison de chaque exclusion.
+#
+# Un troisième mécanisme d'accès existe depuis la Feature 2.5 : le crawl du
+# `sitemap.xml` et du bloc schema.org `JobPosting` des pages d'offres, pour
+# les sites qui n'ont ni API ni flux. Ces sources se déclarent ici comme les
+# autres — même fichier, même forme, pas de token. Ce qui change se joue
+# dans l'adaptateur : `robots.txt` respecté, crawl incrémental sur le
+# `<lastmod>` du sitemap, pré-filtrage des URLs avant chargement, et
+# cadence réduite (un crawl coûte plus cher à l'hôte qu'un appel d'API).
 
 # --- Priorité géo ① — télétravail international -------------------------
 
@@ -85,3 +93,17 @@
 - nom: "APEC"
   ats: apec
   token: developpeur
+
+# --- Priorité géo ② — Japon, postes anglophones -------------------------
+
+# Ni API ni flux RSS : Japan Dev est lue par sitemap + schema.org
+# `JobPosting` (Feature 2.5). ~290 offres, `robots.txt` n'interdisant que
+# deux PDF. Son sitemap ne publie **aucun** `<lastmod>` : l'incrémental se
+# repère alors sur les URLs déjà chargées, mémorisées dans
+# `state/crawl.json` (voir `src/adapters/jobposting.py`).
+#
+# Collectée par `collect-slow.yml` : comme toute source crawlée, elle
+# déclare `max_calls_per_day = 4`, ce qui la range automatiquement dans la
+# cadence réduite.
+- nom: "Japan Dev"
+  ats: japandev

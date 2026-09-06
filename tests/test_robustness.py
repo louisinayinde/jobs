@@ -40,6 +40,8 @@ from src.core.config import Source
 from tests.adapter_cases import (
     AGGREGATOR_IDS,
     AGGREGATOR_CASES,
+    API_AGGREGATOR_CASES,
+    API_AGGREGATOR_IDS,
     ALL_ADAPTER_IDS,
     ALL_ADAPTERS,
     ATS_CASES,
@@ -601,7 +603,7 @@ def test_ats_requests_identify_jobradar_by_name(case) -> None:
         assert request.headers["user-agent"] == USER_AGENT
 
 
-@pytest.mark.parametrize("case", AGGREGATOR_CASES, ids=AGGREGATOR_IDS)
+@pytest.mark.parametrize("case", API_AGGREGATOR_CASES, ids=API_AGGREGATOR_IDS)
 def test_aggregator_requests_use_the_browser_user_agent(case) -> None:
     """Les agrégateurs filtrent le UA « JobRadar » à tort (audit 2026-09-05)."""
     seen: list[httpx.Request] = []

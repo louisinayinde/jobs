@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <url>
+  <loc>https://japan-dev.com/</loc>
+  <priority>0.9</priority>
+</url>
+<url>
+  <loc>https://japan-dev.com/jobs</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://japan-dev.com/jobs/alpaca/alpaca-senior-software-engineer---clearing-qb5uw2</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://japan-dev.com/jobs/abbeal/abbeal-senior-fullstack-developer-8cbk7p</loc>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://japan-dev.com/jobs/abbeal/abbeal-ai-engineer-maj4uw</loc>
+  <priority>0.8</priority>
+</url>
+</urlset>

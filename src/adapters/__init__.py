@@ -13,6 +13,12 @@ Deux familles, un seul contrat :
   entreprises depuis un endpoint global, sans token ; `RawJob.entreprise` est
   lu dans l'offre, et une offre sans employeur identifiable est écartée.
 
+Les sources lues par **sitemap + schema.org `JobPosting`** (Feature 2.5) sont
+des agrégateurs comme les autres de ce point de vue : elles publient pour N
+entreprises, sans token. Ce qui change est le mécanisme d'accès — un crawl de
+pages HTML plutôt qu'un appel d'API — et les précautions qu'il impose
+(`robots.txt`, incrémental, délai entre requêtes) : voir `jobposting.py`.
+
 Voir `README.md` dans ce dossier pour la marche à suivre.
 """
 
@@ -34,6 +40,7 @@ from src.adapters.freework import FreeWorkAdapter
 from src.adapters.greenhouse import GreenhouseAdapter
 from src.adapters.hackernews import HackerNewsAdapter
 from src.adapters.himalayas import HimalayasAdapter
+from src.adapters.jobposting import JapanDevAdapter, JobPostingAdapter
 from src.adapters.landingjobs import LandingJobsAdapter
 from src.adapters.lever import LeverAdapter
 from src.adapters.nodesk import NoDeskAdapter
@@ -72,6 +79,7 @@ AGGREGATOR_ADAPTERS: tuple[type[Adapter], ...] = (
     LandingJobsAdapter,
     FreeWorkAdapter,
     ApecAdapter,
+    JapanDevAdapter,
 )
 
 #: `ats` d'une entrée de configuration → classe d'adaptateur.
@@ -116,6 +124,8 @@ __all__ = [
     "HackerNewsAdapter",
     "HimalayasAdapter",
     "HttpAdapter",
+    "JapanDevAdapter",
+    "JobPostingAdapter",
     "JobspressoAdapter",
     "LandingJobsAdapter",
     "LeverAdapter",

@@ -250,14 +250,26 @@ class HttpAdapter(Adapter):
     ) -> httpx.Response | None:
         """Traduit un statut en valeur de retour, ou en `AdapterError`."""
         if response.status_code == 404:
-            logger.warning(
-                "source « %s » (%s) : board introuvable (404) sur %s — "
-                "le token « %s » a peut-être changé",
-                source.nom,
-                self.ats,
-                url,
-                source.token,
-            )
+            # Le diagnostic n'est pas le même selon la famille d'adaptateur :
+            # chez un ATS, un 404 désigne presque toujours un token périmé ;
+            # chez une source crawlée, c'est une offre retirée depuis que le
+            # sitemap a été publié — un fait banal, pas une piste à suivre.
+            if self.requires_token:
+                logger.warning(
+                    "source « %s » (%s) : board introuvable (404) sur %s — "
+                    "le token « %s » a peut-être changé",
+                    source.nom,
+                    self.ats,
+                    url,
+                    source.token,
+                )
+            else:
+                logger.warning(
+                    "source « %s » (%s) : introuvable (404) sur %s",
+                    source.nom,
+                    self.ats,
+                    url,
+                )
             return None
 
         if response.status_code >= 400:

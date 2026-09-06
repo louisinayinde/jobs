@@ -37,6 +37,10 @@ from src.core.config import Source
 from tests.adapter_cases import (
     AGGREGATOR_CASES,
     AGGREGATOR_IDS,
+    API_AGGREGATOR_CASES,
+    API_AGGREGATOR_IDS,
+    CRAWLED_CASES,
+    CRAWLED_IDS,
     FIXTURES,
     AdapterCase,
     fetch_case,
@@ -102,19 +106,25 @@ def test_registry_still_rejects_an_ats_entry_without_token(tmp_path, caplog) -> 
     assert any("Acme" in r.getMessage() and "token" in r.getMessage() for r in caplog.records)
 
 
-def test_real_aggregators_yaml_loads_all_twelve_sources() -> None:
+def test_real_aggregators_yaml_loads_all_thirteen_sources() -> None:
+    """Douze sources d'API ou de flux (Feature 2.3) plus une source crawlée
+    (Japan Dev, Feature 2.5) : le mécanisme d'accès change, pas le registre."""
     raw = yaml.safe_load(AGGREGATORS_YAML.read_text(encoding="utf-8"))
 
     sources = load_registry(AGGREGATORS_YAML)
 
     # Le registre est tolérant : une entrée cassée serait ignorée en silence.
-    assert len(sources) == len(raw) == 12
+    assert len(sources) == len(raw) == 13
     assert all(ADAPTERS[s.ats] in AGGREGATOR_ADAPTERS for s in sources)
 
 
-@pytest.mark.parametrize("case", AGGREGATOR_CASES, ids=AGGREGATOR_IDS)
+@pytest.mark.parametrize("case", API_AGGREGATOR_CASES, ids=API_AGGREGATOR_IDS)
 def test_aggregators_send_realistic_browser_headers(case: AdapterCase) -> None:
-    """Sans ces en-têtes, 17 des sources répondent 403 à tort (audit 2026-09-05)."""
+    """Sans ces en-têtes, 17 des sources répondent 403 à tort (audit 2026-09-05).
+
+    Ne vaut que pour les agrégateurs d'**API et de flux** : une source
+    crawlée s'identifie au contraire, voir le test suivant.
+    """
     seen: list[httpx.Request] = []
 
     fetch_case(case, recorder=seen)
@@ -124,6 +134,45 @@ def test_aggregators_send_realistic_browser_headers(case: AdapterCase) -> None:
         assert request.headers["user-agent"] == BROWSER_USER_AGENT
         assert request.headers["accept-language"] == "en-US,en;q=0.9"
         assert request.headers["referer"].startswith("http")
+
+
+@pytest.mark.parametrize("case", CRAWLED_CASES, ids=CRAWLED_IDS)
+def test_crawled_sources_identify_themselves_instead_of_faking_a_browser(
+    case: AdapterCase,
+) -> None:
+    """La posture du projet, et le seul endroit où elle s'inverse.
+
+    Un agrégateur expose un endpoint *fait pour* être consommé, et filtre le
+    User-Agent « JobRadar » à tort : on lui envoie donc des en-têtes de
+    navigateur pour ne pas être écarté par erreur. Un crawl, lui, charge des
+    pages que le site n'a pas publiées comme une API — s'y présenter en
+    Chrome empêcherait cet hôte de nous voir, de nous limiter, ou de nous
+    exclure par un `User-agent: JobRadar` que `robots.py` respecte pourtant.
+
+    D'où aussi l'absence de `Referer` : on ne vient d'aucune page.
+    """
+    seen: list[httpx.Request] = []
+
+    fetch_case(case, recorder=seen)
+
+    assert seen, "l'adaptateur doit avoir émis au moins une requête"
+    for request in seen:
+        assert request.headers["user-agent"] == USER_AGENT
+        assert "referer" not in request.headers
+
+
+@pytest.mark.parametrize("case", CRAWLED_CASES, ids=CRAWLED_IDS)
+def test_the_name_we_crawl_under_is_the_one_robots_txt_can_exclude(
+    case: AdapterCase,
+) -> None:
+    """Se nommer ne sert à rien si le nom envoyé n'est pas celui qu'on
+    reconnaît dans `robots.txt` : un site nous excluerait sans effet."""
+    from src.adapters.robots import ROBOTS_AGENT, parse_robots
+
+    assert ROBOTS_AGENT in case.adapter_cls.headers["User-Agent"].lower()
+    assert parse_robots(
+        f"User-agent: {ROBOTS_AGENT}\nDisallow: /"
+    ).blocks_everything
 
 
 def test_ats_adapters_keep_the_honest_jobradar_user_agent() -> None:
@@ -163,7 +212,7 @@ def test_posting_without_identifiable_company_is_dropped_and_logged(caplog) -> N
     case = CASES["weworkremotely"]
 
     with caplog.at_level(logging.WARNING):
-        jobs = case.adapter_cls(client=responder(anonyme)).fetch(case.source)
+        jobs = case.build(responder(anonyme)).fetch(case.source)
 
     assert [job.titre for job in jobs] == [
         "AI/ML Engineer for an AI-Driven E-Commerce Platform",
@@ -390,7 +439,7 @@ def test_wwr_category_comes_from_the_token_with_a_documented_default() -> None:
 
     seen.clear()
     design = Source(nom="We Work Remotely", ats="weworkremotely", token="remote-design-jobs")
-    case.adapter_cls(client=responder(*case.bodies(), recorder=seen)).fetch(design)
+    case.build(responder(*case.bodies(), recorder=seen)).fetch(design)
     assert str(seen[0].url) == (
         "https://weworkremotely.com/categories/remote-design-jobs.rss"
     )
@@ -456,7 +505,7 @@ def test_hn_without_a_who_is_hiring_thread_returns_nothing_and_says_so(caplog) -
     case = CASES["hackernews"]
 
     with caplog.at_level(logging.WARNING):
-        jobs = case.adapter_cls(client=responder(autres)).fetch(case.source)
+        jobs = case.build(responder(autres)).fetch(case.source)
 
     assert jobs == []
     assert any("Who is hiring" in r.getMessage() for r in caplog.records)
@@ -604,7 +653,7 @@ def test_nodesk_title_without_the_separator_yields_no_company() -> None:
     )
     case = CASES["nodesk"]
 
-    jobs = case.adapter_cls(client=responder(anonyme)).fetch(case.source)
+    jobs = case.build(responder(anonyme)).fetch(case.source)
 
     assert [job.entreprise for job in jobs] == ["Graphy", "General Assembly"]
 
@@ -704,9 +753,7 @@ def test_freework_stops_at_max_pages_on_a_catalogue_that_never_ends() -> None:
     seen: list[httpx.Request] = []
     case = CASES["freework"]
 
-    jobs = case.adapter_cls(
-        client=responder(json.dumps(payload), recorder=seen)
-    ).fetch(case.source)
+    jobs = case.build(responder(json.dumps(payload), recorder=seen)).fetch(case.source)
 
     assert len(seen) == MAX_PAGES
     assert len(jobs) == 3 * MAX_PAGES
@@ -788,7 +835,7 @@ def test_apec_paginates_through_start_index() -> None:
     seen: list[httpx.Request] = []
     case = CASES["apec"]
 
-    case.adapter_cls(client=responder(json.dumps(payload), recorder=seen)).fetch(case.source)
+    case.build(responder(json.dumps(payload), recorder=seen)).fetch(case.source)
 
     assert len(seen) == MAX_PAGES
     start_indexes = [json.loads(r.content)["pagination"]["startIndex"] for r in seen]
@@ -801,7 +848,7 @@ def test_apec_confidential_posting_without_a_company_is_dropped(caplog) -> None:
     case = CASES["apec"]
 
     with caplog.at_level(logging.WARNING):
-        jobs = case.adapter_cls(client=responder(json.dumps(payload))).fetch(case.source)
+        jobs = case.build(responder(json.dumps(payload))).fetch(case.source)
 
     assert [job.entreprise for job in jobs] == ["SP SEARCH", "Akanea"]
     assert any("écartée" in r.getMessage() for r in caplog.records)

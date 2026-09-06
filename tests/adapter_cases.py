@@ -11,8 +11,11 @@ malformé, erreur serveur — sans écrire une ligne de test.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import tempfile
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import httpx
 
@@ -25,6 +28,7 @@ from src.adapters import (
     GreenhouseAdapter,
     HackerNewsAdapter,
     HimalayasAdapter,
+    JapanDevAdapter,
     JobspressoAdapter,
     LandingJobsAdapter,
     LeverAdapter,
@@ -37,7 +41,9 @@ from src.adapters import (
     WorkableAdapter,
     WorkingNomadsAdapter,
 )
+from src.adapters.jobposting import JobPostingAdapter, SlugFilter
 from src.core.config import Source
+from src.core.state import CrawlState
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
@@ -70,6 +76,12 @@ class AdapterCase:
     source: Source
     #: Un agrégateur lit l'entreprise dans l'offre, pas dans `Source.nom`.
     aggregator: bool = False
+    #: Fabrique des arguments de construction supplémentaires, **rappelée à
+    #: chaque instanciation**. C'est ce qui permet à un adaptateur crawlé
+    #: (Feature 2.5) de recevoir un état et un pré-filtre neufs à chaque
+    #: test, plutôt que de lire ceux du dépôt et de dépendre de l'ordre des
+    #: tests.
+    extra: Callable[[], dict[str, Any]] = dict
 
     @property
     def id(self) -> str:
@@ -77,6 +89,9 @@ class AdapterCase:
 
     def bodies(self) -> list[str]:
         return [(FIXTURES / name).read_text(encoding="utf-8") for name in self.fixtures]
+
+    def build(self, client: httpx.Client) -> Adapter:
+        return self.adapter_cls(client=client, **self.extra())
 
 
 # --- ATS : un board = une entreprise, désignée par son token ---------------
@@ -184,6 +199,22 @@ AGGREGATOR_CASES = [
         Source(nom="APEC", ats="apec", token="developpeur"),
         aggregator=True,
     ),
+    # Sitemap + schema.org (Feature 2.5). Quatre fixtures, servies dans
+    # l'ordre exact des requêtes de l'adaptateur : `robots.txt`, l'index de
+    # sitemaps, le sitemap d'URLs, puis la page d'offre — répétée pour
+    # chaque page chargée.
+    AdapterCase(
+        JapanDevAdapter,
+        (
+            "japandev_robots.txt",
+            "japandev_sitemap.xml",
+            "japandev_shard.xml",
+            "japandev_job.html",
+        ),
+        Source(nom="Japan Dev", ats="japandev", token=""),
+        aggregator=True,
+        extra=lambda: crawl_kwargs(),
+    ),
 ]
 
 #: Tous les adaptateurs branchés. Les tests transverses s'y appliquent.
@@ -191,6 +222,25 @@ ALL_ADAPTERS = ATS_CASES + AGGREGATOR_CASES
 ALL_ADAPTER_IDS = [case.id for case in ALL_ADAPTERS]
 ATS_IDS = [case.id for case in ATS_CASES]
 AGGREGATOR_IDS = [case.id for case in AGGREGATOR_CASES]
+
+#: Les agrégateurs se subdivisent en deux **mécanismes d'accès**, et le
+#: partage se déduit de la classe plutôt que d'un drapeau à tenir à jour :
+#:
+#: - ceux qui appellent une API ou lisent un flux (Feature 2.3) : ils
+#:   reçoivent des en-têtes de navigateur, faute de quoi 17 d'entre eux
+#:   répondent 403 à tort ;
+#: - ceux qui **crawlent des pages** (Feature 2.5) : ils s'identifient au
+#:   contraire sous le User-Agent « JobRadar », pour que l'hôte puisse les
+#:   voir, les limiter ou les exclure nommément.
+#:
+#: Tout le reste — schéma `RawJob`, règle anti-scam, entreprise lue dans
+#: l'offre — leur est commun, et se teste sur `AGGREGATOR_CASES` entier.
+CRAWLED_CASES = [
+    case for case in AGGREGATOR_CASES if issubclass(case.adapter_cls, JobPostingAdapter)
+]
+API_AGGREGATOR_CASES = [case for case in AGGREGATOR_CASES if case not in CRAWLED_CASES]
+CRAWLED_IDS = [case.id for case in CRAWLED_CASES]
+API_AGGREGATOR_IDS = [case.id for case in API_AGGREGATOR_CASES]
 
 
 # ---------------------------------------------------------------------------
@@ -218,15 +268,33 @@ def responder(
     return httpx.Client(transport=httpx.MockTransport(handler))
 
 
+def crawl_kwargs(**surcharges: Any) -> dict[str, Any]:
+    """Arguments d'un adaptateur crawlé, isolés du dépôt et du run précédent.
+
+    L'état part d'un fichier neuf sous un dossier temporaire — un
+    adaptateur qui lirait `state/crawl.json` verrait le curseur laissé par
+    un vrai run et ne chargerait plus rien. Le pré-filtre de slug est celui
+    du dépôt : les tests doivent casser si `filters.yaml` cesse de laisser
+    passer les offres témoins.
+    """
+    defauts: dict[str, Any] = {
+        "state": CrawlState(Path(tempfile.mkdtemp()) / "crawl.json"),
+        "slug_filter": SlugFilter.from_filters(
+            FIXTURES.parent.parent / "config" / "filters.yaml"
+        ),
+    }
+    return {**defauts, **surcharges}
+
+
 def fetch_case(
     case: AdapterCase, *, recorder: list[httpx.Request] | None = None
 ) -> list[RawJob]:
     """Rejoue les fixtures de `case` et retourne les `RawJob` produits."""
     client = responder(*case.bodies(), recorder=recorder)
-    return case.adapter_cls(client=client).fetch(case.source)
+    return case.build(client).fetch(case.source)
 
 
 def fetch_body(case: AdapterCase, body: str, *, status: int = 200) -> list[RawJob]:
     """Rejoue un corps de réponse arbitraire (404, JSON malformé, ...)."""
     client = responder(body, status=status)
-    return case.adapter_cls(client=client).fetch(case.source)
+    return case.build(client).fetch(case.source)

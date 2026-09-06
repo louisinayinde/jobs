@@ -1,0 +1,5 @@
+User-agent: *
+
+Sitemap: https://japan-dev.com/sitemap.xml
+Disallow: /blog/japan-dev-salary-guide-2022---
+Disallow: /cdn/resources/a87bb10da/japan_dev_salary_guide_2022.pdf

@@ -16,6 +16,12 @@
 # duplique jamais), mais autant éviter les retards.
 #
 # ⚠️ Un déclenchement manuel (`workflow_dispatch`) s'ajoute à ces 4 appels.
+#
+# C'est aussi la cadence des sources lues par crawl de sitemap (Feature 2.5,
+# aujourd'hui Japan Dev). Celles-là ont besoin de se souvenir d'où elles en
+# étaient : le runner étant éphémère, l'état est **versionné dans le dépôt**
+# (`state/crawl.json`) et remis en place à la fin de chaque run. Sans ce
+# commit, chaque run repartirait de zéro et rechargerait le catalogue.
 
 name: Collect (slow)
 
@@ -24,9 +30,19 @@ on:
     - cron: "7 */6 * * *"
   workflow_dispatch: {}
 
+# Deux runs qui écriraient l'état en même temps se marcheraient dessus. Ils
+# sont donc sérialisés, sans annulation : un run déjà lancé va au bout, sinon
+# on perdrait les offres qu'il avait déjà collectées.
+concurrency:
+  group: collect-state
+  cancel-in-progress: false
+
 jobs:
   collect-slow:
     runs-on: ubuntu-latest
+    permissions:
+      # Nécessaire au commit de `state/crawl.json` ci-dessous.
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -36,3 +52,22 @@ jobs:
       - run: python -m src.collect --cadence slow
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # `always()` : l'état gagné avant l'échec d'une source vaut d'être
+      # gardé — le run suivant repartira de là plutôt que du début.
+      - name: Commit l'état du crawl
+        if: always()
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/
+          # `git diff --cached --quiet` sort 0 quand rien n'a bougé : sans
+          # changement on s'arrête là, plutôt que de créer un commit vide
+          # toutes les six heures.
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(state): avancement du crawl [skip ci]"
+          # Un autre run a pu pousser entre-temps : on rejoue par-dessus
+          # plutôt que d'écraser.
+          git pull --rebase --autostash
+          git push

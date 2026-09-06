@@ -20,6 +20,27 @@ C'est `Adapter.requires_token` qui porte cette différence : le Source Registry
 s'en sert pour accepter une entrée d'agrégateur sans token au lieu de la
 rejeter comme malformée.
 
+Et **trois mécanismes d'accès**, qui ne se recoupent pas :
+
+| Mécanisme | Feature | Ce qu'on lit | User-Agent | Sources |
+|---|---|---|---|---|
+| API JSON d'un ATS | 2.2 | le board d'une entreprise | `JobRadar/0.1` | 5 plateformes, 26 entreprises |
+| API JSON ou flux RSS d'un agrégateur | 2.3 | un endpoint global | navigateur | 12 |
+| **Sitemap + schema.org `JobPosting`** | 2.5 | des **pages HTML** | `JobRadar/0.1` | 1 (Japan Dev) |
+
+Le troisième est un **crawl**, et c'est la seule famille qui en soit un : il
+charge des pages que le site n'a pas publiées pour être consommées par une
+machine. D'où trois obligations qui n'existent nulle part ailleurs —
+`robots.txt`, incrémental, délai entre requêtes — détaillées plus bas.
+
+Et d'où l'inversion du User-Agent, qui n'est pas une incohérence. Les
+en-têtes de navigateur de la Feature 2.3 existent pour ne pas être filtré
+**à tort** sur un endpoint publié pour être consommé. Un crawl, lui, doit
+pouvoir être vu, limité, ou exclu par un `User-agent: JobRadar` — un droit
+que `robots.py` respecte, et qui serait décoratif si on se présentait en
+Chrome. Japan Dev sert `robots.txt`, ses sitemaps et ses pages en 200 sous
+ce nom (vérifié le 2026-09-06).
+
 ## Le contrat
 
 ```python
@@ -47,7 +68,7 @@ celles des adaptateurs qui paginent ou enchaînent plusieurs appels :
 |---|---|---|
 | Timeout | 15 s, **surchargeable par adaptateur** | `DEFAULT_TIMEOUT`, ou `default_timeout` sur la classe |
 | Nouvelles tentatives | 1, après 2 s | `RETRY_DELAYS` dans `base.py` |
-| User-Agent | `JobRadar/0.1` (ATS) · navigateur (agrégateurs) | `USER_AGENT` / `BROWSER_HEADERS` |
+| User-Agent | `JobRadar/0.1` (ATS et crawl) · navigateur (agrégateurs d'API) | `USER_AGENT` / `BROWSER_HEADERS` / `CRAWL_HEADERS` |
 
 Le retry est **ciblé** : il ne se déclenche que sur ce qui peut se réparer
 tout seul — panne réseau, timeout, et les statuts de `RETRYABLE_STATUS`
@@ -162,6 +183,7 @@ Le `token` de `sources.yaml` est le slug lu dans l'URL du board public. Il est
 | `landingjobs` | `GET landing.jobs/api/v1/jobs` | JSON | — |
 | `freework` | `GET free-work.com/api/job_postings?contracts=…&page=N` | JSON | type de contrat |
 | `apec` | `POST apec.fr/cms/webservices/rechercheOffre` | JSON | mots-clés |
+| `japandev` | `GET japan-dev.com/sitemap.xml` + pages d'offres | sitemap + JSON-LD | — |
 
 Où l'entreprise se trouve, selon les cas : dans un **champ dédié** (RemoteOK,
 Remotive, Himalayas, Working Nomads, Free-Work, APEC, et les flux WP Job
@@ -183,6 +205,70 @@ Trois pièges qui ont coûté cher, et qui sont désormais couverts par des test
   nomme le champ fautif. Le corps de `apec.py` ne contient que des champs
   vérifiés en direct.
 
+## Sources lues par crawl : sitemap + schema.org (Feature 2.5)
+
+Toute source qui veut apparaître dans **Google for Jobs** doit publier un bloc
+JSON-LD `JobPosting` sur chaque page d'offre et lister ces pages dans son
+`sitemap.xml`. Deux formats standards, stables, faits pour les machines : un
+**seul** adaptateur les lit tous, là où un scraper demanderait un parseur HTML
+par site — le coût de maintenance que `docs/sources-audit.md` refuse.
+
+`JobPostingAdapter` (`jobposting.py`) hérite d'`AggregatorAdapter` : mêmes
+en-têtes, même règle anti-scam, même schéma `RawJob`. Ce qui s'y ajoute :
+
+| Précaution | US | Où | Ce qu'elle évite |
+|---|---|---|---|
+| On s'identifie (`JobRadar/0.1`, sans `Referer`) | 2.5.3 | `CRAWL_HEADERS` | crawler sous un faux nom un site qu'on ne fait que lire |
+| `robots.txt` lu et respecté | 2.5.3 | `robots.py` | se faire bannir, et crawler ce qu'un site refuse |
+| Incrémental sur `<lastmod>` | 2.5.0 | `sitemap.py` + `core/state.py` | recharger le catalogue à chaque run |
+| Pré-filtrage sur le slug d'URL | 2.5.1 | `SlugFilter` | charger une page pour la jeter ensuite |
+| Plafond de pages par run | — | `max_pages_per_run` | un run de durée inconnue |
+| Délai entre deux requêtes | 2.5.3 | `RobotsRules.delay` | frapper un hôte en rafale |
+
+Trois points qui ont demandé une décision, et qui sont couverts par des tests :
+
+- **`Disallow: /` désactive la source**, il ne se contourne pas. Une seule
+  requête part alors : celle du `robots.txt` lui-même. Et c'est le groupe
+  `User-agent: *` qui fait foi, **même déclaré en dernier** — Europe Remotely
+  en publie treize, et le premier (`Googlebot`) dit l'inverse du dernier.
+- **Un `robots.txt` injoignable met la source en échec**, pas en libre-service.
+  Un 404 est autre chose : c'est l'absence de règle, donc la permission.
+- **Sitemap sans `<lastmod>` → repli sur les URLs déjà chargées.** Japan Dev
+  n'en publie aucun sur ses 1 449 URLs. On reste incrémental, en se repérant
+  sur l'identité de l'URL au lieu d'une date ; le prix est de mémoriser ces
+  URLs dans `state/crawl.json`, ce que le plafond `MAX_KNOWN_URLS` borne.
+
+Le **curseur n'avance que jusqu'à la dernière page réellement chargée** : le
+plafond de pages ne doit jamais faire enjamber en silence des offres qu'on n'a
+pas eu le temps de lire. Et il n'est enregistré qu'en cas de succès — un
+sitemap illisible ne doit pas faire sauter ce qu'il contenait.
+
+### Où l'état vit
+
+`state/crawl.json`, versionné dans le dépôt et commité par `collect-slow.yml`
+(le runner Actions est éphémère : sans commit, l'incrémental n'existe pas en
+production). Voir `state/README.md`. Un fichier absent ou corrompu vaut un
+état vide : ça coûte un recrawl, jamais un run en échec.
+
+### Ajouter une source crawlée
+
+1. Sous-classer `JobPostingAdapter` en déclarant `ats`, `site_url`,
+   `sitemap_url` et, si besoin, `job_url_pattern`. **Rien d'autre** — pas de
+   parseur, pas de méthode : le jour où une sous-classe a besoin d'un
+   sélecteur HTML, c'est un scraper qu'on écrit, et un test le refuse.
+2. Ajouter la classe à `AGGREGATOR_ADAPTERS` et l'entrée à
+   `config/aggregators.yaml`.
+3. Figer **quatre** réponses réelles dans `tests/fixtures/` — `robots.txt`,
+   l'index de sitemaps, le sitemap d'URLs, une page d'offre — et ajouter
+   l'`AdapterCase` correspondant avec `extra=lambda: crawl_kwargs()`, qui lui
+   donne un état neuf et le pré-filtre du dépôt.
+
+Avant tout ça, vérifier que le site est réellement atteignable : un pare-feu
+applicatif répond volontiers `202` avec une page de défi JavaScript, ce qui
+n'est pas un accès. La commande de contrôle est dans `docs/sources-audit.md` —
+c'est ce qui a fait sortir Welcome to the Jungle du périmètre le 2026-09-06,
+la veille de son branchement.
+
 ## Cadences de collecte
 
 Certaines plateformes plafonnent leurs appels quotidiens. La boucle normale
@@ -199,6 +285,13 @@ L'affectation se **déduit** de `Adapter.max_calls_per_day` — jamais d'une cl�
 de configuration, qu'une édition pourrait faire sauter sans qu'on s'en
 aperçoive. Une source appartient donc toujours à exactement une cadence, et
 `python -m src.collect --cadence {fast,slow}` sélectionne la bonne liste.
+
+Ce plafond n'est pas toujours celui de la plateforme : il peut être celui
+qu'on **s'impose**. Les sources crawlées (Feature 2.5) déclarent 4 appels par
+jour de leur propre chef — un crawl coûte au minimum trois requêtes de
+repérage par run à un site qui n'a rien demandé, là où un agrégateur expose
+une API faite pour ça. La mécanique est la même, il n'y a rien de plus à
+retenir.
 
 Pour brancher une plateforme qui impose une limite : déclarer
 `max_calls_per_day = N` sur son adaptateur, et rien d'autre. Si `N` tombe
@@ -270,4 +363,12 @@ sont bien collectées.
 
 ```bash
 pytest tests/test_robustness.py -q
+```
+
+Ceux de l'adaptateur crawlé vivent dans `tests/test_jobposting.py`. Ils
+**comptent des requêtes** plus souvent qu'ils ne comptent des offres : « ne
+pas charger la page » est la moitié de ce que cette famille promet.
+
+```bash
+pytest tests/test_jobposting.py -q
 ```
