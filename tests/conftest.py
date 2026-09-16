@@ -15,6 +15,8 @@ pas voir :
    `state/crawl.json`, celui du dépôt : la suite écrirait alors un fichier
    de production, et pire, un test lisant le curseur qu'un vrai run y a
    laissé ne chargerait plus rien et passerait pour de mauvaises raisons.
+   `seen.json` (Feature 3.3) et le registre des fiches (Feature 4.2) le
+   sont de la même façon.
 """
 
 from __future__ import annotations
@@ -22,7 +24,7 @@ from __future__ import annotations
 import pytest
 
 from src.adapters import base
-from src.board import github
+from src.board import github, registre
 from src.core import dedup, state
 
 
@@ -55,4 +57,12 @@ def isolated_seen_state(tmp_path, monkeypatch: pytest.MonkeyPatch):
     """Redirige `seen.json` par défaut vers le dossier du test."""
     chemin = tmp_path / "state" / "seen.json"
     monkeypatch.setattr(dedup, "DEFAULT_SEEN_PATH", chemin)
+    return chemin
+
+
+@pytest.fixture(autouse=True)
+def isolated_fiches_state(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    """Redirige le registre des fiches par défaut vers le dossier du test."""
+    chemin = tmp_path / "state" / "fiches.json"
+    monkeypatch.setattr(registre, "DEFAULT_FICHES_PATH", chemin)
     return chemin

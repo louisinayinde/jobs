@@ -435,13 +435,13 @@ def test_issue_depuis_une_offre_titre_entreprise_poste_et_fiche_en_corps() -> No
         "body": (
             "**Entreprise** : GitLab  \n"
             "**Poste** : Backend Engineer  \n"
-            "**Localisation** : London, UK, hybrid  \n"
+            "**Localisation** : London, UK · hybride  \n"
             "**Score** : 60 — europe (london)  \n"
             "**Tech** : go, ruby  \n"
+            "**Lien ATS** : [job-boards.greenhouse.io]"
+            "(<https://job-boards.greenhouse.io/gitlab/jobs/4012>)  \n"
             "**Publiée le** : 2026-09-14  \n"
             "**Source** : greenhouse  \n"
-            "\n"
-            "[Voir l'offre](<https://job-boards.greenhouse.io/gitlab/jobs/4012>)\n"
             "\n"
             "<!-- jobradar:id=greenhouse:gitlab:4012 -->\n"
         ),
@@ -479,7 +479,7 @@ def test_fiche_sans_champs_optionnels_ni_trou_ni_none() -> None:
     assert "None" not in corps
     assert "**Tech**" not in corps
     assert "**Publiée le**" not in corps
-    assert "**Localisation** : unknown  " in corps
+    assert "**Localisation**" not in corps
     assert "**Score** : 60 — europe  " in corps
     assert " :  " not in corps
 
@@ -493,7 +493,7 @@ def test_lien_non_http_jamais_rendu_cliquable() -> None:
     corps = corps_issue(offre(url="javascript:alert(1)"))
 
     assert "](" not in corps
-    assert "`javascript:alert(1)`" in corps
+    assert "**Lien ATS** : javascript:alert(1)  " in corps
 
 
 def test_identifiant_de_la_fiche_ne_ferme_pas_le_commentaire_et_se_relit() -> None:

@@ -81,3 +81,22 @@ board check : prêt à publier
 | `Project n°… introuvable` | mauvais numéro ou mauvais `owner` | `board.yaml` |
 | `sans option « Nouveau »` | colonnes non renommées | étape 2 |
 | `les Issues sont désactivées` | Issues coupées sur le dépôt | Settings → General → Features → Issues |
+
+## 6. Si le registre des fiches est cassé
+
+Chaque offre publiée est notée dans `state/fiches.json` (Feature 4.2), et
+c'est ce qui empêche de la publier deux fois. S'il devient illisible — le plus
+souvent un conflit de fusion —, la publication s'arrête avec
+`registre des fiches illisible … python -m src.board resync`. Pour le
+reconstruire depuis les Issues (lecture seule sur GitHub) :
+
+```sh
+git pull
+read -rs GITHUB_TOKEN && export GITHUB_TOKEN
+.venv/bin/python -m src.board resync
+unset GITHUB_TOKEN
+git add state/fiches.json && git commit -m "chore(state): registre des fiches reconstruit" && git push
+```
+
+Résultat attendu : `ok   N fiche(s) trouvée(s) sur GitHub — N sur le tableau, 0 hors du tableau`.
+Une Issue « hors du tableau » (carte retirée à la main) ne sera pas reposée.

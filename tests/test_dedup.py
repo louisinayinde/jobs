@@ -379,14 +379,20 @@ def test_la_suite_n_ecrit_jamais_la_memoire_du_depot(isolated_seen_state) -> Non
     """Le chemin par défaut est redirigé par `conftest.py` : un test qui
     lirait la mémoire d'un vrai run trouverait « déjà vues » les offres
     qu'il attend neuves, et passerait ou échouerait pour de mauvaises
-    raisons."""
+    raisons.
+
+    Le fichier du dépôt existe — les workflows le commitent : c'est son
+    contenu qui ne doit pas bouger, pas son absence qui est vérifiée."""
+    reel = Path("state/seen.json")
+    avant = reel.read_bytes() if reel.exists() else None
+
     vues = SeenStore.load()
     vues.marquer([job()])
     vues.save()
 
     assert vues.path == isolated_seen_state
     assert isolated_seen_state.is_file()
-    assert not Path("state/seen.json").exists()
+    assert (reel.read_bytes() if reel.exists() else None) == avant
 
 
 # ---------------------------------------------------------------------------

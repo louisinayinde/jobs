@@ -9,6 +9,7 @@ alors que la collecte a besoin de se souvenir d'où elle en était.
 |---|---|---|
 | `crawl.json` | `src/core/state.py` (Feature 2.5) | où en est le crawl de chaque source lue par sitemap |
 | `seen.json` | `src/core/dedup.py` (Feature 3.3) | les offres retenues déjà vues, avec leur date de première vue |
+| `fiches.json` | `src/board/registre.py` (Feature 4.2) | les offres publiées sur le tableau, avec leur numéro d'Issue |
 
 `crawl.json` porte, par source :
 
@@ -57,5 +58,38 @@ des offres **qui n'ont été publiées nulle part**. Au branchement de la
 publication, videz-le (`git rm state/seen.json`) pour que le premier run
 publie les offres déjà en ligne au lieu de les croire traitées.
 
-Deux fichiers, deux responsabilités : `crawl.json` retient *où en est le
-crawl d'une source*, `seen.json` *quelles offres ont déjà été vues*.
+## `fiches.json`
+
+Une ligne par offre **publiée** : identifiant stable → Issue.
+
+```json
+{
+  "greenhouse:gitlab:4012": {"issue": 42, "node_id": "I_kwDO…", "item": "PVTI_…"},
+  "lever:malt:9f1c":        {"issue": 43, "node_id": "I_kwDO…", "hors_tableau": true},
+  "ashby:ramp:77":          {"en_cours": "2026-09-16T08:15:00Z"}
+}
+```
+
+- `issue`, `node_id` — l'Issue existe ; `item` — sa carte est sur le tableau ;
+- `hors_tableau` — l'Issue a été retirée du tableau : elle n'y sera pas reposée ;
+- `en_cours` — une création est partie sans réponse nette (timeout, 502).
+  La publication suivante cherche l'Issue sur GitHub avant d'en créer une.
+
+C'est ce fichier, et non `seen.json`, qui garantit qu'une offre n'a jamais
+deux fiches : une offre qu'il connaît ne déclenche aucune création.
+
+⚠️ **Contrairement aux deux autres, un `fiches.json` corrompu arrête la
+publication.** Repartir d'un registre vide recréerait une fiche pour chaque
+offre déjà publiée. Pour le réparer (conflit de fusion, fichier perdu),
+le reconstruire depuis les Issues elles-mêmes, qui portent leur identifiant :
+
+```sh
+read -rs GITHUB_TOKEN && export GITHUB_TOKEN
+.venv/bin/python -m src.board resync
+unset GITHUB_TOKEN
+git add state/fiches.json && git commit -m "chore(state): registre des fiches reconstruit" && git push
+```
+
+Trois fichiers, trois responsabilités : `crawl.json` retient *où en est le
+crawl d'une source*, `seen.json` *quelles offres ont déjà été vues*,
+`fiches.json` *lesquelles ont été publiées, et où*.

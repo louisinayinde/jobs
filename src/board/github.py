@@ -48,7 +48,7 @@ from typing import Any, Mapping
 import httpx
 
 from src.adapters.base import USER_AGENT
-from src.board.fiche import corps_issue, titre_issue
+from src.board.fiche import corps_issue, lire_id, titre_issue
 from src.core.config import BoardConfig
 from src.core.scoring import ScoredJob
 from src.core.secrets import require_env
@@ -70,6 +70,9 @@ TIMEOUT = 30.0
 
 #: Longueur maximale d'un titre d'Issue acceptée par GitHub.
 TITRE_MAX = 256
+
+#: Taille de page des listes (Issues, cartes du tableau) : le maximum permis.
+PAGE = 100
 
 #: Attentes avant chaque nouvelle tentative sur panne passagère (réseau,
 #: 5xx), pour les seuls appels rejouables — voir la docstring du module.
@@ -94,7 +97,17 @@ MARGE_RESET = 1.0
 
 
 class GitHubError(Exception):
-    """Échec d'un appel à GitHub, avec l'appel et le motif dans le message."""
+    """Échec d'un appel à GitHub, avec l'appel et le motif dans le message.
+
+    `peut_avoir_abouti` est vrai quand une écriture non rejouable (création
+    d'Issue) a échoué sans réponse nette — panne réseau, 5xx : GitHub a pu
+    la traiter quand même. Le registre des fiches (US-4.2.2) s'en sert pour
+    vérifier au run suivant plutôt que recréer.
+    """
+
+    def __init__(self, message: str, *, peut_avoir_abouti: bool = False) -> None:
+        super().__init__(message)
+        self.peut_avoir_abouti = peut_avoir_abouti
 
 
 class GitHubAuthError(GitHubError):
@@ -187,6 +200,25 @@ query($owner: String!, $number: Int!, $champ: String!) {
         url
         field(name: $champ) {
           ... on ProjectV2SingleSelectField { id name options { id name } }
+        }
+      }
+    }
+  }
+}
+"""
+
+#: Les cartes du tableau, page par page, avec le numéro de l'Issue portée.
+#: Une carte peut porter une Issue d'un autre dépôt, un brouillon ou une
+#: pull request : seules les Issues de `board.yaml` sont gardées.
+QUERY_ITEMS = """
+query($projet: ID!, $apres: String) {
+  node(id: $projet) {
+    ... on ProjectV2 {
+      items(first: 100, after: $apres) {
+        pageInfo { hasNextPage endCursor }
+        nodes {
+          id
+          content { ... on Issue { number repository { nameWithOwner } } }
         }
       }
     }
@@ -309,6 +341,49 @@ class GitHubClient:
         """L'Issue d'une offre classée : « Entreprise — Poste », la fiche en corps."""
         return self.creer_issue(titre_issue(offre), corps_issue(offre))
 
+    def lister_fiches(self, depuis: datetime | None = None) -> dict[str, Issue]:
+        """Les Issues du dépôt qui portent une fiche, par identifiant stable.
+
+        Lecture seule, ouvertes et fermées, pull requests exclues. `depuis`
+        restreint aux Issues modifiées après cet instant — une Issue créée
+        après l'est forcément. Deux Issues pour la même offre : la plus
+        ancienne est gardée, et les autres sont signalées dans le journal.
+        Sert à reconstruire le registre des fiches (US-4.2.2).
+        """
+        parametres = f"state=all&sort=created&direction=asc&per_page={PAGE}"
+        if depuis is not None:
+            parametres += "&since=" + depuis.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        fiches: dict[str, Issue] = {}
+        page = 1
+        while True:
+            chemin = f"{self._chemin_depot()}/issues?{parametres}&page={page}"
+            lot = self._appeler("GET", chemin, json=None, rejouable=True).json()
+            for data in lot:
+                identifiant = lire_id(data.get("body"))
+                if "pull_request" in data or identifiant is None:
+                    continue
+                issue = Issue(
+                    number=data["number"],
+                    node_id=data["node_id"],
+                    url=data.get("html_url", ""),
+                    titre=data.get("title", ""),
+                )
+                deja = fiches.get(identifiant)
+                if deja is None or issue.number < deja.number:
+                    fiches[identifiant] = issue
+                if deja is not None:
+                    logger.warning(
+                        "offre %s publiée deux fois : Issues #%d et #%d — la plus "
+                        "ancienne est gardée",
+                        identifiant,
+                        min(deja.number, issue.number),
+                        max(deja.number, issue.number),
+                    )
+            if len(lot) < PAGE:
+                return fiches
+            page += 1
+
     # -- US-4.1.3 · Project + statut -----------------------------------------
 
     def projet(self) -> Projet:
@@ -390,6 +465,29 @@ class GitHubClient:
         logger.info("Issue #%d ajoutée au Project, statut « %s »", issue.number, statut)
         return ItemProjet(id=item_id, statut=statut)
 
+    def items_du_projet(self) -> dict[int, str]:
+        """Numéro d'Issue du dépôt → identifiant de sa carte sur le tableau.
+
+        Lecture seule, toutes les pages. Sert à reconstruire le registre des
+        fiches (US-4.2.2) sans reposer une carte déjà triée en « Nouveau ».
+        """
+        projet = self.projet()
+        depot = self.config.repository.casefold()
+        items: dict[int, str] = {}
+        apres: str | None = None
+        while True:
+            data = self._graphql(QUERY_ITEMS, {"projet": projet.id, "apres": apres})
+            page = ((data.get("node") or {}).get("items")) or {}
+            for noeud in page.get("nodes") or []:
+                contenu = (noeud or {}).get("content") or {}
+                nom = ((contenu.get("repository") or {}).get("nameWithOwner") or "").casefold()
+                if "number" in contenu and nom == depot:
+                    items[contenu["number"]] = noeud["id"]
+            infos = page.get("pageInfo") or {}
+            if not infos.get("hasNextPage"):
+                return items
+            apres = infos.get("endCursor")
+
     # -- transport -----------------------------------------------------------
 
     def _chemin_depot(self) -> str:
@@ -451,7 +549,10 @@ class GitHubClient:
                     self._attendre_panne(appel, motif, pannes)
                     pannes += 1
                     continue
-                raise GitHubError(f"{appel} : échec réseau — {motif}{_avertir(rejouable)}") from exc
+                raise GitHubError(
+                    f"{appel} : échec réseau — {motif}{_avertir(rejouable)}",
+                    peut_avoir_abouti=not rejouable,
+                ) from exc
 
             self._noter_scopes(reponse)
 
@@ -525,8 +626,11 @@ class GitHubClient:
             raise GitHubNotFoundError(
                 f"{appel} : introuvable (404), ou invisible pour ce jeton — {message}"
             )
+        incertain = statut >= 500 and not rejouable
         suite = _avertir(rejouable) if statut >= 500 else ""
-        raise GitHubError(f"{appel} : statut HTTP {statut} — {message}{suite}")
+        raise GitHubError(
+            f"{appel} : statut HTTP {statut} — {message}{suite}", peut_avoir_abouti=incertain
+        )
 
 
 # ---------------------------------------------------------------------------
