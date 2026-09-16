@@ -1,4 +1,9 @@
 {
+  "ashby:alan:0ff78ea3-64c0-4b4e-ad0f-72d54175b132": {
+    "issue": 112,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYho",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwNhw"
+  },
   "ashby:alan:14729a35-9c9f-479e-860b-3d6c1348a2b0": {
     "issue": 67,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXBE",
@@ -14,10 +19,20 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWzM",
     "node_id": "I_kwDOUIzwRc8AAAABRpug9g"
   },
+  "ashby:kraken:acf80ca2-7073-49aa-ab4a-7064f852d94f": {
+    "issue": 117,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYnI",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwTEw"
+  },
   "ashby:kraken:b2a32764-7b75-4c6d-a45a-58b7af0887ad": {
     "issue": 61,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW4k",
     "node_id": "I_kwDOUIzwRc8AAAABRpumWA"
+  },
+  "ashby:kraken:c0d90cde-96ab-455a-b613-16b2f395e683": {
+    "issue": 95,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYPY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv4tw"
   },
   "ashby:supabase:06752423-eebb-472c-95b5-c7ff2559fd60": {
     "issue": 5,
@@ -84,6 +99,91 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW9c",
     "node_id": "I_kwDOUIzwRc8AAAABRpupug"
   },
+  "greenhouse:elastic:8119456": {
+    "issue": 89,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYGY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvxrQ"
+  },
+  "greenhouse:elastic:8161419": {
+    "issue": 111,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYgY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwMJg"
+  },
+  "greenhouse:elastic:8161426": {
+    "issue": 110,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYfc",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwK5w"
+  },
+  "greenhouse:elastic:8161427": {
+    "issue": 109,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYeg",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwJrA"
+  },
+  "greenhouse:elastic:8161428": {
+    "issue": 108,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYdc",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwIEA"
+  },
+  "greenhouse:elastic:8161432": {
+    "issue": 107,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYcM",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwGzQ"
+  },
+  "greenhouse:elastic:8161434": {
+    "issue": 106,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYbE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwFxA"
+  },
+  "greenhouse:elastic:8161435": {
+    "issue": 105,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYZw",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwEsg"
+  },
+  "greenhouse:elastic:8161437": {
+    "issue": 104,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYZA",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwDiQ"
+  },
+  "greenhouse:elastic:8161519": {
+    "issue": 96,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYQ4",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv52A"
+  },
+  "greenhouse:elastic:8161560": {
+    "issue": 97,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYSQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv7Nw"
+  },
+  "greenhouse:elastic:8161569": {
+    "issue": 98,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYS0",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv8Yg"
+  },
+  "greenhouse:elastic:8161686": {
+    "issue": 99,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYUM",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv9iA"
+  },
+  "greenhouse:elastic:8161687": {
+    "issue": 100,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYVE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv-hg"
+  },
+  "greenhouse:elastic:8161688": {
+    "issue": 101,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYVk",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv_pQ"
+  },
+  "greenhouse:elastic:8161695": {
+    "issue": 102,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYWo",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwAvw"
+  },
+  "greenhouse:elastic:8161696": {
+    "issue": 103,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYXo",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwCKw"
+  },
   "greenhouse:elastic:8167769": {
     "issue": 52,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWro",
@@ -93,6 +193,36 @@
     "issue": 60,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW3k",
     "node_id": "I_kwDOUIzwRc8AAAABRpuk1w"
+  },
+  "greenhouse:elastic:8173299": {
+    "issue": 88,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYFM",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvwsw"
+  },
+  "greenhouse:elastic:8173300": {
+    "issue": 87,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYEo",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvvkA"
+  },
+  "greenhouse:elastic:8173301": {
+    "issue": 86,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYC4",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvuaQ"
+  },
+  "greenhouse:elastic:8173302": {
+    "issue": 85,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYBo",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvtTg"
+  },
+  "greenhouse:elastic:8173419": {
+    "issue": 84,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX_k",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvrKg"
+  },
+  "greenhouse:elastic:8173421": {
+    "issue": 83,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX-c",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvpyQ"
   },
   "greenhouse:elastic:8204969": {
     "issue": 59,
@@ -174,10 +304,60 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWGo",
     "node_id": "I_kwDOUIzwRc8AAAABRpt7gg"
   },
+  "greenhouse:gitlab:8738225002": {
+    "issue": 78,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX34",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvjpw"
+  },
+  "greenhouse:gitlab:8749946002": {
+    "issue": 116,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYmk",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwR-w"
+  },
+  "greenhouse:gitlab:8749950002": {
+    "issue": 115,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYlY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwQ6w"
+  },
+  "greenhouse:gitlab:8749951002": {
+    "issue": 114,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYkM",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwPsA"
+  },
+  "greenhouse:gitlab:8749952002": {
+    "issue": 113,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYis",
+    "node_id": "I_kwDOUIzwRc8AAAABRpwOlg"
+  },
+  "greenhouse:gitlab:8759577002": {
+    "issue": 94,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYNg",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv3mQ"
+  },
   "greenhouse:gitlab:8760233002": {
     "issue": 66,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXAY",
     "node_id": "I_kwDOUIzwRc8AAAABRpur9Q"
+  },
+  "greenhouse:gitlab:8775039002": {
+    "issue": 82,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX9Q",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvohA"
+  },
+  "greenhouse:gitlab:8775415002": {
+    "issue": 80,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX6o",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvl9Q"
+  },
+  "greenhouse:gitlab:8777342002": {
+    "issue": 81,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX8U",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvnEQ"
+  },
+  "greenhouse:gitlab:8778279002": {
+    "issue": 79,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX5E",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvkvA"
   },
   "greenhouse:gitlab:8778943002": {
     "issue": 65,
@@ -219,10 +399,30 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWJo",
     "node_id": "I_kwDOUIzwRc8AAAABRpt95w"
   },
+  "hackernews:infohawk:49524880": {
+    "issue": 92,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYLQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv1YA"
+  },
   "hackernews:klarasystems-com:49523797": {
     "issue": 7,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVAM",
     "node_id": "I_kwDOUIzwRc8AAAABRps63Q"
+  },
+  "hackernews:miltenyi-biotec:49532122": {
+    "issue": 91,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYKM",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv0OQ"
+  },
+  "hackernews:motan:49523666": {
+    "issue": 93,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYMw",
+    "node_id": "I_kwDOUIzwRc8AAAABRpv2hA"
+  },
+  "hackernews:odoo:49533482": {
+    "issue": 90,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYHs",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvzJw"
   },
   "hackernews:openalex:49524920": {
     "issue": 6,
@@ -328,6 +528,56 @@
     "issue": 23,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWCA",
     "node_id": "I_kwDOUIzwRc8AAAABRpt2qw"
+  },
+  "workingnomads:proxify:1843234": {
+    "issue": 77,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX24",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvigw"
+  },
+  "workingnomads:proxify:1843235": {
+    "issue": 76,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX1o",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvhcw"
+  },
+  "workingnomads:proxify:1843237": {
+    "issue": 75,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TX00",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvgOQ"
+  },
+  "workingnomads:proxify:1843239": {
+    "issue": 74,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXzU",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvfFA"
+  },
+  "workingnomads:proxify:1843241": {
+    "issue": 73,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXyM",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvdiA"
+  },
+  "workingnomads:proxify:1843246": {
+    "issue": 72,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXwk",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvcDw"
+  },
+  "workingnomads:proxify:1843248": {
+    "issue": 71,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXvk",
+    "node_id": "I_kwDOUIzwRc8AAAABRpva-A"
+  },
+  "workingnomads:proxify:1843250": {
+    "issue": 70,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXuY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvZ8A"
+  },
+  "workingnomads:proxify:1843256": {
+    "issue": 69,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXsc",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvYvw"
+  },
+  "workingnomads:proxify:1843257": {
+    "issue": 68,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXrE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpvXoQ"
   },
   "workingnomads:sticker-mule:1833624": {
     "issue": 3,
