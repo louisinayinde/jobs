@@ -28,9 +28,14 @@ référence croisée dans l'Issue d'un autre dépôt. La ponctuation Markdown es
 qui les suit : le texte reste le même à l'œil, GitHub n'y voit plus ni
 mention ni référence.
 
-**Pas de description dans la fiche.** Elle ferait parfois plusieurs pages,
-et le lien ATS la montre mieux. Le CV Generator (Epic 6) la récupérera à la
-source.
+**La description suit les champs**, sous un séparateur : sans elle, la
+fiche ne dit rien de la mission et ne suffit ni à trier ni à adapter un CV —
+et certaines sources (Hacker News) n'ont pas d'autre page que le
+commentaire. Chaque ligne y devient un paragraphe, rendu inerte comme les
+champs ; un `#` ou une suite de tirets en tête de ligne est échappé pour ne
+faire ni titre ni règle. Elle est bornée à `LIMITE_DESCRIPTION` signes pour
+que le corps reste sous la limite de 65 536 caractères d'une Issue, même
+une fois échappé.
 
 **L'identifiant stable est écrit dans la fiche**, dans un commentaire HTML
 invisible au rendu : `<!-- jobradar:id=greenhouse:gitlab:4012 -->`.
@@ -57,6 +62,13 @@ POSTE_INCONNU = "(poste sans titre)"
 #: Le mode de travail, dit en français ; `unknown` n'est pas affiché.
 MODES_DE_TRAVAIL = {"remote": "télétravail", "hybrid": "hybride", "onsite": "sur site"}
 
+#: Signes de description gardés au plus. Échappée, une description peut
+#: doubler : 25 000 signes tiennent sous les 65 536 d'un corps d'Issue.
+LIMITE_DESCRIPTION = 25_000
+
+#: Ajouté à une description coupée à `LIMITE_DESCRIPTION`.
+SUITE_TRONQUEE = "… (description tronquée — la suite est sur le lien ATS)"
+
 #: Gluon de mots (U+2060) : invisible, insécable, et il coupe `@nom` et `#12`.
 GLUON = "\u2060"
 
@@ -68,6 +80,9 @@ _MARKDOWN_RE = re.compile(r"([\\`*_\[\]<>~&|])")
 
 #: `@` ou `#` collé à ce qui ferait une mention ou une référence.
 _ACTIF_RE = re.compile(r"([@#])(?=\w)")
+
+#: Début de ligne qui ferait un titre (`#`) ou une règle (`---`, `===`).
+_BLOC_RE = re.compile(r"^(#|[-=](?=[-=\s]*$))")
 
 _MARQUEUR_RE = re.compile(r"<!-- " + re.escape(MARQUEUR_ID) + r"(\S+) -->")
 
@@ -90,7 +105,7 @@ def corps_issue(offre: ScoredJob) -> str:
     localisation = " · ".join(
         v for v in (texte(job.localisation), MODES_DE_TRAVAIL.get(job.remote_type, "")) if v
     )
-    motif = f"{offre.categorie} ({offre.detail})" if offre.detail else offre.categorie
+    motif = offre.motif
 
     lignes = [
         ("Entreprise", texte(job.entreprise)),
@@ -104,6 +119,9 @@ def corps_issue(offre: ScoredJob) -> str:
     ]
     corps = [f"**{nom}** : {valeur}  " for nom, valeur in lignes if valeur]
     corps.append("")
+    description = description_md(job.description)
+    if description:
+        corps += ["---", "", "**Description**", "", description, ""]
     corps.append(f"<!-- {MARQUEUR_ID}{_commentaire_sur(stable_id(job))} -->")
     return "\n".join(corps) + "\n"
 
@@ -116,6 +134,15 @@ def lire_id(corps: str | None) -> str | None:
     """
     trouve = _MARQUEUR_RE.search(corps or "")
     return unquote(trouve.group(1)) if trouve else None
+
+
+def description_md(description: str) -> str:
+    """La description en paragraphes inertes, bornée ; `""` si elle est vide."""
+    description = description.strip()
+    if len(description) > LIMITE_DESCRIPTION:
+        description = description[:LIMITE_DESCRIPTION].rstrip() + SUITE_TRONQUEE
+    paragraphes = (_BLOC_RE.sub(r"\\\1", texte(ligne)) for ligne in description.splitlines())
+    return "\n\n".join(p for p in paragraphes if p)
 
 
 def texte(valeur: str) -> str:

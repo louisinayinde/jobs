@@ -41,6 +41,14 @@ Une liste de **mots neutres** se trompe dans l'autre sens : une formulation
 mondiale inédite tombe au plancher. Elle reste publiée, et un mot s'ajoute
 à `MOTS_NEUTRES`.
 
+**La stack s'ajoute à la géographie** (`scoring.tech_bonus`). Chaque
+techno de la stack du candidat lue dans `tech[]` rapporte ses points, dans
+la limite de `max`. C'est un bonus, jamais un filtre : une offre qui dit
+« Java ou Node.js » gagne les points de Node.js et reste publiée, et une
+offre sans techno reconnue garde son score géo. Les technos se comparent
+par nom canonique, via le même index d'alias que `tech_include_any` :
+`k8s` dans la configuration rapporte sur une offre taguée `Kubernetes`.
+
 **Le plancher n'est jamais une exception.** Localisation vide, illisible,
 ou `geo_priority` absent : l'offre reçoit `default` (0 s'il n'est pas
 écrit), et le tri continue. Le scoring ordonne, il ne jette rien.
@@ -50,14 +58,14 @@ from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from typing import Iterable, Iterator, Mapping
 
 from src.adapters.base import REMOTE
 from src.core.config import ScoringConfig
-from src.core.normalize import Job
-from src.core.retention import REGION_MEMBERS, region_trouvee
+from src.core.normalize import TECH_VOCABULARY, Job
+from src.core.retention import REGION_MEMBERS, _entrees, _index_alias, region_trouvee
 
 logger = logging.getLogger(__name__)
 
@@ -151,12 +159,24 @@ class ScoredJob:
     localisation qui l'a déclenchée (`tokyo`, `london`) — vide pour
     `remote_global` et `default`, qui se décident sur une absence. Les deux
     servent au journal du run : un score seul ne dit pas s'il est juste.
+
+    `score` est le total : score géo **plus** `bonus`, les points de stack
+    (déjà plafonnés), gagnés par les technos de `stack`.
     """
 
     job: Job
     score: int
     categorie: str
     detail: str = ""
+    bonus: int = 0
+    stack: tuple[str, ...] = ()
+
+    @property
+    def motif(self) -> str:
+        """Ce qui a fait le score : `europe (london) · stack +15 (Go, Python)`."""
+        geo = f"{self.categorie} ({self.detail})" if self.detail else self.categorie
+        stack = f"stack +{self.bonus} ({', '.join(self.stack)})" if self.stack else ""
+        return " · ".join(partie for partie in (geo, stack) if partie)
 
 
 def ne_nomme_aucun_lieu(localisation: str) -> bool:
@@ -174,10 +194,26 @@ class GeoScorer:
     """
 
     priorites: Mapping[str, int] = field(default_factory=dict)
+    #: Points de stack par techno, **par nom canonique** (`Kubernetes`).
+    bonus_tech: Mapping[str, int] = field(default_factory=dict)
+    #: Plafond du bonus de stack d'une offre ; `None` = pas de plafond.
+    bonus_max: int | None = None
 
     @classmethod
-    def from_config(cls, scoring: ScoringConfig) -> GeoScorer:
-        scorer = cls(dict(scoring.geo_priority))
+    def from_config(
+        cls,
+        scoring: ScoringConfig,
+        *,
+        vocabulaire: Mapping[str, tuple[str, ...]] = TECH_VOCABULARY,
+    ) -> GeoScorer:
+        """`vocabulaire` doit être celui passé à `normalize` : c'est lui qui
+        traduit une techno écrite (`k8s`) en nom canonique (`Kubernetes`)."""
+        index = _index_alias(_entrees(vocabulaire))
+        bonus: dict[str, int] = {}
+        for terme, points in scoring.tech_bonus.points.items():
+            canonique = index.get(terme.strip().lower(), terme.strip())
+            bonus[canonique] = max(points, bonus.get(canonique, points))
+        scorer = cls(dict(scoring.geo_priority), bonus, scoring.tech_bonus.max)
         for clef in scorer._zones:
             zone = _zone(clef)
             if zone not in REGION_MEMBERS:
@@ -204,7 +240,7 @@ class GeoScorer:
         return [clef for clef in self.priorites if clef not in (REMOTE_GLOBAL, DEFAULT)]
 
     def noter(self, job: Job) -> ScoredJob:
-        """Le score de l'offre : la meilleure catégorie qu'elle satisfait.
+        """Le score de l'offre : la meilleure catégorie géo, plus sa stack.
 
         Ne lève jamais : une offre sans localisation, ou une configuration
         sans `geo_priority`, donne le plancher.
@@ -224,9 +260,21 @@ class GeoScorer:
                 candidats.append(ScoredJob(job, self.priorites[clef], clef, terme))
 
         if not candidats:
-            return ScoredJob(job, self.plancher, DEFAULT)
-        # `max` rend le premier des ex æquo : l'ordre de la configuration.
-        return max(candidats, key=lambda candidat: candidat.score)
+            geo = ScoredJob(job, self.plancher, DEFAULT)
+        else:
+            # `max` rend le premier des ex æquo : l'ordre de la configuration.
+            geo = max(candidats, key=lambda candidat: candidat.score)
+        return self._ajouter_stack(geo)
+
+    def _ajouter_stack(self, geo: ScoredJob) -> ScoredJob:
+        """Le bonus des technos de la stack que l'offre mentionne."""
+        stack = tuple(techno for techno in geo.job.tech if techno in self.bonus_tech)
+        if not stack:
+            return geo
+        bonus = sum(self.bonus_tech[techno] for techno in stack)
+        if self.bonus_max is not None:
+            bonus = min(bonus, self.bonus_max)
+        return replace(geo, score=geo.score + bonus, bonus=bonus, stack=stack)
 
     def classer(self, jobs: Iterable[Job]) -> ScoringReport:
         """Note toutes les offres d'un run et les trie (US-3.4.1 + 3.4.2)."""

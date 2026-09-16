@@ -25,16 +25,23 @@ retention:
     - "support engineer"
 
   seniority:
+    # Profil visé : 1 à 3 ans d'expérience. Junior et mid sont la cible,
+    # senior reste atteignable.
     # Niveaux de séniorité à garder. Vide ou absent = tous les niveaux
     # sont acceptés à cette étape.
     keep:
+      - "junior"
       - "mid"
       - "senior"
-      - "staff"
     # Niveaux à toujours rejeter, même s'ils figurent aussi dans `keep`.
+    # `drop` est prioritaire : « Software Engineers (Senior, Staff,
+    # Principal) » est rejetée pour « staff » malgré « Senior ».
     drop:
       - "intern"
-      - "junior"
+      - "staff"
+      - "principal"
+      - "lead"
+      - "manager"
 
   location:
     # Une offre est retenue si sa localisation correspond à au moins une
@@ -75,3 +82,92 @@ scoring:
     europe: 60
     france: 40
     default: 0
+
+  # Bonus de stack, ajouté au score géo. Chaque techno citée dans l'offre
+  # (titre ou description) rapporte les points de son groupe ; le total est
+  # plafonné à `max`. Toutes les technos rapportent, de 10 (stack maîtrisée)
+  # à 1 (stacks non souhaitées) : une offre « Java ou Node.js » reste donc
+  # bien classée grâce à Node.js, et une offre 100 % Java gagne peu.
+  # Les noms de groupe sont libres. Un alias vaut la techno (k8s = Kubernetes),
+  # et une techno inconnue du détecteur y est ajoutée automatiquement.
+  # Avec max: 40, une offre qui colle à la stack peut remonter de deux
+  # crans géo (une offre Europe à 60 + 40 passe devant l'Asie à 80).
+  tech_bonus:
+    max: 40
+    mastered:
+      points: 10
+      techs:
+        - "python"
+        - "typescript"
+        - "node.js"
+        - "next.js"
+        - "docker"
+        - "sql"
+        - "nosql"
+        - "terraform"
+        - "aws"
+        - "gcp"
+        - "javascript"
+        - "react"
+        - "express"
+    learning:
+      points: 5
+      techs:
+        - "rust"
+        - "go"
+        - "nestjs"
+        - "grpc"
+        - "kafka"
+        - "k8s"
+        - "postgresql"
+        - "mysql"
+        - "mongodb"
+        - "dynamodb"
+        - "git"
+        - "ci/cd"
+    # Ni stack ni rejet : l'écosystème autour.
+    neutral:
+      points: 3
+      techs:
+        - "django"
+        - "flask"
+        - "fastapi"
+        - "redis"
+        - "bigquery"
+        - "graphql"
+        - "rest"
+        - "rabbitmq"
+        - "bash"
+        - "linux"
+        - "prometheus"
+        - "grafana"
+        - "vue"
+        - "angular"
+    unwanted:
+      points: 1
+      techs:
+        - "java"
+        - "kotlin"
+        - "swift"
+        - "ruby"
+        - "php"
+        - "scala"
+        - "elixir"
+        - "c++"
+        - "c#"
+        - "spring"
+        - "rails"
+        - "laravel"
+        - "symfony"
+        - "svelte"
+        - ".net"
+        - "elasticsearch"
+        - "cassandra"
+        - "snowflake"
+        - "spark"
+        - "airflow"
+        - "dbt"
+        - "azure"
+        - "ansible"
+        - "helm"
+        - "jenkins"

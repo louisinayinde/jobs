@@ -53,8 +53,22 @@ class RetentionConfig:
 
 
 @dataclass(frozen=True)
+class TechBonusConfig:
+    """`scoring.tech_bonus` : des points par techno de la stack du candidat.
+
+    `points` associe chaque techno écrite dans la configuration à ses points
+    (une techno citée dans deux groupes garde le plus élevé) ; `max` plafonne
+    le bonus d'une offre, `None` = pas de plafond.
+    """
+
+    points: dict[str, int] = field(default_factory=dict)
+    max: int | None = None
+
+
+@dataclass(frozen=True)
 class ScoringConfig:
     geo_priority: dict[str, int] = field(default_factory=dict)
+    tech_bonus: TechBonusConfig = field(default_factory=TechBonusConfig)
 
 
 @dataclass(frozen=True)
@@ -96,7 +110,7 @@ def _optional_str_list(data: dict, key: str, context: str) -> list[str]:
     return list(value)
 
 
-def _optional_int(data: dict, key: str, default: int, context: str) -> int:
+def _optional_int(data: dict, key: str, default: int | None, context: str) -> int | None:
     if key not in data or data[key] is None:
         return default
     value = data[key]
@@ -188,7 +202,38 @@ def _parse_scoring(data: dict) -> ScoringConfig:
             )
         geo_priority[key] = value
 
-    return ScoringConfig(geo_priority=geo_priority)
+    return ScoringConfig(
+        geo_priority=geo_priority,
+        tech_bonus=_parse_tech_bonus(_optional_mapping(data, "tech_bonus", context)),
+    )
+
+
+def _parse_tech_bonus(data: dict) -> TechBonusConfig:
+    """`max` (optionnel) et des groupes `nom: {points: int, techs: [...]}`.
+
+    Les noms de groupe sont libres (`mastered`, `learning`) : ils ne servent
+    qu'à la lecture humaine du fichier.
+    """
+    context = "filters.yaml:scoring.tech_bonus"
+    plafond = _optional_int(data, "max", None, context)
+
+    points: dict[str, int] = {}
+    for nom, groupe in data.items():
+        if nom == "max":
+            continue
+        if not isinstance(groupe, dict):
+            raise ConfigError(
+                f"type invalide pour « {nom} » ({context}) : attendu mapping "
+                "avec « points » et « techs »"
+            )
+        valeur = _optional_int(groupe, "points", None, f"{context}.{nom}")
+        if valeur is None:
+            raise ConfigError(f"clé requise manquante : « points » ({context}.{nom})")
+        for techno in _optional_str_list(groupe, "techs", f"{context}.{nom}"):
+            if techno.strip():
+                points[techno.strip()] = max(valeur, points.get(techno.strip(), valeur))
+
+    return TechBonusConfig(points=points, max=plafond)
 
 
 def load_filters(path: str | Path) -> FiltersConfig:

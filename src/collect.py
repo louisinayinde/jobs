@@ -41,7 +41,8 @@ que le workflow commite. Sans elle, une offre en ligne trois semaines
 serait publiée à chaque quart d'heure.
 
 Les offres nouvelles sont ensuite **classées** (Feature 3.4) : un score de
-priorité géo tiré de `scoring.geo_priority`, puis un tri du meilleur au
+priorité géo tiré de `scoring.geo_priority`, plus un bonus pour les technos
+de la stack du candidat (`scoring.tech_bonus`), puis un tri du meilleur au
 moins bon.
 
 Elles sont enfin **publiées** sur le tableau de revue (Feature 4.3), dans cet
@@ -320,8 +321,10 @@ def main(
     except ConfigError as exc:
         print(f"collect : règles de rétention illisibles — {exc}", file=sys.stderr)
         return 1
-    filtre = RetentionFilter.from_config(filtres.retention)
-    scorer = GeoScorer.from_config(filtres.scoring)
+    filtre = RetentionFilter.from_config(
+        filtres.retention, termes_bonus=filtres.scoring.tech_bonus.points
+    )
+    scorer = GeoScorer.from_config(filtres.scoring, vocabulaire=filtre.vocabulaire)
 
     # Même logique que pour les filtres : un registre cassé refuse de publier
     # (il recréerait des fiches existantes), autant le savoir avant de
@@ -470,10 +473,9 @@ def _lignes_classement(classement: ScoringReport, limite: int = TOP_AFFICHE) -> 
     """
     lignes = []
     for offre in classement.offres[:limite]:
-        motif = f"{offre.categorie} ({offre.detail})" if offre.detail else offre.categorie
         job = offre.job
         lignes.append(
-            f"  {offre.score:>4} {motif} : {job.entreprise} — {job.titre} "
+            f"  {offre.score:>4} {offre.motif} : {job.entreprise} — {job.titre} "
             f"[{job.localisation or job.remote_type}]"
         )
     reste = len(classement) - limite

@@ -602,10 +602,11 @@ def test_le_run_de_collecte_applique_la_retention(monkeypatch, capsys) -> None:
     sortie = capsys.readouterr().out
     assert code == 0
     assert "9 offre(s) normalisée(s)" in sortie
-    # Six des neuf offres réelles passent les règles du dépôt ; le décompte
+    # Cinq des neuf offres réelles passent les règles du dépôt — l'offre
+    # Staff de Malt tombe sur la séniorité ; le décompte
     # par motif est affiché, sans quoi un filtre qui rejette tout
     # ressemblerait à un marché de l'emploi calme.
-    assert "6 retenue(s) sur 9" in sortie
+    assert "5 retenue(s) sur 9" in sortie
     assert f"{TITRE_NON_INCLUS} 3" in sortie
 
 

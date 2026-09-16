@@ -19,6 +19,7 @@ rien.
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import logging
 import re
@@ -31,7 +32,16 @@ import httpx
 import pytest
 
 from src.board import __main__ as board_cli
-from src.board.fiche import GLUON, corps_issue, lien, lire_id, texte, titre_issue
+from src.board.fiche import (
+    GLUON,
+    LIMITE_DESCRIPTION,
+    SUITE_TRONQUEE,
+    corps_issue,
+    lien,
+    lire_id,
+    texte,
+    titre_issue,
+)
 from src.board.github import GitHubError
 from src.board.publication import MARGE_HORLOGE, publier_offre, reconstruire
 from src.board.registre import (
@@ -138,11 +148,11 @@ def test_champ_optionnel_manquant_ni_trou_ni_none(champs: dict[str, Any], absent
     presents = lignes_de_champs(corps)
     assert absents.isdisjoint(presents)
     assert all(valeur.strip() for valeur in presents.values())
-    # Aucune ligne de champ vide, aucun blanc en trop : chaque ligne est un
-    # champ, sauf la ligne vide qui précède l'identifiant.
-    lignes = corps.splitlines()
-    assert lignes.count("") == 1
-    assert len(presents) == len(lignes) - 2
+    # Aucune ligne de champ vide, aucun blanc en trop : avant la description,
+    # chaque ligne est un champ.
+    entete = corps.split("\n\n---\n", 1)[0].splitlines()
+    assert "" not in entete
+    assert len(presents) == len(entete)
     assert lire_id(corps) == stable_id(offre(**champs).job)
 
 
@@ -160,6 +170,14 @@ def test_localisation_sans_mode_connu_ou_mode_seul() -> None:
 def test_score_sans_detail_ni_categorie() -> None:
     assert lignes_de_champs(corps_issue(offre(detail="")))["Score"] == "60 — europe"
     assert lignes_de_champs(corps_issue(offre(score=0, categorie="", detail="")))["Score"] == "0"
+
+
+def test_score_avec_bonus_de_stack() -> None:
+    une_offre = dataclasses.replace(offre(), score=75, bonus=15, stack=("Go", "Python"))
+
+    assert lignes_de_champs(corps_issue(une_offre))["Score"] == (
+        "75 — europe (london) · stack +15 (Go, Python)"
+    )
 
 
 def test_valeurs_tierces_restent_du_texte() -> None:
@@ -192,6 +210,61 @@ def test_valeur_multiligne_ramenee_sur_une_ligne() -> None:
 
     assert lignes_de_champs(corps)["Localisation"] == "Paris # Titre France · hybride"
     assert "\n#" not in corps
+
+
+def description_de(corps: str) -> str:
+    """Le texte entre « **Description** » et l'identifiant, ou `""`."""
+    if "\n**Description**\n" not in corps:
+        return ""
+    return corps.split("\n**Description**\n\n", 1)[1].rsplit("\n\n<!-- jobradar", 1)[0]
+
+
+def test_la_description_suit_les_champs_ligne_par_paragraphe() -> None:
+    corps = corps_issue(
+        offre(description="About the role\nBuild the edge platform.\n\n- Go, Rust\n- 5+ years")
+    )
+
+    assert corps.index("**Source**") < corps.index("**Description**") < corps.index("<!-- jobradar")
+    assert description_de(corps) == (
+        "About the role\n\nBuild the edge platform.\n\n- Go, Rust\n\n- 5+ years"
+    )
+    assert lire_id(corps) == ID
+
+
+@pytest.mark.parametrize("vide", ["", "  \n\t "])
+def test_description_vide_pas_de_section(vide: str) -> None:
+    corps = corps_issue(offre(description=vide))
+
+    assert "Description" not in corps
+    assert corps.endswith(f"**Source** : greenhouse  \n\n<!-- jobradar:id={ID} -->\n")
+
+
+def test_description_tierce_reste_du_texte() -> None:
+    corps = corps_issue(
+        offre(
+            description=(
+                "# Titre\n---\n===\ncc @octocat, voir autre/depot#12\n"
+                "<!-- caché\n</details> [lien](https://evil.example) *gras*"
+            )
+        )
+    )
+    description = description_de(corps)
+
+    assert description.split("\n\n")[:3] == ["\\# Titre", "\\---", "\\==="]
+    sans_marqueur = corps.rsplit("<!-- jobradar", 1)[0]
+    assert re.search(r"[@#]\w", sans_marqueur) is None
+    assert re.search(r"(?<![\\(])<", sans_marqueur) is None
+    assert len(LIEN_RE.findall(corps)) == 1
+    assert lire_id(corps) == ID
+
+
+def test_description_trop_longue_tronquee_sous_la_limite_github() -> None:
+    # Le pire cas : chaque signe est échappé.
+    corps = corps_issue(offre(description="*" * (LIMITE_DESCRIPTION * 3)))
+
+    assert len(corps) < 65_536
+    assert description_de(corps).endswith(texte(SUITE_TRONQUEE))
+    assert lire_id(corps) == ID
 
 
 def test_le_titre_de_l_issue_n_est_pas_echappe() -> None:

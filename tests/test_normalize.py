@@ -323,9 +323,14 @@ def test_la_stack_est_triee_et_sans_doublon() -> None:
         # Un mot plus long ne doit pas déclencher le mot court.
         ("JavaScript everywhere", ("JavaScript",)),
         ("Java 21 and Spring Boot", ("Java", "Spring")),
+        ("NoSQL stores", ("NoSQL",)),
+        ("NoSQL and SQL", ("NoSQL", "SQL")),
         # Ponctuation et versions collées au terme.
         ("python3, C++11, k8s", ("C++", "Kubernetes", "Python")),
         ("Node.js / NestJS", ("NestJS", "Node.js")),
+        ("Senior Backend Engineer (TS/Node)", ("Node.js", "TypeScript")),
+        # En minuscules, ce sont des mots courants : pas une stack.
+        ("each node of the graph, ts timestamps", ()),
         (".NET 8 sur Azure", (".NET", "Azure")),
         # Rien de reconnu : tuple vide, jamais `None`.
         ("Nous cherchons quelqu'un de curieux.", ()),

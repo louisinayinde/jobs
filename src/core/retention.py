@@ -356,15 +356,18 @@ def tech_vocabulary(
     retention: RetentionConfig,
     *,
     base: Mapping[str, tuple[str, ...]] = TECH_VOCABULARY,
+    termes_bonus: Iterable[str] = (),
 ) -> Mapping[str, tuple[str, ...]]:
-    """Le vocabulaire du détecteur, augmenté des termes sur lesquels on filtre.
+    """Le vocabulaire du détecteur, augmenté des termes sur lesquels on filtre
+    ou qui rapportent un bonus de stack au scoring (`termes_bonus`).
 
     `tech[]` est déduit par `normalize` contre un vocabulaire fermé
     (`TECH_VOCABULARY`). Filtrer sur un terme absent de ce vocabulaire
     rejetterait donc **toutes** les offres, sans que rien ne le dise : la
     techno cherchée serait invisible au détecteur. Chaque terme de
     `tech_include_any` inconnu du vocabulaire y est donc ajouté, et c'est
-    ce vocabulaire-là que le run passe à `normalize`.
+    ce vocabulaire-là que le run passe à `normalize`. Même raisonnement pour
+    `scoring.tech_bonus` : une techno invisible ne rapporterait jamais rien.
 
     Un terme ajouté est cherché **sans tenir compte de la casse** : il vient
     d'une main humaine, pas de la table soigneusement calibrée du module.
@@ -375,7 +378,7 @@ def tech_vocabulary(
     supplement: dict[str, tuple[str, ...]] = {}
     vus: set[str] = set()
 
-    for terme in retention.tech_include_any:
+    for terme in (*retention.tech_include_any, *termes_bonus):
         propre = terme.strip()
         clef = propre.lower()
         if not propre or clef in index or clef in vus:
@@ -387,8 +390,8 @@ def tech_vocabulary(
         return base
 
     logger.info(
-        "vocabulaire technique étendu pour la rétention : %s — "
-        "sans quoi le filtre tech rejetterait tout",
+        "vocabulaire technique étendu : %s — sans quoi le filtre tech et le "
+        "bonus de stack ne les verraient jamais",
         ", ".join(sorted(supplement)),
     )
     return {**base, **supplement}
@@ -464,6 +467,7 @@ class RetentionFilter:
         retention: RetentionConfig,
         *,
         base: Mapping[str, tuple[str, ...]] = TECH_VOCABULARY,
+        termes_bonus: Iterable[str] = (),
     ) -> RetentionFilter:
         """Construit le filtre depuis la section `retention:` de `filters.yaml`.
 
@@ -479,7 +483,7 @@ class RetentionFilter:
             location_require_any=tuple(retention.location.require_any),
             relocation_regions=tuple(retention.location.relocation_regions),
             tech_include_any=tuple(retention.tech_include_any),
-            vocabulaire=tech_vocabulary(retention, base=base),
+            vocabulaire=tech_vocabulary(retention, base=base, termes_bonus=termes_bonus),
         )
 
     # -- US-3.2.1 — le titre ------------------------------------------------

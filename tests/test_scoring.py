@@ -22,8 +22,9 @@ import logging
 
 import pytest
 
-from src.core.config import ScoringConfig, load_filters
-from src.core.normalize import Job, normalize
+from src.adapters.base import RawJob
+from src.core.config import RetentionConfig, ScoringConfig, TechBonusConfig, load_filters
+from src.core.normalize import TECH_VOCABULARY, Job, normalize
 from src.core.scoring import (
     DEFAULT,
     REMOTE_GLOBAL,
@@ -56,6 +57,7 @@ def job(
     date: str = "2026-09-14T08:00:00+00:00",
     id: str = "4012",
     titre: str = "Backend Engineer",
+    tech: tuple[str, ...] = (),
 ) -> Job:
     """Une offre normalisée réduite à ce que le scoring regarde."""
     return Job(
@@ -68,6 +70,7 @@ def job(
         url=f"https://boards.greenhouse.io/gitlab/jobs/{id}",
         date=date,
         description="",
+        tech=tech,
     )
 
 
@@ -364,27 +367,32 @@ def test_mots_neutres() -> None:
 
 
 def test_le_run_de_collecte_classe_les_offres_nouvelles(monkeypatch, capsys) -> None:
-    """Les trois fixtures ATS réelles (GitLab, Malt, Ramp) : deux offres
-    européennes en tête, la plus récente d'abord, puis les quatre
-    « remote » nord-américaines au plancher, par date décroissante."""
+    """Les trois fixtures ATS réelles (GitLab, Malt, Ramp) : l'offre
+    européenne en tête (celle de Malt, Staff, est écartée par la
+    séniorité), puis les quatre « remote » nord-américaines, au plancher
+    géo et départagées par leur bonus de stack."""
     from tests.test_dedup import _run_collecte
 
     code, sortie = _run_collecte(monkeypatch, capsys)
 
     assert code == 0
-    assert "6 offre(s) classée(s) — europe 2, default 4" in sortie
+    assert "5 offre(s) classée(s) — europe 1, default 4" in sortie
     lignes = [ligne.strip() for ligne in sortie.splitlines() if ligne.startswith("    ")]
     assert lignes == [
-        "60 europe (london) : Malt — Staff Software Engineer [Paris; London; Lyon]",
-        "60 europe (london) : Ramp — Software Engineer, International [London]",
-        "0 default : GitLab — Backend Engineer, AI Engineering: Duo Chat "
-        "[Remote, Canada; Remote, United States]",
-        "0 default : GitLab — Backend Engineer (Ruby), AI Engineering: Agent Observability "
-        "[Remote, Canada]",
-        "0 default : Ramp — Software Engineer, Security, Stablecoin "
+        "62 europe (london) · stack +2 (Rails, Swift) : "
+        "Ramp — Software Engineer, International [London]",
+        "40 default · stack +40 (AWS, Azure, GCP, Go, Java, Python, Rails, Terraform) : "
+        "Ramp — Software Engineer, Security, Stablecoin "
         "[New York, NY (HQ); San Francisco, CA; Remote (US)]",
-        "0 default : Ramp — Software Engineer, Frontend "
+        "36 default · stack +36 (GraphQL, PostgreSQL, Python, Rails, REST, Ruby, SQL, Vue) : "
+        "GitLab — Backend Engineer (Ruby), AI Engineering: Agent Observability "
+        "[Remote, Canada]",
+        "30 default · stack +30 (JavaScript, React, TypeScript) : "
+        "Ramp — Software Engineer, Frontend "
         "[New York, NY (HQ); Remote (Canada); San Francisco, CA; Remote (US); Miami, FL]",
+        "15 default · stack +15 (GraphQL, Python, Rails, Ruby) : "
+        "GitLab — Backend Engineer, AI Engineering: Duo Chat "
+        "[Remote, Canada; Remote, United States]",
     ]
 
 
@@ -396,6 +404,115 @@ def test_le_second_run_n_a_plus_rien_a_classer(monkeypatch, capsys) -> None:
 
     assert code == 0
     assert "0 offre(s) classée(s)\n" in sortie
+
+
+# ---------------------------------------------------------------------------
+# Bonus de stack
+# ---------------------------------------------------------------------------
+
+STACK = TechBonusConfig(
+    points={"python": 10, "typescript": 10, "k8s": 5, "go": 5},
+    max=25,
+)
+SCORER_STACK = GeoScorer.from_config(ScoringConfig(geo_priority=PRIORITES, tech_bonus=STACK))
+
+
+def test_chaque_techno_de_la_stack_ajoute_ses_points_au_score_geo() -> None:
+    note = SCORER_STACK.noter(job("Remote (Europe)", tech=("Go", "Python", "React")))
+
+    assert (note.score, note.bonus, note.stack) == (75, 15, ("Go", "Python"))
+    assert (note.categorie, note.detail) == ("europe", "europe")
+
+
+def test_un_alias_de_la_configuration_rapporte_sur_le_nom_canonique() -> None:
+    note = SCORER_STACK.noter(job("Worldwide", tech=("Kubernetes",)))
+
+    assert (note.score, note.stack) == (105, ("Kubernetes",))
+
+
+def test_le_bonus_est_plafonne() -> None:
+    note = SCORER_STACK.noter(job("Worldwide", tech=("Go", "Kubernetes", "Python", "TypeScript")))
+
+    assert (note.score, note.bonus) == (125, 25)
+    assert note.stack == ("Go", "Kubernetes", "Python", "TypeScript")
+
+
+def test_sans_plafond_tout_compte() -> None:
+    scorer = GeoScorer.from_config(
+        ScoringConfig(tech_bonus=TechBonusConfig(points={"python": 10, "go": 10}))
+    )
+
+    assert scorer.noter(job("Mars", "onsite", tech=("Go", "Python"))).score == 20
+
+
+def test_une_offre_hors_stack_garde_son_score_geo() -> None:
+    note = SCORER_STACK.noter(job("Remote (Europe)", tech=("Java", "Spring")))
+
+    assert note == SCORER.noter(job("Remote (Europe)", tech=("Java", "Spring")))
+    assert (note.score, note.bonus, note.stack) == (60, 0, ())
+
+
+def test_le_motif_nomme_la_zone_puis_la_stack() -> None:
+    assert SCORER_STACK.noter(job("London", "onsite", tech=("Python",))).motif == (
+        "europe (london) · stack +10 (Python)"
+    )
+    assert SCORER_STACK.noter(job("Mars", "onsite", tech=("Go",))).motif == "default · stack +5 (Go)"
+    assert SCORER_STACK.noter(job("Mars", "onsite")).motif == "default"
+
+
+def test_la_stack_peut_faire_passer_une_zone_moins_prioritaire_devant() -> None:
+    asie = job("Tokyo", "onsite", id="asie")
+    europe = job("Berlin", "onsite", id="europe", tech=("Python", "TypeScript", "Go"))
+
+    assert ids(SCORER_STACK.classer([asie, europe])) == ["europe", "asie"]
+
+
+def test_une_techno_du_bonus_inconnue_du_detecteur_est_detectee_et_rapporte() -> None:
+    """Sans extension du vocabulaire, « Supabase » ne serait jamais dans
+    `tech[]` et son bonus ne rapporterait jamais rien, sans un mot."""
+    from src.core.retention import RetentionFilter
+
+    scoring = ScoringConfig(tech_bonus=TechBonusConfig(points={"Supabase": 10}))
+    filtre = RetentionFilter.from_config(RetentionConfig(), termes_bonus=scoring.tech_bonus.points)
+    scorer = GeoScorer.from_config(scoring, vocabulaire=filtre.vocabulaire)
+    brut = RawJob(
+        id="1",
+        ats="greenhouse",
+        entreprise="Acme",
+        titre="Backend Engineer",
+        localisation="Mars",
+        remote_type="onsite",
+        url="https://boards.greenhouse.io/acme/jobs/1",
+        date="2026-09-14T08:00:00+00:00",
+        description="We run on supabase.",
+    )
+
+    (offre,) = normalize([brut], vocabulaire=filtre.vocabulaire)
+
+    assert scorer.noter(offre).stack == ("Supabase",)
+
+
+def test_la_configuration_versionnee_recompense_la_stack_du_candidat() -> None:
+    filtres = load_filters(REAL_FILTERS)
+    scorer = GeoScorer.from_config(filtres.scoring)
+
+    assert scorer.noter(job("Mars", "onsite", tech=("Next.js", "Node.js"))).bonus == 20
+    assert scorer.noter(job("Mars", "onsite", tech=("Kubernetes",))).bonus == 5
+    assert scorer.noter(job("Mars", "onsite", tech=("Java",))).bonus == 1
+    assert scorer.noter(job("Mars", "onsite", tech=("React",))).bonus == 10
+    assert scorer.noter(job("Mars", "onsite", tech=("Vue",))).bonus == 3
+    assert scorer.bonus_max is not None
+    tout = tuple(scorer.bonus_tech)
+    assert scorer.noter(job("Mars", "onsite", tech=tout)).bonus == scorer.bonus_max
+
+
+def test_toute_techno_detectee_rapporte_des_points_dans_la_configuration_versionnee() -> None:
+    """Une techno ajoutée au détecteur sans être notée rapporterait 0 sans
+    que rien ne le signale."""
+    scorer = GeoScorer.from_config(load_filters(REAL_FILTERS).scoring)
+
+    assert set(TECH_VOCABULARY) <= set(scorer.bonus_tech)
+    assert all(points >= 1 for points in scorer.bonus_tech.values())
 
 
 def test_le_journal_du_run_s_arrete_au_top_et_compte_le_reste() -> None:

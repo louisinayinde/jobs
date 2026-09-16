@@ -435,12 +435,11 @@ def _run(monkeypatch, capsys, *argv: str, tableau: FauxTableau | None) -> tuple[
 #: Les six offres retenues des trois fixtures ATS, dans l'ordre du classement
 #: (voir test_scoring : deux européennes, puis quatre au plancher).
 TITRES_CLASSES = [
-    "Malt — Staff Software Engineer",
     "Ramp — Software Engineer, International",
-    "GitLab — Backend Engineer, AI Engineering: Duo Chat",
-    "GitLab — Backend Engineer (Ruby), AI Engineering: Agent Observability",
     "Ramp — Software Engineer, Security, Stablecoin",
+    "GitLab — Backend Engineer (Ruby), AI Engineering: Agent Observability",
     "Ramp — Software Engineer, Frontend",
+    "GitLab — Backend Engineer, AI Engineering: Duo Chat",
 ]
 
 
@@ -453,10 +452,10 @@ def test_le_run_publie_les_offres_nouvelles_dans_l_ordre_du_classement(
 
     assert code == 0
     assert tableau.titres == TITRES_CLASSES
-    assert len(tableau.cartes) == 6
-    assert "6 fiche(s) publiée(s) sur 6 offre(s)" in sortie
-    assert "  #1 lever:malt:" in sortie
-    assert "6 offre(s) mémorisée(s), 6 au total" in sortie
+    assert len(tableau.cartes) == 5
+    assert "5 fiche(s) publiée(s) sur 5 offre(s)" in sortie
+    assert "  #1 ashby:ramp:" in sortie
+    assert "5 offre(s) mémorisée(s), 5 au total" in sortie
     # Mémoire et registre désignent exactement les mêmes offres.
     vues = json.loads(isolated_seen_state.read_text(encoding="utf-8"))
     fiches = json.loads(isolated_fiches_state.read_text(encoding="utf-8"))
@@ -487,8 +486,8 @@ def test_seen_json_vide_mais_registre_intact_zero_doublon(
 
     assert code == 0
     assert reprise.requetes == []
-    assert "0 fiche(s) publiée(s) sur 6 offre(s), 6 déjà sur le tableau" in sortie
-    assert len(json.loads(isolated_seen_state.read_text(encoding="utf-8"))) == 6
+    assert "0 fiche(s) publiée(s) sur 5 offre(s), 5 déjà sur le tableau" in sortie
+    assert len(json.loads(isolated_seen_state.read_text(encoding="utf-8"))) == 5
 
 
 def test_panne_au_milieu_du_lot_le_run_echoue_et_ne_memorise_que_le_publie(
@@ -500,20 +499,20 @@ def test_panne_au_milieu_du_lot_le_run_echoue_et_ne_memorise_que_le_publie(
 
     assert code == 1
     assert "ÉCHEC de publication" in erreurs
-    assert "2 fiche(s) publiée(s) sur 6 offre(s), 4 reportée(s) au run suivant" in sortie
+    assert "2 fiche(s) publiée(s) sur 5 offre(s), 3 reportée(s) au run suivant" in sortie
     # Écrits malgré l'échec : le workflow les commite dans tous les cas.
     vues = json.loads(isolated_seen_state.read_text(encoding="utf-8"))
     assert set(vues) == set(tableau.identifiants)
     assert len(vues) == 2
 
-    # Le run suivant publie les quatre restantes, et elles seules.
+    # Le run suivant publie les trois restantes, et elles seules.
     reprise = FauxTableau(premier_numero=3)
     code, sortie, _ = _run(monkeypatch, capsys, tableau=reprise)
 
     assert code == 0
-    assert "4 nouvelle(s) sur 6 — 2 déjà vue(s)" in sortie
+    assert "3 nouvelle(s) sur 5 — 2 déjà vue(s)" in sortie
     assert reprise.titres == TITRES_CLASSES[2:]
-    assert len(json.loads(isolated_fiches_state.read_text(encoding="utf-8"))) == 6
+    assert len(json.loads(isolated_fiches_state.read_text(encoding="utf-8"))) == 5
 
 
 def test_plafond_du_run_les_meilleures_d_abord_le_reste_au_run_suivant(monkeypatch, capsys) -> None:
@@ -522,7 +521,7 @@ def test_plafond_du_run_les_meilleures_d_abord_le_reste_au_run_suivant(monkeypat
 
     assert code == 0
     assert premier.titres == TITRES_CLASSES[:4]
-    assert "2 reportée(s) au run suivant" in sortie
+    assert "1 reportée(s) au run suivant" in sortie
     assert "4 offre(s) mémorisée(s)" in sortie
 
     second = FauxTableau(premier_numero=5)
@@ -544,7 +543,7 @@ def test_sans_publication_ni_github_ni_memoire(
     code, sortie, _ = _run(monkeypatch, capsys, "--sans-publication", tableau=None)
 
     assert code == 0
-    assert "6 offre(s) classée(s)" in sortie
+    assert "5 offre(s) classée(s)" in sortie
     assert "rien n'est publié ni mémorisé" in sortie
     assert not isolated_seen_state.exists()
     assert not isolated_fiches_state.exists()

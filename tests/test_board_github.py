@@ -443,6 +443,12 @@ def test_issue_depuis_une_offre_titre_entreprise_poste_et_fiche_en_corps() -> No
             "**Publiée le** : 2026-09-14  \n"
             "**Source** : greenhouse  \n"
             "\n"
+            "---\n"
+            "\n"
+            "**Description**\n"
+            "\n"
+            "We are hiring. cc @\u2060octocat\n"
+            "\n"
             "<!-- jobradar:id=greenhouse:gitlab:4012 -->\n"
         ),
     }

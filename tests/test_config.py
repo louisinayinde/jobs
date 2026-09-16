@@ -43,6 +43,14 @@ def test_valid_filters_yaml_loads_with_exact_expected_values() -> None:
     )
     assert filters.retention.tech_include_any == raw["retention"]["tech_include_any"]
     assert filters.scoring.geo_priority == raw["scoring"]["geo_priority"]
+    bonus = raw["scoring"]["tech_bonus"]
+    assert filters.scoring.tech_bonus.max == bonus["max"]
+    assert filters.scoring.tech_bonus.points == {
+        techno: groupe["points"]
+        for nom, groupe in bonus.items()
+        if nom != "max"
+        for techno in groupe["techs"]
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -104,6 +112,59 @@ def test_wrong_type_for_geo_priority_value_raises_explicit_error(tmp_path: Path)
         load_filters(path)
 
     assert "geo_priority.europe" in str(excinfo.value)
+
+
+def test_tech_bonus_absent_means_no_bonus(tmp_path: Path) -> None:
+    path = _write_yaml(tmp_path / "filters.yaml", {"retention": {}, "scoring": {}})
+
+    bonus = load_filters(path).scoring.tech_bonus
+
+    assert (bonus.points, bonus.max) == ({}, None)
+
+
+def test_tech_bonus_groups_flatten_and_a_tech_in_two_groups_keeps_the_best(
+    tmp_path: Path,
+) -> None:
+    path = _write_yaml(
+        tmp_path / "filters.yaml",
+        {
+            "retention": {},
+            "scoring": {
+                "tech_bonus": {
+                    "mastered": {"points": 10, "techs": ["python", " go "]},
+                    "learning": {"points": 5, "techs": ["go", "rust", ""]},
+                }
+            },
+        },
+    )
+
+    bonus = load_filters(path).scoring.tech_bonus
+
+    assert bonus.points == {"python": 10, "go": 10, "rust": 5}
+    assert bonus.max is None
+
+
+@pytest.mark.parametrize(
+    ("tech_bonus", "attendu"),
+    [
+        ({"max": "quarante"}, "« max »"),
+        ({"mastered": ["python"]}, "« mastered »"),
+        ({"mastered": {"techs": ["python"]}}, "« points » (filters.yaml:scoring.tech_bonus.mastered)"),
+        ({"mastered": {"points": "dix", "techs": ["python"]}}, "« points »"),
+        ({"mastered": {"points": 10, "techs": "python"}}, "« techs »"),
+    ],
+)
+def test_invalid_tech_bonus_raises_explicit_error(
+    tmp_path: Path, tech_bonus: dict, attendu: str
+) -> None:
+    path = _write_yaml(
+        tmp_path / "filters.yaml", {"retention": {}, "scoring": {"tech_bonus": tech_bonus}}
+    )
+
+    with pytest.raises(ConfigError) as excinfo:
+        load_filters(path)
+
+    assert attendu in str(excinfo.value)
 
 
 # ---------------------------------------------------------------------------

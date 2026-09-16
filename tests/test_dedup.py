@@ -441,17 +441,17 @@ def test_deux_runs_successifs_ne_retiennent_les_offres_qu_une_fois(
     code, premier = _run_collecte(monkeypatch, capsys)
 
     assert code == 0
-    assert "6 nouvelle(s) sur 6 — 0 déjà vue(s)" in premier
-    assert "6 offre(s) mémorisée(s), 6 au total" in premier
+    assert "5 nouvelle(s) sur 5 — 0 déjà vue(s)" in premier
+    assert "5 offre(s) mémorisée(s), 5 au total" in premier
     memoire = json.loads(isolated_seen_state.read_text(encoding="utf-8"))
-    assert len(memoire) == 6
+    assert len(memoire) == 5
     assert all(cle.split(":")[0] in {"greenhouse", "lever", "ashby"} for cle in memoire)
 
     code, second = _run_collecte(monkeypatch, capsys)
 
     assert code == 0
-    assert "0 nouvelle(s) sur 6 — 6 déjà vue(s)" in second
-    assert "0 offre(s) mémorisée(s), 6 au total" in second
+    assert "0 nouvelle(s) sur 5 — 5 déjà vue(s)" in second
+    assert "0 offre(s) mémorisée(s), 5 au total" in second
     assert json.loads(isolated_seen_state.read_text(encoding="utf-8")) == memoire
 
 
@@ -461,7 +461,7 @@ def test_le_run_accepte_un_autre_chemin_de_memoire(monkeypatch, capsys, tmp_path
     code, _ = _run_collecte(monkeypatch, capsys, "--seen", str(ailleurs))
 
     assert code == 0
-    assert len(json.loads(ailleurs.read_text(encoding="utf-8"))) == 6
+    assert len(json.loads(ailleurs.read_text(encoding="utf-8"))) == 5
 
 
 def test_un_run_dont_toutes_les_sources_echouent_n_ecrit_pas_la_memoire(
