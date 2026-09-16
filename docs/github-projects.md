@@ -51,8 +51,10 @@ Dépôt → **Settings** → **Secrets and variables** → **Actions** →
 **New repository secret** : nom **`JOBRADAR_TOKEN`**, valeur `ghp_…`.
 
 Le nom ne peut pas commencer par `GITHUB_` (réservé). Le code, lui, lit
-`GITHUB_TOKEN` : c'est le workflow qui fait le lien, à partir de la
-Feature 4.3, par `GITHUB_TOKEN: ${{ secrets.JOBRADAR_TOKEN }}`.
+`GITHUB_TOKEN` : ce sont les workflows `collect.yml` et `collect-slow.yml`
+qui font le lien, par `GITHUB_TOKEN: ${{ secrets.JOBRADAR_TOKEN }}`.
+**Sans ce secret, la collecte échoue à chaque run** (« variable
+d'environnement requise absente : GITHUB_TOKEN »).
 
 ## 5. Vérifier
 
@@ -100,3 +102,58 @@ git add state/fiches.json && git commit -m "chore(state): registre des fiches re
 
 Résultat attendu : `ok   N fiche(s) trouvée(s) sur GitHub — N sur le tableau, 0 hors du tableau`.
 Une Issue « hors du tableau » (carte retirée à la main) ne sera pas reposée.
+
+## 7. Mettre en service la publication (Feature 4.3)
+
+À chaque run, `python -m src.collect` publie les offres nouvelles sur le
+tableau, **meilleur score d'abord**, au plus 50 par run (`--max-publications`) ;
+le reste part aux runs suivants. Une seule fois, à la mise en service :
+
+```sh
+# 1. Le jeton et le tableau sont prêts (sections 3 à 5) :
+read -rs GITHUB_TOKEN && export GITHUB_TOKEN
+.venv/bin/python -m src.board check
+unset GITHUB_TOKEN
+
+# 2. Facultatif — un essai à blanc : collecte, filtre et classe, sans rien
+#    publier ni écrire dans state/ (pas besoin de jeton) :
+.venv/bin/python -m src.collect --sans-publication
+
+# 3. Récupérer les derniers commits d'état des workflows, puis vider
+#    `seen.json`, qui mémorise des offres jamais publiées (state/README.md) :
+git pull --rebase
+git rm state/seen.json
+git commit -m "chore(state): seen.json vidé à la mise en service de la publication"
+git push
+```
+
+Si `git push` est refusé parce qu'un run vient de pousser l'état entre-temps :
+`git pull --rebase`, et en cas de conflit sur `state/seen.json` (« deleted by
+us ») : `git rm state/seen.json && GIT_EDITOR=true git rebase --continue`,
+puis `git push`.
+
+Le run suivant (au plus 15 min, ou **Actions → Collect → Run workflow**)
+publie les 50 premières offres ; les ~300 autres suivent en six ou sept runs.
+
+### Lire le bilan d'un run
+
+Dans le log de l'étape `python -m src.collect` :
+
+```
+collect [fast] : 50 fiche(s) publiée(s) sur 335 offre(s), 285 reportée(s) au run suivant
+  #12 lever:malt:5549f929-…
+collect [fast] : 50 offre(s) mémorisée(s), 50 au total dans state/seen.json
+```
+
+| Ligne | Sens | À faire |
+|---|---|---|
+| `N déjà sur le tableau` | le registre les connaissait, aucun appel | rien |
+| `N reportée(s) au run suivant` | plafond atteint | rien, elles suivent |
+| `INTERROMPUE : GitHubAuthError …` (run en échec) | jeton expiré ou révoqué | section 3, puis mettre à jour le secret |
+| `INTERROMPUE : … n'a pas d'option « Nouveau »` | colonnes renommées | section 2 |
+| `INTERROMPUE : GitHubRateLimitError` | limite de débit GitHub | rien : les offres reportées repartent au run suivant |
+| `N refusée(s) par GitHub` (run en échec) | GitHub rejette le contenu d'une offre (422) | lire la ligne `ERROR` du log ; l'offre n'est pas retentée |
+| `registre des fiches illisible` | `state/fiches.json` en conflit | section 6 |
+
+Un run en échec **commite quand même** `state/` : les fiches créées avant la
+panne sont notées, et ne seront pas recréées.

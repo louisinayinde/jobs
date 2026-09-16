@@ -235,10 +235,9 @@ class SeenStore:
         """Sépare les offres jamais vues des autres, **sans rien mémoriser**.
 
         Le tri et la mémorisation sont deux temps distincts, et c'est ce qui
-        permettra à la publication (Feature 4.3) de s'intercaler : une offre
-        ne doit être marquée vue qu'une fois réellement arrivée sur le
-        tableau. Marquée avant, un échec de publication la ferait
-        disparaître pour toujours.
+        permet à la publication (Feature 4.3) de s'intercaler : une offre
+        n'est marquée vue qu'une fois traitée par le tableau. Marquée avant,
+        un échec de publication la ferait disparaître pour toujours.
 
         Deux offres de même identifiant dans le run — la même source
         interrogée deux fois, un agrégateur qui liste une annonce dans deux

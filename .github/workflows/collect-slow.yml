@@ -24,7 +24,8 @@
 # commit, chaque run repartirait de zéro et rechargerait le catalogue.
 #
 # Le même commit emporte `state/seen.json`, la mémoire des offres déjà vues
-# (Feature 3.3), que `collect.yml` écrit aussi.
+# (Feature 3.3), et `state/fiches.json`, le registre des fiches publiées sur
+# le tableau (Feature 4.3), que `collect.yml` écrit aussi.
 
 name: Collect (slow)
 
@@ -60,7 +61,11 @@ jobs:
       - run: pip install .
       - run: python -m src.collect --cadence slow
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Le jeton personnel (scopes `repo` + `project`) : celui qu'Actions
+          # fournit ne voit pas les Projects d'un compte. Le code lit
+          # `GITHUB_TOKEN` ; un secret ne peut pas porter ce nom, d'où le lien
+          # ici. Mise en place : docs/github-projects.md.
+          GITHUB_TOKEN: ${{ secrets.JOBRADAR_TOKEN }}
 
       # `always()` : l'état gagné avant l'échec d'une source vaut d'être
       # gardé — le run suivant repartira de là plutôt que du début.
@@ -75,7 +80,7 @@ jobs:
           # changement on s'arrête là, plutôt que de créer un commit vide
           # toutes les six heures.
           git diff --cached --quiet && exit 0
-          git commit -m "chore(state): avancement du crawl et offres vues [skip ci]"
+          git commit -m "chore(state): avancement du crawl, offres vues et fiches [skip ci]"
           # Un autre run a pu pousser entre-temps : on rejoue par-dessus
           # plutôt que d'écraser.
           git pull --rebase --autostash

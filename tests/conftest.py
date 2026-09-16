@@ -1,6 +1,6 @@
 """Réglages partagés par toute la suite de tests.
 
-Deux, et chacun protège la suite d'une nuisance qu'un test isolé ne peut
+Trois, et chacun protège la suite d'une nuisance qu'un test isolé ne peut
 pas voir :
 
 1. **L'attente du retry réseau est neutralisée** (US-2.4.2). Sans ça,
@@ -17,14 +17,21 @@ pas voir :
    laissé ne chargerait plus rien et passerait pour de mauvaises raisons.
    `seen.json` (Feature 3.3) et le registre des fiches (Feature 4.2) le
    sont de la même façon.
+3. **Le run de collecte ne peut pas joindre GitHub** (Feature 4.3). Il
+   publie désormais : un test qui le lance sur des offres retenues sans
+   lui fournir de faux GitHub enverrait des requêtes au vrai tableau. Le
+   client qu'il ouvre lève sur toute requête ; la pause entre deux fiches
+   est neutralisée comme les autres attentes.
 """
 
 from __future__ import annotations
 
+import httpx
 import pytest
 
+from src import collect
 from src.adapters import base
-from src.board import github, registre
+from src.board import github, publication, registre
 from src.core import dedup, state
 
 
@@ -42,6 +49,32 @@ def github_delays(monkeypatch: pytest.MonkeyPatch) -> list[float]:
     delays: list[float] = []
     monkeypatch.setattr(github, "_wait", delays.append)
     return delays
+
+
+@pytest.fixture(autouse=True)
+def publication_pauses(monkeypatch: pytest.MonkeyPatch) -> list[float]:
+    """Remplace la pause entre deux fiches par un simple enregistrement."""
+    pauses: list[float] = []
+    monkeypatch.setattr(publication, "_pause", pauses.append)
+    return pauses
+
+
+def _github_interdit(request: httpx.Request) -> httpx.Response:
+    raise AssertionError(
+        f"le run a voulu joindre GitHub ({request.method} {request.url}) — "
+        "passer `github=` ou `--sans-publication`"
+    )
+
+
+@pytest.fixture(autouse=True)
+def github_injoignable(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Le client GitHub qu'ouvre le run lève sur toute requête."""
+
+    def ouvrir(config):
+        http = httpx.Client(transport=httpx.MockTransport(_github_interdit))
+        return github.GitHubClient("jeton-de-test", config, client=http)
+
+    monkeypatch.setattr(collect, "ouvrir_github", ouvrir)
 
 
 @pytest.fixture(autouse=True)

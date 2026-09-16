@@ -40,12 +40,26 @@ offres retenues **jamais vues**, puis les mémorise dans `state/seen.json`,
 que le workflow commite. Sans elle, une offre en ligne trois semaines
 serait publiée à chaque quart d'heure.
 
-Les offres nouvelles sont enfin **classées** (Feature 3.4) : un score de
+Les offres nouvelles sont ensuite **classées** (Feature 3.4) : un score de
 priorité géo tiré de `scoring.geo_priority`, puis un tri du meilleur au
-moins bon. C'est l'ordre dans lequel la publication (Feature 4.3) les
-enverra sur le tableau.
+moins bon.
 
-La suite — publication — arrive avec les Features 4.1 à 4.3.
+Elles sont enfin **publiées** sur le tableau de revue (Feature 4.3), dans cet
+ordre : une Issue et une carte « Nouveau » par offre, plafonnées par run.
+**Seules les offres traitées sont mémorisées comme vues** — publiées, déjà
+sur le tableau, ou refusées par GitHub. Une offre reportée (plafond atteint,
+publication interrompue par une panne) n'est pas marquée : elle revient au
+run suivant, au lieu de disparaître pour toujours. Une publication
+interrompue fait sortir le run en erreur, mais seulement **après** avoir
+écrit ce qui a été fait ; le workflow commite `state/` dans tous les cas.
+
+`board.yaml` et le registre des fiches sont lus, comme `filters.yaml`,
+**avant** la première requête : un tableau mal configuré ou un registre
+illisible ne coûtent pas trente-sept appels pour rien.
+
+`--sans-publication` fait tout sauf publier, et **ne mémorise rien** : c'est
+le mode d'un essai local, qui ne doit ni toucher au tableau ni faire croire
+au vrai run que des offres ont été traitées. Il ne demande pas de jeton.
 """
 
 from __future__ import annotations
@@ -60,7 +74,10 @@ import httpx
 from src.adapters import RawJob, get_adapter
 from src.adapters.base import new_client
 from src.adapters.registry import CADENCES, FAST, load_all
-from src.core.config import ConfigError, Source, load_filters
+from src.board.github import GitHubClient
+from src.board.publication import MAX_PUBLICATIONS, BilanPublication, publier_lot
+from src.board.registre import RegistreFiches, RegistreIllisible
+from src.core.config import BoardConfig, ConfigError, Source, load_board, load_filters
 from src.core.dedup import SeenStore
 from src.core.normalize import Job, normalize
 from src.core.retention import RetentionFilter
@@ -73,6 +90,9 @@ logger = logging.getLogger(__name__)
 #: `--filters` (les tests s'en servent pour ne pas dépendre du fichier du
 #: dépôt).
 DEFAULT_FILTERS_PATH = "config/filters.yaml"
+
+#: Configuration du tableau de revue, surchargeable par `--board`.
+DEFAULT_BOARD_PATH = "config/board.yaml"
 
 #: Nombre d'offres classées détaillées dans le journal du run. Au-delà, une
 #: ligne de décompte : le premier run après un `seen.json` vidé en classe
@@ -223,25 +243,71 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="mémoire des offres déjà vues (défaut : state/seen.json)",
     )
+    parser.add_argument(
+        "--board",
+        default=DEFAULT_BOARD_PATH,
+        help="configuration du tableau de revue (défaut : %(default)s)",
+    )
+    parser.add_argument(
+        "--fiches",
+        # Même raison que `--seen` : résolu au chargement.
+        default=None,
+        help="registre des fiches publiées (défaut : state/fiches.json)",
+    )
+    parser.add_argument(
+        "--max-publications",
+        type=_entier_positif,
+        default=MAX_PUBLICATIONS,
+        help="fiches publiées au plus par run, le reste au run suivant (défaut : %(default)s)",
+    )
+    parser.add_argument(
+        "--sans-publication",
+        action="store_true",
+        help="collecte, filtre et classe sans rien publier ni mémoriser (essai local)",
+    )
     return parser
 
 
-def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -> int:
-    """Collecte la cadence demandée. Retourne 0, ou 1 en cas d'échec.
+def _entier_positif(valeur: str) -> int:
+    try:
+        nombre = int(valeur)
+    except ValueError:
+        nombre = 0
+    if nombre < 1:
+        raise argparse.ArgumentTypeError(f"entier positif attendu, reçu « {valeur} »")
+    return nombre
 
-    Deux échecs possibles, et un seul est une panne : des règles de
-    rétention illisibles (avant toute requête), ou **toutes** les sources
-    en erreur.
 
-    `client` n'est là que pour les tests : en production, le run ouvre le
-    sien et le referme à la fin.
+def ouvrir_github(config: BoardConfig) -> GitHubClient:
+    """Le client GitHub du run, authentifié par `GITHUB_TOKEN`.
+
+    Isolé pour que la suite de tests le remplace : aucun test ne doit
+    pouvoir publier sur le vrai tableau.
+    """
+    return GitHubClient.from_env(config)
+
+
+def main(
+    argv: list[str] | None = None,
+    *,
+    client: httpx.Client | None = None,
+    github: GitHubClient | None = None,
+) -> int:
+    """Collecte la cadence demandée et publie. Retourne 0, ou 1 en cas d'échec.
+
+    Les échecs : une configuration illisible — règles de rétention,
+    tableau, registre des fiches — (avant toute requête), **toutes** les
+    sources en erreur, ou une publication interrompue ou refusée.
+
+    `client` et `github` ne sont là que pour les tests : en production, le
+    run ouvre les siens et les referme à la fin.
     """
     args = build_parser().parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     # httpx journalise chaque requête en INFO : une ligne par source, en
     # double de la nôtre. On garde ses avertissements, pas son bavardage.
     logging.getLogger("httpx").setLevel(logging.WARNING)
-    require_env("GITHUB_TOKEN")
+    publier = not args.sans_publication
 
     # Avant la première requête : collecter sans savoir quoi retenir n'a
     # aucun intérêt, et une erreur de config vaut mieux découverte tout de
@@ -256,6 +322,21 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
         return 1
     filtre = RetentionFilter.from_config(filtres.retention)
     scorer = GeoScorer.from_config(filtres.scoring)
+
+    # Même logique que pour les filtres : un registre cassé refuse de publier
+    # (il recréerait des fiches existantes), autant le savoir avant de
+    # collecter.
+    if publier:
+        require_env("GITHUB_TOKEN")
+        try:
+            board = load_board(args.board)
+            registre = RegistreFiches.load(args.fiches)
+        except ConfigError as exc:
+            print(f"collect : tableau de revue mal configuré — {exc}", file=sys.stderr)
+            return 1
+        except RegistreIllisible as exc:
+            print(f"collect : {exc}", file=sys.stderr)
+            return 1
 
     sources = load_all(cadence=args.cadence)
     if not sources:
@@ -341,12 +422,27 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
     for ligne in _lignes_classement(classement):
         print(ligne, flush=True)
 
-    # Dernière étape du run, et pas par hasard : une offre n'est marquée vue
-    # qu'une fois tout le reste fait. Quand la publication (Feature 4.3)
-    # arrivera, elle s'intercalera juste au-dessus, et ne devront être
-    # marquées que les offres **réellement publiées** — sinon un échec de
-    # l'API GitHub les ferait disparaître pour toujours.
-    ajouts = vues.marquer(dedup)
+    if not publier:
+        print(
+            f"collect [{args.cadence}] : --sans-publication — rien n'est publié "
+            "ni mémorisé",
+            flush=True,
+        )
+        return 0
+
+    if github is not None:
+        bilan = publier_lot(github, registre, classement, max_publications=args.max_publications)
+    else:
+        with ouvrir_github(board) as owned:
+            bilan = publier_lot(owned, registre, classement, max_publications=args.max_publications)
+    print(f"collect [{args.cadence}] : {bilan.resume}", flush=True)
+    for ligne in _lignes_publication(bilan):
+        print(ligne, flush=True)
+
+    # Dernière étape, et pas par hasard : seules les offres **traitées** sont
+    # marquées vues. Marquer tout le classement ferait disparaître pour
+    # toujours une offre reportée par le plafond ou par une panne de GitHub.
+    ajouts = vues.marquer(offre.job for offre in bilan.traitees)
     if ajouts:
         vues.save()
     print(
@@ -354,7 +450,14 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
         f"{len(vues)} au total dans {vues.path}",
         flush=True,
     )
-    print("collect: offres nouvelles classées — publication à venir (Features 4.x)")
+
+    if bilan.en_echec:
+        print(
+            f"collect [{args.cadence}] : ÉCHEC de publication — {bilan.resume}",
+            file=sys.stderr,
+            flush=True,
+        )
+        return 1
     return 0
 
 
@@ -374,6 +477,19 @@ def _lignes_classement(classement: ScoringReport, limite: int = TOP_AFFICHE) -> 
             f"[{job.localisation or job.remote_type}]"
         )
     reste = len(classement) - limite
+    if reste > 0:
+        lignes.append(f"  … et {reste} autre(s)")
+    return lignes
+
+
+def _lignes_publication(bilan: BilanPublication, limite: int = TOP_AFFICHE) -> list[str]:
+    """Les fiches arrivées sur le tableau, avec leur numéro d'Issue.
+
+    Le numéro sert à retrouver la fiche depuis le log d'Actions ; au-delà de
+    `limite`, une ligne de décompte, comme pour le classement.
+    """
+    lignes = [f"  #{p.issue} {p.identifiant}" for p in bilan.publiees[:limite]]
+    reste = len(bilan.publiees) - limite
     if reste > 0:
         lignes.append(f"  … et {reste} autre(s)")
     return lignes

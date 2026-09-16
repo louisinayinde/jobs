@@ -458,7 +458,7 @@ def test_le_run_de_collecte_normalise_ce_qu_il_a_collecte(monkeypatch, capsys) -
     monkeypatch.setenv("GITHUB_TOKEN", "jeton-de-test")
     monkeypatch.setattr(collect, "load_all", lambda **kwargs: list(TROIS_SOURCES))
 
-    code = collect.main(["--cadence", "fast"], client=client)
+    code = collect.main(["--cadence", "fast", "--sans-publication"], client=client)
 
     sortie = capsys.readouterr().out
     assert code == 0

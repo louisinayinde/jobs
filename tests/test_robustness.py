@@ -280,7 +280,8 @@ def test_a_failed_source_is_not_counted_as_empty() -> None:
 def _run_main(monkeypatch, sources: list[Source], client: httpx.Client) -> int:
     monkeypatch.setenv("GITHUB_TOKEN", "jeton-de-test")
     monkeypatch.setattr(collect, "load_all", lambda **kwargs: list(sources))
-    return collect.main(["--cadence", "fast"], client=client)
+    # La publication a ses propres tests (test_publication.py).
+    return collect.main(["--cadence", "fast", "--sans-publication"], client=client)
 
 
 def test_a_run_where_every_source_fails_exits_non_zero(monkeypatch, capsys) -> None:

@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import pytest
 import yaml
@@ -400,8 +401,14 @@ def test_la_suite_n_ecrit_jamais_la_memoire_du_depot(isolated_seen_state) -> Non
 # ---------------------------------------------------------------------------
 
 
-def _run_collecte(monkeypatch, capsys, *argv: str) -> tuple[int, str]:
+def _run_collecte(
+    monkeypatch, capsys, *argv: str, tableau: Any = None
+) -> tuple[int, str]:
+    """Un run de collecte sur les trois fixtures ATS, qui publie sur un faux
+    tableau (`FauxTableau`, un neuf par défaut) : la mémoire n'est écrite
+    que pour les offres publiées."""
     from src import collect
+    from tests.test_publication import FauxTableau
     from tests.test_robustness import (
         ASHBY_HOST,
         GREENHOUSE_HOST,
@@ -421,7 +428,8 @@ def _run_collecte(monkeypatch, capsys, *argv: str) -> tuple[int, str]:
     monkeypatch.setenv("GITHUB_TOKEN", "jeton-de-test")
     monkeypatch.setattr(collect, "load_all", lambda **kwargs: list(TROIS_SOURCES))
 
-    code = collect.main(["--cadence", "fast", *argv], client=client)
+    tableau = tableau if tableau is not None else FauxTableau()
+    code = collect.main(["--cadence", "fast", *argv], client=client, github=tableau.client())
     return code, capsys.readouterr().out
 
 

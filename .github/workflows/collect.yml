@@ -5,10 +5,12 @@
 # répartition se déduit de `Adapter.max_calls_per_day`, donc aucune source
 # ne peut se retrouver dans les deux workflows ni dans aucun.
 #
-# Le run mémorise les offres déjà vues dans `state/seen.json` (Feature 3.3).
-# Le runner étant éphémère, ce fichier est **commité** à la fin du run : sans
-# ce commit, chaque quart d'heure repartirait d'une mémoire vide et toutes
-# les offres retenues redeviendraient neuves.
+# Le run mémorise les offres déjà vues dans `state/seen.json` (Feature 3.3)
+# et publie les nouvelles sur le tableau de revue (Feature 4.3), en notant
+# chaque fiche dans `state/fiches.json`. Le runner étant éphémère, ces
+# fichiers sont **commités** à la fin du run : sans ce commit, chaque quart
+# d'heure repartirait d'une mémoire vide, et le registre qui empêche les
+# doublons sur le tableau serait perdu.
 
 name: Collect
 
@@ -44,11 +46,18 @@ jobs:
       - run: pip install .
       - run: python -m src.collect --cadence fast
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Le jeton personnel (scopes `repo` + `project`) : celui qu'Actions
+          # fournit ne voit pas les Projects d'un compte. Le code lit
+          # `GITHUB_TOKEN` ; un secret ne peut pas porter ce nom, d'où le lien
+          # ici. Mise en place : docs/github-projects.md.
+          GITHUB_TOKEN: ${{ secrets.JOBRADAR_TOKEN }}
 
-      # Pas de `always()` ici, contrairement au crawl : `seen.json` n'est
-      # écrit qu'en fin de run réussi, un run en échec n'a rien à commiter.
-      - name: Commit la mémoire des offres vues
+      # `always()` : le run publie (Feature 4.3). Une publication interrompue
+      # fait échouer le run **après** avoir écrit les fiches créées dans
+      # `state/fiches.json` et les offres traitées dans `seen.json` ; perdre ce
+      # registre, c'est risquer de republier ces offres en double.
+      - name: Commit la mémoire des offres vues et le registre des fiches
+        if: always()
         run: |
           set -euo pipefail
           git config user.name  "github-actions[bot]"
@@ -56,6 +65,6 @@ jobs:
           git add state/
           # Aucune offre nouvelle : rien n'a bougé, pas de commit vide.
           git diff --cached --quiet && exit 0
-          git commit -m "chore(state): offres vues [skip ci]"
+          git commit -m "chore(state): offres vues et fiches publiées [skip ci]"
           git pull --rebase --autostash
           git push

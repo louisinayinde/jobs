@@ -49,14 +49,21 @@ fait donc apparaître d'anciennes offres comme neuves, ce qui est voulu.
 Il est commité par **les deux** workflows de collecte, qui partagent le
 groupe `concurrency` `collect-state` pour ne jamais écrire en même temps.
 
+Depuis la Feature 4.3, une offre n'y entre qu'une fois **traitée** par la
+publication : sa fiche est sur le tableau (créée maintenant ou avant), ou
+GitHub l'a refusée pour son contenu. Une offre reportée — plafond de
+`--max-publications` atteint, publication interrompue par une panne — n'y
+entre pas, et revient au run suivant.
+
 **Le supprimer ne casse rien non plus** : toutes les offres retenues
 encore en ligne redeviennent neuves pour un run, puis sont mémorisées à
 nouveau. Un fichier corrompu (conflit de fusion compris) vaut un état vide.
 
-⚠️ Tant que la publication (Feature 4.3) n'existe pas, `seen.json` mémorise
-des offres **qui n'ont été publiées nulle part**. Au branchement de la
-publication, videz-le (`git rm state/seen.json`) pour que le premier run
-publie les offres déjà en ligne au lieu de les croire traitées.
+⚠️ **Avant la Feature 4.3**, `seen.json` mémorisait des offres **qui
+n'avaient été publiées nulle part**. Pour que ces offres arrivent sur le
+tableau, le fichier est vidé une fois, à la mise en service de la publication
+(`git rm state/seen.json`, voir `docs/github-projects.md`, section 7). Sans
+risque de doublon : c'est `fiches.json` qui décide de créer une fiche.
 
 ## `fiches.json`
 
@@ -77,6 +84,11 @@ Une ligne par offre **publiée** : identifiant stable → Issue.
 
 C'est ce fichier, et non `seen.json`, qui garantit qu'une offre n'a jamais
 deux fiches : une offre qu'il connaît ne déclenche aucune création.
+
+Il est écrit par la publication (`python -m src.collect`, les deux cadences)
+**après chaque geste** sur GitHub, et commité par les deux workflows de
+collecte **même quand le run échoue** (`if: always()`) : un run qui publie
+puis tombe en panne a créé des Issues, et doit laisser leur trace.
 
 ⚠️ **Contrairement aux deux autres, un `fiches.json` corrompu arrête la
 publication.** Repartir d'un registre vide recréerait une fiche pour chaque

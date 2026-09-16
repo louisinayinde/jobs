@@ -103,11 +103,19 @@ class GitHubError(Exception):
     d'Issue) a échoué sans réponse nette — panne réseau, 5xx : GitHub a pu
     la traiter quand même. Le registre des fiches (US-4.2.2) s'en sert pour
     vérifier au run suivant plutôt que recréer.
+
+    `statut` est le statut HTTP de la réponse en erreur, `None` sans réponse
+    ou pour une erreur GraphQL. La publication d'un lot (US-4.3.1) s'en sert
+    pour distinguer une offre refusée pour elle-même (422) d'une panne qui
+    toucherait toutes les suivantes.
     """
 
-    def __init__(self, message: str, *, peut_avoir_abouti: bool = False) -> None:
+    def __init__(
+        self, message: str, *, peut_avoir_abouti: bool = False, statut: int | None = None
+    ) -> None:
         super().__init__(message)
         self.peut_avoir_abouti = peut_avoir_abouti
+        self.statut = statut
 
 
 class GitHubAuthError(GitHubError):
@@ -440,14 +448,7 @@ class GitHubClient:
         """
         statut = self.config.status_initial if statut is None else statut
         projet = self.projet()
-        option = projet.option(statut)
-        if option is None:
-            disponibles = ", ".join(f"« {nom} »" for nom in projet.options_statut) or "aucune"
-            raise GitHubNotFoundError(
-                f"le champ « {self.config.status_field} » du Project « {projet.titre} » "
-                f"n'a pas d'option « {statut} » (options : {disponibles}) — "
-                "à ajouter dans les réglages du champ"
-            )
+        option = self.option_statut(statut)
 
         ajout = self._graphql(
             MUTATION_AJOUT, {"projet": projet.id, "contenu": issue.node_id}
@@ -464,6 +465,24 @@ class GitHubClient:
         )
         logger.info("Issue #%d ajoutée au Project, statut « %s »", issue.number, statut)
         return ItemProjet(id=item_id, statut=statut)
+
+    def option_statut(self, statut: str | None = None) -> str:
+        """Identifiant de l'option `statut` (défaut : `status.initial`), ou lève.
+
+        `GitHubNotFoundError` si le champ n'a pas cette option, avec la liste
+        des options présentes. Lit le Project s'il ne l'est pas encore.
+        """
+        statut = self.config.status_initial if statut is None else statut
+        projet = self.projet()
+        option = projet.option(statut)
+        if option is None:
+            disponibles = ", ".join(f"« {nom} »" for nom in projet.options_statut) or "aucune"
+            raise GitHubNotFoundError(
+                f"le champ « {self.config.status_field} » du Project « {projet.titre} » "
+                f"n'a pas d'option « {statut} » (options : {disponibles}) — "
+                "à ajouter dans les réglages du champ"
+            )
+        return option
 
     def items_du_projet(self) -> dict[int, str]:
         """Numéro d'Issue du dépôt → identifiant de sa carte sur le tableau.
@@ -614,22 +633,26 @@ class GitHubClient:
         if statut == 401:
             raise GitHubAuthError(
                 f"{appel} : jeton GitHub refusé (401) — {TOKEN_ENV} invalide, expiré "
-                f"ou révoqué ({message})"
+                f"ou révoqué ({message})",
+                statut=statut,
             )
         if statut == 403:
             attendues = reponse.headers.get("x-accepted-github-permissions")
             precision = f" ; permissions attendues : {attendues}" if attendues else ""
             raise GitHubPermissionError(
-                f"{appel} : accès refusé (403) — {message}{precision}"
+                f"{appel} : accès refusé (403) — {message}{precision}", statut=statut
             )
         if statut == 404:
             raise GitHubNotFoundError(
-                f"{appel} : introuvable (404), ou invisible pour ce jeton — {message}"
+                f"{appel} : introuvable (404), ou invisible pour ce jeton — {message}",
+                statut=statut,
             )
         incertain = statut >= 500 and not rejouable
         suite = _avertir(rejouable) if statut >= 500 else ""
         raise GitHubError(
-            f"{appel} : statut HTTP {statut} — {message}{suite}", peut_avoir_abouti=incertain
+            f"{appel} : statut HTTP {statut} — {message}{suite}",
+            peut_avoir_abouti=incertain,
+            statut=statut,
         )
 
 
