@@ -563,11 +563,13 @@ class RetentionFilter:
         « Anywhere » ou « Tokyo, JP » alors que la source a dit, dans un
         champ dédié, qu'elles sont en télétravail.
 
-        ⚠️ **Le « remote menteur » n'est pas traité ici.** « Remote (US
+        ⚠️ **Le « remote menteur » n'est pas rejeté ici.** « Remote (US
         only) » satisfait `require_any: ["remote"]` alors que le poste est
         hors d'atteinte. Le rejeter demanderait une clé de configuration qui
-        n'existe pas encore ; en attendant, ces offres arrivent sur le
-        tableau où leur localisation est affichée telle quelle.
+        n'existe pas encore. Il est en revanche **rejugé au scoring**
+        (Feature 3.4) : une offre remote qui nomme un lieu hors des zones
+        acceptées reçoit le score plancher, et arrive en bas du tableau au
+        lieu d'en haut.
         """
         if not self.location_require_any and not self.relocation_regions:
             return GARDEE
@@ -697,14 +699,25 @@ def _termes_region(region: str) -> tuple[str, ...]:
     return (clef, *(terme for terme in membres if terme.lower() != clef))
 
 
-def _region_presente(texte: str, region: str) -> bool:
-    """Correspondance **mot entier**, contrairement aux titres.
+def region_trouvee(texte: str, region: str) -> str:
+    """Le terme de la région lu dans `texte`, ou `""` s'il n'y en a aucun.
 
-    La table de régions contient des codes de deux lettres (`fr`, `eu`,
-    `uk`) qu'on rencontre tels quels dans une localisation (« Paris, FR »).
-    En sous-chaîne, ils tagueraient la moitié du monde.
+    Correspondance **mot entier**, contrairement aux titres : la table de
+    régions contient des codes de deux lettres (`fr`, `eu`, `uk`) qu'on
+    rencontre tels quels dans une localisation (« Paris, FR »). En
+    sous-chaîne, ils tagueraient la moitié du monde.
+
+    Publique parce que le scoring (Feature 3.4) lit les mêmes zones : une
+    offre retenue pour sa zone doit être classée **par cette zone-là**, pas
+    par une seconde table qui divergerait de la première.
     """
-    return any(_mot_present(texte, terme) for terme in _termes_region(region))
+    return next(
+        (terme for terme in _termes_region(region) if _mot_present(texte, terme)), ""
+    )
+
+
+def _region_presente(texte: str, region: str) -> bool:
+    return bool(region_trouvee(texte, region))
 
 
 # ---------------------------------------------------------------------------

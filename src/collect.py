@@ -40,7 +40,12 @@ offres retenues **jamais vues**, puis les mémorise dans `state/seen.json`,
 que le workflow commite. Sans elle, une offre en ligne trois semaines
 serait publiée à chaque quart d'heure.
 
-La suite — scoring, publication — arrive avec les Features 3.4 à 4.3.
+Les offres nouvelles sont enfin **classées** (Feature 3.4) : un score de
+priorité géo tiré de `scoring.geo_priority`, puis un tri du meilleur au
+moins bon. C'est l'ordre dans lequel la publication (Feature 4.3) les
+enverra sur le tableau.
+
+La suite — publication — arrive avec les Features 4.1 à 4.3.
 """
 
 from __future__ import annotations
@@ -59,6 +64,7 @@ from src.core.config import ConfigError, Source, load_filters
 from src.core.dedup import SeenStore
 from src.core.normalize import Job, normalize
 from src.core.retention import RetentionFilter
+from src.core.scoring import GeoScorer, ScoringReport
 from src.core.secrets import require_env
 
 logger = logging.getLogger(__name__)
@@ -67,6 +73,11 @@ logger = logging.getLogger(__name__)
 #: `--filters` (les tests s'en servent pour ne pas dépendre du fichier du
 #: dépôt).
 DEFAULT_FILTERS_PATH = "config/filters.yaml"
+
+#: Nombre d'offres classées détaillées dans le journal du run. Au-delà, une
+#: ligne de décompte : le premier run après un `seen.json` vidé en classe
+#: plusieurs centaines, et le log d'Actions deviendrait illisible.
+TOP_AFFICHE = 10
 
 
 @dataclass(frozen=True)
@@ -239,10 +250,12 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
     # laisser passer coûtait quelques requêtes ; ici, cela publierait le
     # marché de l'emploi mondial sur le tableau de revue.
     try:
-        filtre = RetentionFilter.from_config(load_filters(args.filters).retention)
+        filtres = load_filters(args.filters)
     except ConfigError as exc:
         print(f"collect : règles de rétention illisibles — {exc}", file=sys.stderr)
         return 1
+    filtre = RetentionFilter.from_config(filtres.retention)
+    scorer = GeoScorer.from_config(filtres.scoring)
 
     sources = load_all(cadence=args.cadence)
     if not sources:
@@ -321,6 +334,13 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
     dedup = vues.nouvelles(retention)
     print(f"collect [{args.cadence}] : {dedup.resume}", flush=True)
 
+    # Seules les nouvelles sont classées : ce sont les seules qui partiront
+    # sur le tableau, et dans cet ordre.
+    classement = scorer.classer(dedup)
+    print(f"collect [{args.cadence}] : {classement.resume}", flush=True)
+    for ligne in _lignes_classement(classement):
+        print(ligne, flush=True)
+
     # Dernière étape du run, et pas par hasard : une offre n'est marquée vue
     # qu'une fois tout le reste fait. Quand la publication (Feature 4.3)
     # arrivera, elle s'intercalera juste au-dessus, et ne devront être
@@ -334,8 +354,29 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
         f"{len(vues)} au total dans {vues.path}",
         flush=True,
     )
-    print("collect: offres nouvelles — scoring et publication à venir (Features 3.4/4.x)")
+    print("collect: offres nouvelles classées — publication à venir (Features 4.x)")
     return 0
+
+
+def _lignes_classement(classement: ScoringReport, limite: int = TOP_AFFICHE) -> list[str]:
+    """Le haut du classement, une offre par ligne, score en tête.
+
+    La catégorie et le terme lu sont affichés avec le score : « 80 » seul ne
+    dit pas si l'offre est vraiment en Asie ou si « Tokyo » est apparu par
+    hasard dans sa localisation.
+    """
+    lignes = []
+    for offre in classement.offres[:limite]:
+        motif = f"{offre.categorie} ({offre.detail})" if offre.detail else offre.categorie
+        job = offre.job
+        lignes.append(
+            f"  {offre.score:>4} {motif} : {job.entreprise} — {job.titre} "
+            f"[{job.localisation or job.remote_type}]"
+        )
+    reste = len(classement) - limite
+    if reste > 0:
+        lignes.append(f"  … et {reste} autre(s)")
+    return lignes
 
 
 def _ecartees(bruts: list[RawJob], jobs: list[Job]) -> str:

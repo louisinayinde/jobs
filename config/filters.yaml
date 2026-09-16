@@ -57,7 +57,18 @@ retention:
 
 scoring:
   # Score attribué selon la zone géographique de l'offre retenue. Plus le
-  # score est haut, plus l'offre est prioritaire dans le tri du tableau.
+  # score est haut, plus l'offre est prioritaire dans le tri du tableau
+  # (à score égal : la plus récente d'abord).
+  #
+  # - remote_global : offre en télétravail dont la localisation ne nomme
+  #   AUCUN lieu (« Worldwide », « Anywhere in the World », vide). « Remote
+  #   (US) » ou « Remote, Canada » nomment un lieu : elles n'y ont pas droit.
+  # - toute autre clé est une zone, cherchée dans la localisation avec les
+  #   mêmes pays et villes que `relocation_regions` ; le suffixe
+  #   `_relocation` est ignoré (asia_relocation = zone asia). Une offre
+  #   sur plusieurs zones prend le meilleur score.
+  # - default : score plancher des offres qu'aucune catégorie ne décrit.
+  #   Optionnel — défaut : 0.
   geo_priority:
     remote_global: 100
     asia_relocation: 80
