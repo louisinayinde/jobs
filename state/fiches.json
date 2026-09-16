@@ -84,6 +84,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Toj0",
     "node_id": "I_kwDOUIzwRc8AAAABRqCAwA"
   },
+  "ashby:close:8b67d1fa-5852-4f7d-b8c2-cedc20b16da7": {
+    "issue": 315,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty68",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOaEg"
+  },
   "ashby:kraken:2ea95678-fe02-4fb6-b85c-b25d8cba46b8": {
     "issue": 228,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ToOc",
@@ -134,6 +139,16 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tg-o",
     "node_id": "I_kwDOUIzwRc8AAAABRp44Lw"
   },
+  "ashby:ramp:be496b52-cfbf-494e-b862-61fb4a188b24": {
+    "issue": 306,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty0Y",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOQWA"
+  },
+  "ashby:ramp:d1183b00-6590-4fe4-a585-28d84e578fe3": {
+    "issue": 303,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyyM",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOM8w"
+  },
   "ashby:supabase:06752423-eebb-472c-95b5-c7ff2559fd60": {
     "issue": 5,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU-M",
@@ -148,6 +163,11 @@
     "issue": 9,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVCM",
     "node_id": "I_kwDOUIzwRc8AAAABRps9Bw"
+  },
+  "ashby:supabase:621516b5-4d8f-4ee9-8287-2da12e63d023": {
+    "issue": 302,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyxc",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOMHA"
   },
   "ashby:supabase:98ae5c78-eab7-4879-b143-96b98e4d0dbb": {
     "issue": 251,
@@ -184,35 +204,175 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TV_c",
     "node_id": "I_kwDOUIzwRc8AAAABRpt0KQ"
   },
+  "greenhouse:coinbase:6784618": {
+    "issue": 298,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyuU",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOHhg"
+  },
+  "greenhouse:coinbase:7366208": {
+    "issue": 292,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyow",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN_ZA"
+  },
+  "greenhouse:coinbase:7483221": {
+    "issue": 317,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty9Y",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOcUg"
+  },
   "greenhouse:coinbase:7558051": {
     "issue": 50,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWn4",
     "node_id": "I_kwDOUIzwRc8AAAABRpuYyw"
+  },
+  "greenhouse:coinbase:7580292": {
+    "issue": 316,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty8M",
+    "node_id": "I_kwDOUIzwRc8AAAABRqObCg"
+  },
+  "greenhouse:coinbase:7629141": {
+    "issue": 314,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty6c",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOZJA"
+  },
+  "greenhouse:coinbase:7684298": {
+    "issue": 313,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty6A",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOXjA"
+  },
+  "greenhouse:coinbase:7711287": {
+    "issue": 312,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty5M",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOWpw"
+  },
+  "greenhouse:coinbase:7773776": {
+    "issue": 294,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyqs",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOCUQ"
+  },
+  "greenhouse:coinbase:7812407": {
+    "issue": 309,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty2s",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOTww"
+  },
+  "greenhouse:coinbase:7847431": {
+    "issue": 296,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TysM",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOEcw"
   },
   "greenhouse:coinbase:7866674": {
     "issue": 45,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWhA",
     "node_id": "I_kwDOUIzwRc8AAAABRpuS5A"
   },
+  "greenhouse:coinbase:7930686": {
+    "issue": 299,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyvM",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOIuA"
+  },
+  "greenhouse:coinbase:7961318": {
+    "issue": 295,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyrQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRqODZw"
+  },
   "greenhouse:coinbase:7964398": {
     "issue": 210,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThnY",
     "node_id": "I_kwDOUIzwRc8AAAABRp5zHg"
+  },
+  "greenhouse:coinbase:7964410": {
+    "issue": 293,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Typs",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOAWQ"
+  },
+  "greenhouse:coinbase:7991691": {
+    "issue": 297,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TytM",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOFhQ"
   },
   "greenhouse:coinbase:7991839": {
     "issue": 212,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Thpo",
     "node_id": "I_kwDOUIzwRc8AAAABRp51TA"
   },
+  "greenhouse:coinbase:7997840": {
+    "issue": 286,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TykA",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN4vQ"
+  },
+  "greenhouse:coinbase:8021647": {
+    "issue": 290,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TynI",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN86w"
+  },
+  "greenhouse:coinbase:8021650": {
+    "issue": 289,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TymQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN71g"
+  },
+  "greenhouse:coinbase:8024814": {
+    "issue": 291,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyn8",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN-AQ"
+  },
+  "greenhouse:coinbase:8029035": {
+    "issue": 287,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyk4",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN56A"
+  },
+  "greenhouse:coinbase:8051871": {
+    "issue": 277,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyc8",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNtcQ"
+  },
   "greenhouse:coinbase:8054153": {
     "issue": 43,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWdU",
     "node_id": "I_kwDOUIzwRc8AAAABRpuQUw"
   },
+  "greenhouse:coinbase:8056068": {
+    "issue": 279,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyeQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNv7w"
+  },
+  "greenhouse:coinbase:8060842": {
+    "issue": 278,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TydQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNvBg"
+  },
+  "greenhouse:coinbase:8082199": {
+    "issue": 276,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TycI",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNsag"
+  },
+  "greenhouse:coinbase:8088201": {
+    "issue": 275,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tybw",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNrdg"
+  },
+  "greenhouse:coinbase:8092651": {
+    "issue": 274,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tya4",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNqfA"
+  },
   "greenhouse:coinbase:8094196": {
     "issue": 214,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThsI",
     "node_id": "I_kwDOUIzwRc8AAAABRp54ZQ"
+  },
+  "greenhouse:coinbase:8095252": {
+    "issue": 273,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyZo",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNpAw"
+  },
+  "greenhouse:coinbase:8097944": {
+    "issue": 272,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyYw",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNm7w"
+  },
+  "greenhouse:coinbase:8100066": {
+    "issue": 271,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyXg",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNl8Q"
   },
   "greenhouse:coinbase:8103569": {
     "issue": 255,
@@ -604,6 +764,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWxg",
     "node_id": "I_kwDOUIzwRc8AAAABRpuf0w"
   },
+  "greenhouse:gitlab:8451512002": {
+    "issue": 311,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty4k",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOVuw"
+  },
   "greenhouse:gitlab:8463922002": {
     "issue": 47,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWjU",
@@ -619,10 +784,20 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThT8",
     "node_id": "I_kwDOUIzwRc8AAAABRp5ZOQ"
   },
+  "greenhouse:gitlab:8614945002": {
+    "issue": 285,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyi0",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN3fA"
+  },
   "greenhouse:gitlab:8615312002": {
     "issue": 30,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWLE",
     "node_id": "I_kwDOUIzwRc8AAAABRpt_Hg"
+  },
+  "greenhouse:gitlab:8620720002": {
+    "issue": 282,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TygY",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNzZA"
   },
   "greenhouse:gitlab:8621620002": {
     "issue": 163,
@@ -643,6 +818,16 @@
     "issue": 152,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TbRI",
     "node_id": "I_kwDOUIzwRc8AAAABRpydmg"
+  },
+  "greenhouse:gitlab:8644569002": {
+    "issue": 270,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyWs",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNlAg"
+  },
+  "greenhouse:gitlab:8644572002": {
+    "issue": 269,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyVo",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNkHQ"
   },
   "greenhouse:gitlab:8646544002": {
     "issue": 265,
@@ -819,6 +1004,36 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWAY",
     "node_id": "I_kwDOUIzwRc8AAAABRpt1bA"
   },
+  "greenhouse:grafana-labs:5982443004": {
+    "issue": 308,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty18",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOSNg"
+  },
+  "greenhouse:grafana-labs:5982444004": {
+    "issue": 307,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty1E",
+    "node_id": "I_kwDOUIzwRc8AAAABRqORRQ"
+  },
+  "greenhouse:grafana-labs:5988483004": {
+    "issue": 304,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyys",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOOfA"
+  },
+  "greenhouse:grafana-labs:5988484004": {
+    "issue": 305,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyzg",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOPcQ"
+  },
+  "greenhouse:grafana-labs:6007413004": {
+    "issue": 300,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TywU",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOJwA"
+  },
+  "greenhouse:grafana-labs:6007414004": {
+    "issue": 301,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyw8",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOLCQ"
+  },
   "greenhouse:grafana-labs:6101637004": {
     "issue": 181,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThK8",
@@ -864,6 +1079,21 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThGI",
     "node_id": "I_kwDOUIzwRc8AAAABRp5GKQ"
   },
+  "greenhouse:grafana-labs:6108384004": {
+    "issue": 284,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyiM",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN2jw"
+  },
+  "greenhouse:grafana-labs:6108385004": {
+    "issue": 283,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyhI",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN0cQ"
+  },
+  "greenhouse:grafana-labs:6111473004": {
+    "issue": 281,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyfo",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNycA"
+  },
   "greenhouse:grafana-labs:6112824004": {
     "issue": 167,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tbjk",
@@ -888,6 +1118,11 @@
     "issue": 165,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tbhk",
     "node_id": "I_kwDOUIzwRc8AAAABRpys4w"
+  },
+  "greenhouse:grafana-labs:6114603004": {
+    "issue": 280,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tyes",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNxgA"
   },
   "greenhouse:grafana-labs:6123193004": {
     "issue": 149,
@@ -954,6 +1189,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThUk",
     "node_id": "I_kwDOUIzwRc8AAAABRp5aOA"
   },
+  "greenhouse:stripe:7737237": {
+    "issue": 310,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7Ty3k",
+    "node_id": "I_kwDOUIzwRc8AAAABRqOUyQ"
+  },
   "greenhouse:stripe:8035723": {
     "issue": 177,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThHY",
@@ -968,6 +1208,11 @@
     "issue": 145,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TbJA",
     "node_id": "I_kwDOUIzwRc8AAAABRpyUsQ"
+  },
+  "greenhouse:stripe:8089353": {
+    "issue": 268,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TyVA",
+    "node_id": "I_kwDOUIzwRc8AAAABRqNiyA"
   },
   "greenhouse:stripe:8089815": {
     "issue": 139,
@@ -988,6 +1233,11 @@
     "issue": 197,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThZs",
     "node_id": "I_kwDOUIzwRc8AAAABRp5hPw"
+  },
+  "greenhouse:vercel:6093255004": {
+    "issue": 288,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TylU",
+    "node_id": "I_kwDOUIzwRc8AAAABRqN60g"
   },
   "greenhouse:vercel:6113157004": {
     "issue": 162,
