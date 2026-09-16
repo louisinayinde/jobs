@@ -1,0 +1,91 @@
+{
+  "ashby:supabase:06752423-eebb-472c-95b5-c7ff2559fd60": {
+    "issue": 5,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU-M",
+    "node_id": "I_kwDOUIzwRc8AAAABRps4kQ"
+  },
+  "ashby:supabase:26f7817d-ca92-4094-a2b5-f22e07a218c4": {
+    "issue": 9,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVCM",
+    "node_id": "I_kwDOUIzwRc8AAAABRps9Bw"
+  },
+  "greenhouse:sourcegraph:6103628004": {
+    "issue": 18,
+    "node_id": "I_kwDOUIzwRc8AAAABRptFbA"
+  },
+  "hackernews:enveritas-yc-s18-non-profit:49541107": {
+    "issue": 4,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU9U",
+    "node_id": "I_kwDOUIzwRc8AAAABRps3jQ"
+  },
+  "hackernews:klarasystems-com:49523797": {
+    "issue": 7,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVAM",
+    "node_id": "I_kwDOUIzwRc8AAAABRps63Q"
+  },
+  "hackernews:openalex:49524920": {
+    "issue": 6,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU_M",
+    "node_id": "I_kwDOUIzwRc8AAAABRps5xA"
+  },
+  "hackernews:remote-us-close:49615973": {
+    "issue": 2,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU6c",
+    "node_id": "I_kwDOUIzwRc8AAAABRps1Uw"
+  },
+  "remoteok:mirantis:1137387": {
+    "issue": 1,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU5E",
+    "node_id": "I_kwDOUIzwRc8AAAABRps0OQ"
+  },
+  "remoteok:salesforge:1137114": {
+    "issue": 8,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVBU",
+    "node_id": "I_kwDOUIzwRc8AAAABRps77g"
+  },
+  "remoteok:wakacje-pl:1135634": {
+    "issue": 17,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVLo",
+    "node_id": "I_kwDOUIzwRc8AAAABRptErw"
+  },
+  "weworkremotely:ci-t:ci-t-job-26953-senior-full-stack-developer-react-net": {
+    "issue": 13,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVHw",
+    "node_id": "I_kwDOUIzwRc8AAAABRptBXA"
+  },
+  "weworkremotely:huzzle:huzzle-full-stack-developer-python-react-ai": {
+    "issue": 12,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVGY",
+    "node_id": "I_kwDOUIzwRc8AAAABRptAEA"
+  },
+  "weworkremotely:huzzle:huzzle-full-stack-developer-python-react-ai-1": {
+    "issue": 11,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVFU",
+    "node_id": "I_kwDOUIzwRc8AAAABRps_EQ"
+  },
+  "weworkremotely:intellectsoft:intellectsoft-senior-shopify-full-stack-developer-ir-471": {
+    "issue": 10,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVC8",
+    "node_id": "I_kwDOUIzwRc8AAAABRps-FA"
+  },
+  "weworkremotely:wing-assistant:wing-assistant-full-stack-developer-1": {
+    "issue": 14,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVJM",
+    "node_id": "I_kwDOUIzwRc8AAAABRptCNA"
+  },
+  "workable:hugging-face:6000109": {
+    "issue": 15,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVKE",
+    "node_id": "I_kwDOUIzwRc8AAAABRptDGQ"
+  },
+  "workable:hugging-face:6000148": {
+    "issue": 16,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVK4",
+    "node_id": "I_kwDOUIzwRc8AAAABRptD3A"
+  },
+  "workingnomads:sticker-mule:1833624": {
+    "issue": 3,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU8A",
+    "node_id": "I_kwDOUIzwRc8AAAABRps2XQ"
+  }
+}
