@@ -49,6 +49,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TbPs",
     "node_id": "I_kwDOUIzwRc8AAAABRpycPw"
   },
+  "ashby:alan:7f1b9681-71df-4dd9-8de9-3f7d9b14a156": {
+    "issue": 329,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7UQrQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRquYqA"
+  },
   "ashby:alan:9160db0d-a894-4fba-be07-c4b9f6fd2605": {
     "issue": 194,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThXA",
@@ -1244,6 +1249,31 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TamA",
     "node_id": "I_kwDOUIzwRc8AAAABRpxz3A"
   },
+  "greenhouse:stripe:8130881": {
+    "issue": 325,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7UQoc",
+    "node_id": "I_kwDOUIzwRc8AAAABRquVUg"
+  },
+  "greenhouse:stripe:8130922": {
+    "issue": 326,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7UQpQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRquWGA"
+  },
+  "greenhouse:stripe:8130927": {
+    "issue": 327,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7UQpo",
+    "node_id": "I_kwDOUIzwRc8AAAABRquXAQ"
+  },
+  "greenhouse:stripe:8130930": {
+    "issue": 328,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7UQqU",
+    "node_id": "I_kwDOUIzwRc8AAAABRquXww"
+  },
+  "greenhouse:stripe:8160776": {
+    "issue": 324,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7UQoE",
+    "node_id": "I_kwDOUIzwRc8AAAABRquUaw"
+  },
   "greenhouse:turing:6115701004": {
     "issue": 42,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWcE",
@@ -1293,6 +1323,11 @@
     "issue": 223,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ToHc",
     "node_id": "I_kwDOUIzwRc8AAAABRqBijg"
+  },
+  "hackernews:aurora-energy-research:49564474": {
+    "issue": 330,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7UQss",
+    "node_id": "I_kwDOUIzwRc8AAAABRquZgA"
   },
   "hackernews:brilliant-org:49526361": {
     "issue": 235,
@@ -1483,6 +1518,11 @@
     "issue": 17,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVLo",
     "node_id": "I_kwDOUIzwRc8AAAABRptErw"
+  },
+  "weworkremotely:charisma-tec:charisma-tec-junior-devops-engineer-ci-cd-developer-tooling-remote-m-f-d": {
+    "issue": 323,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7UQno",
+    "node_id": "I_kwDOUIzwRc8AAAABRquTmA"
   },
   "weworkremotely:ci-t:ci-t-job-26953-senior-full-stack-developer-react-net": {
     "issue": 13,
