@@ -35,8 +35,12 @@ cassé qui rejette tout ressemblerait à un marché de l'emploi calme.
 illisible arrête le run tout de suite plutôt qu'après trente-sept appels
 réseau, et surtout : collecter sans savoir quoi retenir n'a aucun intérêt.
 
-La suite — dédup, scoring, publication — arrive avec les Features 3.3
-à 4.3.
+Vient ensuite la **déduplication** (Feature 3.3) : le run ne garde que les
+offres retenues **jamais vues**, puis les mémorise dans `state/seen.json`,
+que le workflow commite. Sans elle, une offre en ligne trois semaines
+serait publiée à chaque quart d'heure.
+
+La suite — scoring, publication — arrive avec les Features 3.4 à 4.3.
 """
 
 from __future__ import annotations
@@ -52,6 +56,7 @@ from src.adapters import RawJob, get_adapter
 from src.adapters.base import new_client
 from src.adapters.registry import CADENCES, FAST, load_all
 from src.core.config import ConfigError, Source, load_filters
+from src.core.dedup import SeenStore
 from src.core.normalize import Job, normalize
 from src.core.retention import RetentionFilter
 from src.core.secrets import require_env
@@ -200,6 +205,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_FILTERS_PATH,
         help="règles de rétention à appliquer (défaut : %(default)s)",
     )
+    parser.add_argument(
+        "--seen",
+        # `None` plutôt que le chemin : il est résolu au chargement, ce qui
+        # laisse la suite de tests rediriger `DEFAULT_SEEN_PATH`.
+        default=None,
+        help="mémoire des offres déjà vues (défaut : state/seen.json)",
+    )
     return parser
 
 
@@ -304,7 +316,25 @@ def main(argv: list[str] | None = None, *, client: httpx.Client | None = None) -
 
     retention = filtre.appliquer(jobs)
     print(f"collect [{args.cadence}] : {retention.resume}", flush=True)
-    print("collect: offres retenues — dédup et publication à venir (Features 3.3/4.x)")
+
+    vues = SeenStore.load(args.seen)
+    dedup = vues.nouvelles(retention)
+    print(f"collect [{args.cadence}] : {dedup.resume}", flush=True)
+
+    # Dernière étape du run, et pas par hasard : une offre n'est marquée vue
+    # qu'une fois tout le reste fait. Quand la publication (Feature 4.3)
+    # arrivera, elle s'intercalera juste au-dessus, et ne devront être
+    # marquées que les offres **réellement publiées** — sinon un échec de
+    # l'API GitHub les ferait disparaître pour toujours.
+    ajouts = vues.marquer(dedup)
+    if ajouts:
+        vues.save()
+    print(
+        f"collect [{args.cadence}] : {ajouts} offre(s) mémorisée(s), "
+        f"{len(vues)} au total dans {vues.path}",
+        flush=True,
+    )
+    print("collect: offres nouvelles — scoring et publication à venir (Features 3.4/4.x)")
     return 0
 
 

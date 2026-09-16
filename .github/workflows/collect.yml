@@ -4,6 +4,11 @@
 # quotidiens ; celles-là sont collectées par `collect-slow.yml`. La
 # répartition se déduit de `Adapter.max_calls_per_day`, donc aucune source
 # ne peut se retrouver dans les deux workflows ni dans aucun.
+#
+# Le run mémorise les offres déjà vues dans `state/seen.json` (Feature 3.3).
+# Le runner étant éphémère, ce fichier est **commité** à la fin du run : sans
+# ce commit, chaque quart d'heure repartirait d'une mémoire vide et toutes
+# les offres retenues redeviendraient neuves.
 
 name: Collect
 
@@ -12,11 +17,27 @@ on:
     - cron: "*/15 * * * *"
   workflow_dispatch: {}
 
+# Le même groupe que `collect-slow.yml` : les deux workflows écrivent
+# `state/seen.json`, ils ne doivent jamais tourner en même temps. Sans
+# annulation — un run lancé va au bout, sinon ses offres ne seraient pas
+# mémorisées.
+concurrency:
+  group: collect-state
+  cancel-in-progress: false
+
 jobs:
   collect:
     runs-on: ubuntu-latest
+    permissions:
+      # Nécessaire au commit de `state/seen.json` ci-dessous.
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # La pointe de la branche au démarrage du job, pas le commit de
+          # l'événement : un run mis en attente derrière un autre doit
+          # partir de la mémoire que ce dernier vient de pousser.
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -24,3 +45,17 @@ jobs:
       - run: python -m src.collect --cadence fast
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Pas de `always()` ici, contrairement au crawl : `seen.json` n'est
+      # écrit qu'en fin de run réussi, un run en échec n'a rien à commiter.
+      - name: Commit la mémoire des offres vues
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/
+          # Aucune offre nouvelle : rien n'a bougé, pas de commit vide.
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(state): offres vues [skip ci]"
+          git pull --rebase --autostash
+          git push

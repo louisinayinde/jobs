@@ -22,6 +22,9 @@
 # étaient : le runner étant éphémère, l'état est **versionné dans le dépôt**
 # (`state/crawl.json`) et remis en place à la fin de chaque run. Sans ce
 # commit, chaque run repartirait de zéro et rechargerait le catalogue.
+#
+# Le même commit emporte `state/seen.json`, la mémoire des offres déjà vues
+# (Feature 3.3), que `collect.yml` écrit aussi.
 
 name: Collect (slow)
 
@@ -32,7 +35,8 @@ on:
 
 # Deux runs qui écriraient l'état en même temps se marcheraient dessus. Ils
 # sont donc sérialisés, sans annulation : un run déjà lancé va au bout, sinon
-# on perdrait les offres qu'il avait déjà collectées.
+# on perdrait les offres qu'il avait déjà collectées. Le groupe est partagé
+# avec `collect.yml`, qui écrit lui aussi dans `state/`.
 concurrency:
   group: collect-state
   cancel-in-progress: false
@@ -41,10 +45,15 @@ jobs:
   collect-slow:
     runs-on: ubuntu-latest
     permissions:
-      # Nécessaire au commit de `state/crawl.json` ci-dessous.
+      # Nécessaire au commit de `state/` ci-dessous.
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # La pointe de la branche, pas le commit de l'événement : un run
+          # mis en attente derrière `collect.yml` doit partir de l'état que
+          # celui-ci vient de pousser.
+          ref: ${{ github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -55,7 +64,7 @@ jobs:
 
       # `always()` : l'état gagné avant l'échec d'une source vaut d'être
       # gardé — le run suivant repartira de là plutôt que du début.
-      - name: Commit l'état du crawl
+      - name: Commit l'état du crawl et des offres vues
         if: always()
         run: |
           set -euo pipefail
@@ -66,7 +75,7 @@ jobs:
           # changement on s'arrête là, plutôt que de créer un commit vide
           # toutes les six heures.
           git diff --cached --quiet && exit 0
-          git commit -m "chore(state): avancement du crawl [skip ci]"
+          git commit -m "chore(state): avancement du crawl et offres vues [skip ci]"
           # Un autre run a pu pousser entre-temps : on rejoue par-dessus
           # plutôt que d'écraser.
           git pull --rebase --autostash

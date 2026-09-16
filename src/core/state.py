@@ -22,8 +22,8 @@ Deux propriétés font tout le comportement :
   interrompu en plein `save()` laisse l'ancien état intact plutôt qu'un
   JSON à moitié écrit que le run suivant jetterait.
 
-Ce n'est pas `seen.json` (Feature 3.3), qui mémorisera les offres déjà
-publiées sur le tableau. Deux fichiers, deux responsabilités : celui-ci
+Ce n'est pas `seen.json` (Feature 3.3, `src/core/dedup.py`), qui mémorise
+les offres déjà retenues. Deux fichiers, deux responsabilités : celui-ci
 retient *où en est le crawl d'une source*, l'autre retiendra *quelles
 offres ont déjà été vues*. Les mélanger ferait d'un fichier de 300 URLs
 techniques la même chose qu'un journal de décisions.
@@ -48,6 +48,20 @@ DEFAULT_STATE_PATH = Path("state/crawl.json")
 #: large. Il est là pour qu'un site qui se mettrait à publier 200 000 URLs
 #: sans date ne fasse pas enfler indéfiniment un fichier versionné.
 MAX_KNOWN_URLS = 5_000
+
+
+def write_json_atomic(path: Path, data: Any) -> None:
+    """Écrit `data` en JSON trié, via un temporaire puis `replace`.
+
+    Partagé par les deux fichiers d'état (`crawl.json`, `seen.json`) : un
+    run interrompu en pleine écriture laisse l'ancien fichier intact, et le
+    tri garde un diff Git lisible d'un run à l'autre.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporaire = path.with_suffix(f"{path.suffix}.tmp")
+    contenu = json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True)
+    temporaire.write_text(contenu + "\n", encoding="utf-8")
+    temporaire.replace(path)
 
 
 class CrawlState:
@@ -136,11 +150,7 @@ class CrawlState:
 
     def save(self) -> None:
         """Écrit l'état sur disque, de façon atomique."""
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        temporaire = self.path.with_suffix(f"{self.path.suffix}.tmp")
-        contenu = json.dumps(self._data, indent=2, ensure_ascii=False, sort_keys=True)
-        temporaire.write_text(contenu + "\n", encoding="utf-8")
-        temporaire.replace(self.path)
+        write_json_atomic(self.path, self._data)
 
     def as_dict(self) -> dict[str, Any]:
         """Copie de l'état, pour l'inspection et les tests."""

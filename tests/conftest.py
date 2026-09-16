@@ -20,7 +20,7 @@ from __future__ import annotations
 import pytest
 
 from src.adapters import base
-from src.core import state
+from src.core import dedup, state
 
 
 @pytest.fixture(autouse=True)
@@ -36,4 +36,12 @@ def isolated_crawl_state(tmp_path, monkeypatch: pytest.MonkeyPatch):
     """Redirige l'état de crawl par défaut vers le dossier du test."""
     chemin = tmp_path / "state" / "crawl.json"
     monkeypatch.setattr(state, "DEFAULT_STATE_PATH", chemin)
+    return chemin
+
+
+@pytest.fixture(autouse=True)
+def isolated_seen_state(tmp_path, monkeypatch: pytest.MonkeyPatch):
+    """Redirige `seen.json` par défaut vers le dossier du test."""
+    chemin = tmp_path / "state" / "seen.json"
+    monkeypatch.setattr(dedup, "DEFAULT_SEEN_PATH", chemin)
     return chemin
