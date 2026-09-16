@@ -1,4 +1,24 @@
 {
+  "ashby:alan:14729a35-9c9f-479e-860b-3d6c1348a2b0": {
+    "issue": 67,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXBE",
+    "node_id": "I_kwDOUIzwRc8AAAABRputHw"
+  },
+  "ashby:alan:3d95122a-caaa-4df1-93aa-0d12b222806b": {
+    "issue": 62,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW6U",
+    "node_id": "I_kwDOUIzwRc8AAAABRpunbQ"
+  },
+  "ashby:alan:48c185af-22d2-4137-9d86-cd450175d297": {
+    "issue": 57,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWzM",
+    "node_id": "I_kwDOUIzwRc8AAAABRpug9g"
+  },
+  "ashby:kraken:b2a32764-7b75-4c6d-a45a-58b7af0887ad": {
+    "issue": 61,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW4k",
+    "node_id": "I_kwDOUIzwRc8AAAABRpumWA"
+  },
   "ashby:supabase:06752423-eebb-472c-95b5-c7ff2559fd60": {
     "issue": 5,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU-M",
@@ -9,14 +29,195 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVCM",
     "node_id": "I_kwDOUIzwRc8AAAABRps9Bw"
   },
+  "ashby:supabase:b7206c22-979f-444a-809b-e70d9ee23c7f": {
+    "issue": 19,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TV74",
+    "node_id": "I_kwDOUIzwRc8AAAABRptx8g"
+  },
+  "ashby:supabase:e569b7f7-fa8f-4139-86f6-4f52b456882d": {
+    "issue": 20,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TV9Q",
+    "node_id": "I_kwDOUIzwRc8AAAABRptzHQ"
+  },
+  "ashby:zapier:1767482d-de23-460c-80eb-6d0a3caa72ab": {
+    "issue": 44,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWfU",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuRrg"
+  },
+  "greenhouse:ahrefs:5063690004": {
+    "issue": 51,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWpg",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuZ2g"
+  },
+  "greenhouse:cloudflare:7053411": {
+    "issue": 21,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TV_c",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt0KQ"
+  },
+  "greenhouse:coinbase:7558051": {
+    "issue": 50,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWn4",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuYyw"
+  },
+  "greenhouse:coinbase:7866674": {
+    "issue": 45,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWhA",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuS5A"
+  },
+  "greenhouse:coinbase:8054153": {
+    "issue": 43,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWdU",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuQUw"
+  },
+  "greenhouse:coinbase:8165441": {
+    "issue": 32,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWO8",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuBvw"
+  },
+  "greenhouse:coinbase:8167571": {
+    "issue": 31,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWNE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuAcg"
+  },
+  "greenhouse:doctolib:7990890003": {
+    "issue": 64,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW9c",
+    "node_id": "I_kwDOUIzwRc8AAAABRpupug"
+  },
+  "greenhouse:elastic:8167769": {
+    "issue": 52,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWro",
+    "node_id": "I_kwDOUIzwRc8AAAABRpua5w"
+  },
+  "greenhouse:elastic:8168938": {
+    "issue": 60,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW3k",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuk1w"
+  },
+  "greenhouse:elastic:8204969": {
+    "issue": 59,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW2I",
+    "node_id": "I_kwDOUIzwRc8AAAABRpujlA"
+  },
+  "greenhouse:elastic:8204978": {
+    "issue": 58,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW1Q",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuikQ"
+  },
+  "greenhouse:elastic:8207676": {
+    "issue": 53,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWt4",
+    "node_id": "I_kwDOUIzwRc8AAAABRpucLA"
+  },
+  "greenhouse:elastic:8207677": {
+    "issue": 54,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWvE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpudNQ"
+  },
+  "greenhouse:elastic:8207678": {
+    "issue": 55,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWwc",
+    "node_id": "I_kwDOUIzwRc8AAAABRpueeQ"
+  },
+  "greenhouse:elastic:8207679": {
+    "issue": 56,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWxg",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuf0w"
+  },
+  "greenhouse:gitlab:8463922002": {
+    "issue": 47,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWjU",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuVCQ"
+  },
+  "greenhouse:gitlab:8488961002": {
+    "issue": 46,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWiM",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuT8w"
+  },
+  "greenhouse:gitlab:8615312002": {
+    "issue": 30,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWLE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt_Hg"
+  },
+  "greenhouse:gitlab:8632446002": {
+    "issue": 35,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWS4",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuFIw"
+  },
+  "greenhouse:gitlab:8695815002": {
+    "issue": 38,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWYA",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuJwg"
+  },
+  "greenhouse:gitlab:8716271002": {
+    "issue": 36,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWTo",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuGiA"
+  },
+  "greenhouse:gitlab:8721124002": {
+    "issue": 34,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWR4",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuD3w"
+  },
+  "greenhouse:gitlab:8722304002": {
+    "issue": 37,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWVc",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuIhQ"
+  },
+  "greenhouse:gitlab:8736862002": {
+    "issue": 26,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWF4",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt6VQ"
+  },
+  "greenhouse:gitlab:8736877002": {
+    "issue": 27,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWGo",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt7gg"
+  },
+  "greenhouse:gitlab:8760233002": {
+    "issue": 66,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TXAY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpur9Q"
+  },
+  "greenhouse:gitlab:8778943002": {
+    "issue": 65,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW-o",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuq-Q"
+  },
+  "greenhouse:gitlab:8785285002": {
+    "issue": 22,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWAY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt1bA"
+  },
   "greenhouse:sourcegraph:6103628004": {
     "issue": 18,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TV6I",
     "node_id": "I_kwDOUIzwRc8AAAABRptFbA"
+  },
+  "greenhouse:stripe:7529787": {
+    "issue": 48,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWko",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuWHg"
+  },
+  "greenhouse:stripe:7543868": {
+    "issue": 49,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWmk",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuXeA"
+  },
+  "greenhouse:turing:6115701004": {
+    "issue": 42,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWcE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuPAQ"
   },
   "hackernews:enveritas-yc-s18-non-profit:49541107": {
     "issue": 4,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU9U",
     "node_id": "I_kwDOUIzwRc8AAAABRps3jQ"
+  },
+  "hackernews:fastly:49523835": {
+    "issue": 29,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWJo",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt95w"
   },
   "hackernews:klarasystems-com:49523797": {
     "issue": 7,
@@ -27,6 +228,16 @@
     "issue": 6,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TU_M",
     "node_id": "I_kwDOUIzwRc8AAAABRps5xA"
+  },
+  "hackernews:oscilar-com:49539823": {
+    "issue": 28,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWIY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt8nA"
+  },
+  "hackernews:pango-yc-s26:49711313": {
+    "issue": 63,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TW7s",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuohQ"
   },
   "hackernews:remote-us-close:49615973": {
     "issue": 2,
@@ -82,6 +293,41 @@
     "issue": 16,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVK4",
     "node_id": "I_kwDOUIzwRc8AAAABRptD3A"
+  },
+  "workingnomads:lemon-io:1800264": {
+    "issue": 41,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWbE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuNTw"
+  },
+  "workingnomads:lemon-io:1800514": {
+    "issue": 40,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWaI",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuMKw"
+  },
+  "workingnomads:lemon-io:1802649": {
+    "issue": 39,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWZE",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuK3g"
+  },
+  "workingnomads:lemon-io:1818986": {
+    "issue": 33,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWQY",
+    "node_id": "I_kwDOUIzwRc8AAAABRpuCuw"
+  },
+  "workingnomads:lemon-io:1834974": {
+    "issue": 25,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWEw",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt5TQ"
+  },
+  "workingnomads:lemon-io:1842849": {
+    "issue": 24,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWDQ",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt33g"
+  },
+  "workingnomads:lemon-io:1844110": {
+    "issue": 23,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7TWCA",
+    "node_id": "I_kwDOUIzwRc8AAAABRpt2qw"
   },
   "workingnomads:sticker-mule:1833624": {
     "issue": 3,
