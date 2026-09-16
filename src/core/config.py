@@ -1,6 +1,6 @@
 """Chargement et validation de la configuration déclarative.
 
-Lit `sources.yaml` et `filters.yaml` et les convertit en objets typés.
+Lit `sources.yaml`, `filters.yaml` et `board.yaml` et les convertit en objets typés.
 Toute config invalide (clé manquante, type incorrect, fichier absent ou
 YAML corrompu) lève une `ConfigError` explicite plutôt que de propager une
 valeur par défaut silencieuse ou une stacktrace PyYAML brute.
@@ -8,6 +8,7 @@ valeur par défaut silencieuse ou une stacktrace PyYAML brute.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -210,4 +211,96 @@ def load_filters(path: str | Path) -> FiltersConfig:
         retention=_parse_retention(retention_raw),
         scoring=_parse_scoring(scoring_raw),
         retention_days=_optional_int(raw, "retention_days", DEFAULT_RETENTION_DAYS, context),
+    )
+
+
+# ---------------------------------------------------------------------------
+# board.yaml — le tableau de revue (Feature 4.1)
+# ---------------------------------------------------------------------------
+
+#: Nom du champ de statut qu'un GitHub Project crée tout seul.
+DEFAULT_STATUS_FIELD = "Status"
+
+#: Statut d'une fiche fraîchement publiée (architecture : « colonne Nouveau »).
+DEFAULT_STATUS_INITIAL = "Nouveau"
+
+_REPOSITORY_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+
+
+@dataclass(frozen=True)
+class BoardConfig:
+    """Où publier : le dépôt qui porte les Issues, le Project qui les range.
+
+    Les deux sont distincts chez GitHub : une Issue appartient à un dépôt,
+    un Project (v2) à un compte — utilisateur ou organisation — et peut
+    regrouper des Issues de plusieurs dépôts.
+    """
+
+    repository: str
+    project_owner: str
+    project_number: int
+    status_field: str = DEFAULT_STATUS_FIELD
+    status_initial: str = DEFAULT_STATUS_INITIAL
+
+    @property
+    def owner(self) -> str:
+        return self.repository.split("/", 1)[0]
+
+    @property
+    def repo(self) -> str:
+        return self.repository.split("/", 1)[1]
+
+
+def load_board(path: str | Path) -> BoardConfig:
+    """Charge `board.yaml` en `BoardConfig`.
+
+    Le numéro de Project est le seul réglage qu'on ne peut pas deviner : il
+    n'existe qu'une fois le Project créé à la main. Laissé vide, il lève une
+    `ConfigError` qui dit quoi faire, plutôt qu'un 404 de l'API trois appels
+    plus loin.
+    """
+    raw = _read_yaml(Path(path))
+    if not isinstance(raw, dict):
+        kind = "vide" if raw is None else type(raw).__name__
+        raise ConfigError(f"board.yaml doit contenir un mapping, reçu {kind}")
+
+    context = "board.yaml"
+    repository = _require_str(raw, "repository", context)
+    if not _REPOSITORY_RE.match(repository):
+        raise ConfigError(
+            f"valeur invalide pour « repository » ({context}) : attendu "
+            f"« propriétaire/dépôt », reçu « {repository} »"
+        )
+
+    project = _require_mapping(raw, "project", context)
+    project_context = f"{context}:project"
+    number = project.get("number")
+    if number is None:
+        raise ConfigError(
+            f"clé requise non renseignée : « number » ({project_context}) — créez le "
+            "Project sur GitHub et reportez son numéro, celui de son URL "
+            "(…/projects/<numéro>)"
+        )
+    if isinstance(number, bool) or not isinstance(number, int) or number <= 0:
+        raise ConfigError(
+            f"type invalide pour « number » ({project_context}) : attendu un entier "
+            f"positif, reçu {number!r}"
+        )
+
+    status = _optional_mapping(raw, "status", context)
+    status_context = f"{context}:status"
+    return BoardConfig(
+        repository=repository,
+        project_owner=_require_str(project, "owner", project_context),
+        project_number=number,
+        status_field=(
+            _require_str(status, "field", status_context)
+            if "field" in status
+            else DEFAULT_STATUS_FIELD
+        ),
+        status_initial=(
+            _require_str(status, "initial", status_context)
+            if "initial" in status
+            else DEFAULT_STATUS_INITIAL
+        ),
     )

@@ -1,0 +1,26 @@
+# board.yaml — le tableau de revue GitHub Projects (Feature 4.1).
+#
+# Chaque offre retenue devient une Issue du dépôt `repository`, ajoutée au
+# Project `project` avec le statut `status.initial`. Mise en place pas à
+# pas : docs/github-projects.md.
+
+# Le dépôt qui porte les Issues, sous la forme « propriétaire/dépôt ».
+# Ses Issues doivent être activées (Settings → General → Features).
+repository: louisinayinde/jobs
+
+project:
+  # Le compte (utilisateur ou organisation) propriétaire du Project.
+  owner: louisinayinde
+  # Le numéro du Project, lu dans son URL :
+  #   https://github.com/users/louisinayinde/projects/<numéro>
+  # Vide tant que le Project n'est pas créé : la publication refuse alors
+  # de démarrer, avec un message qui renvoie ici.
+  number: 3
+
+status:
+  # Le champ « sélection unique » qui sert de colonnes au tableau. GitHub
+  # le crée sous le nom « Status » ; optionnel — défaut : Status.
+  field: Status
+  # L'option donnée à une fiche fraîchement publiée. Elle doit exister
+  # dans le champ ci-dessus. Optionnel — défaut : Nouveau.
+  initial: Nouveau

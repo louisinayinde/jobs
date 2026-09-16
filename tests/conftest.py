@@ -8,6 +8,8 @@ pas voir :
    la suite passerait de trois secondes à plusieurs minutes, et personne ne
    la lancerait plus. C'est la même fonction qui porte le délai de crawl
    des sources sitemap (Feature 2.5), donc elle est couverte aussi.
+   Le client GitHub (Feature 4.1) a sa propre attente — celle des limites
+   de débit, qui peut durer un quart d'heure : elle l'est tout autant.
 2. **L'état du crawl est redirigé vers un dossier temporaire**
    (Feature 2.5). Un adaptateur construit sans état explicite lit
    `state/crawl.json`, celui du dépôt : la suite écrirait alors un fichier
@@ -20,6 +22,7 @@ from __future__ import annotations
 import pytest
 
 from src.adapters import base
+from src.board import github
 from src.core import dedup, state
 
 
@@ -28,6 +31,14 @@ def backoff_delays(monkeypatch: pytest.MonkeyPatch) -> list[float]:
     """Remplace l'attente entre deux tentatives par un simple enregistrement."""
     delays: list[float] = []
     monkeypatch.setattr(base, "_wait", delays.append)
+    return delays
+
+
+@pytest.fixture(autouse=True)
+def github_delays(monkeypatch: pytest.MonkeyPatch) -> list[float]:
+    """Remplace les attentes du client GitHub par un simple enregistrement."""
+    delays: list[float] = []
+    monkeypatch.setattr(github, "_wait", delays.append)
     return delays
 
 
