@@ -69,6 +69,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThPg",
     "node_id": "I_kwDOUIzwRc8AAAABRp5Shg"
   },
+  "ashby:close:01fc4ad7-4d33-4f64-919f-502bb2c20efc": {
+    "issue": 320,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7T1_Q",
+    "node_id": "I_kwDOUIzwRc8AAAABRqS-NA"
+  },
   "ashby:close:1022d31e-238a-4236-a44d-9d59c94f1ccd": {
     "issue": 236,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ToXc",
@@ -138,6 +143,11 @@
     "issue": 168,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Tg-o",
     "node_id": "I_kwDOUIzwRc8AAAABRp44Lw"
+  },
+  "ashby:ramp:4e64ab86-4e30-403b-b1b9-41dc052570ce": {
+    "issue": 322,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7T2AU",
+    "node_id": "I_kwDOUIzwRc8AAAABRqTAnQ"
   },
   "ashby:ramp:be496b52-cfbf-494e-b862-61fb4a188b24": {
     "issue": 306,
@@ -1164,6 +1174,16 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TV6I",
     "node_id": "I_kwDOUIzwRc8AAAABRptFbA"
   },
+  "greenhouse:stripe:6042172": {
+    "issue": 321,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7T1_s",
+    "node_id": "I_kwDOUIzwRc8AAAABRqS_Gg"
+  },
+  "greenhouse:stripe:6692166": {
+    "issue": 318,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7T19Y",
+    "node_id": "I_kwDOUIzwRc8AAAABRqS8Xw"
+  },
   "greenhouse:stripe:6717520": {
     "issue": 196,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThYo",
@@ -1233,6 +1253,11 @@
     "issue": 197,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ThZs",
     "node_id": "I_kwDOUIzwRc8AAAABRp5hPw"
+  },
+  "greenhouse:vercel:5430088004": {
+    "issue": 319,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7T1-g",
+    "node_id": "I_kwDOUIzwRc8AAAABRqS9Tg"
   },
   "greenhouse:vercel:6093255004": {
     "issue": 288,
