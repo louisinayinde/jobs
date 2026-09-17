@@ -1779,6 +1779,26 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7XSQQ",
     "node_id": "I_kwDOUIzwRc8AAAABRt2LOA"
   },
+  "japandev:toridori:toridori-backend-engineer-4l8dmh": {
+    "issue": 397,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7at1Y",
+    "node_id": "I_kwDOUIzwRc8AAAABRxKzQw"
+  },
+  "japandev:treasure-ai:treasure-data-senior-software-engineer---query-engines--storage-8d2tmk": {
+    "issue": 399,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7at38",
+    "node_id": "I_kwDOUIzwRc8AAAABRxK1yQ"
+  },
+  "japandev:treasure-ai:treasure-data-staff-software-engineer--machine-learning-pdra2y": {
+    "issue": 400,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7at5Q",
+    "node_id": "I_kwDOUIzwRc8AAAABRxK3CA"
+  },
+  "japandev:visual-alpha:visual-alpha-senior-software-engineer-dxw8c7": {
+    "issue": 398,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7at2M",
+    "node_id": "I_kwDOUIzwRc8AAAABRxK0mw"
+  },
   "lever:malt:c71555a5-5177-46e1-8bd8-de05a4108465": {
     "issue": 204,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Thhg",
@@ -1838,6 +1858,11 @@
     "issue": 17,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVLo",
     "node_id": "I_kwDOUIzwRc8AAAABRptErw"
+  },
+  "remotive:a-team:1919265": {
+    "issue": 401,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7at7Q",
+    "node_id": "I_kwDOUIzwRc8AAAABRxK4eQ"
   },
   "remotive:lemon-io:2091098": {
     "issue": 332,
