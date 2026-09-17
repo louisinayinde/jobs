@@ -1919,6 +1919,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVHw",
     "node_id": "I_kwDOUIzwRc8AAAABRptBXA"
   },
+  "weworkremotely:cosuno:cosuno-senior-full-stack-developer-typescript": {
+    "issue": 410,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7fYBQ",
+    "node_id": "I_kwDOUIzwRc8AAAABR1_I9g"
+  },
   "weworkremotely:huzzle:huzzle-full-stack-developer-python-react-ai": {
     "issue": 12,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVGY",
@@ -1933,6 +1938,11 @@
     "issue": 10,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVC8",
     "node_id": "I_kwDOUIzwRc8AAAABRps-FA"
+  },
+  "weworkremotely:sur:sur-full-stack-developer": {
+    "issue": 409,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7fYAI",
+    "node_id": "I_kwDOUIzwRc8AAAABR1_H1g"
   },
   "weworkremotely:wing-assistant:wing-assistant-full-stack-developer-1": {
     "issue": 14,
