@@ -104,6 +104,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ToOc",
     "node_id": "I_kwDOUIzwRc8AAAABRqBojw"
   },
+  "ashby:kraken:9b9eb551-ad86-4710-b55c-2ad004f514c9": {
+    "issue": 407,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7fSxY",
+    "node_id": "I_kwDOUIzwRc8AAAABR16KIA"
+  },
   "ashby:kraken:acf80ca2-7073-49aa-ab4a-7064f852d94f": {
     "issue": 117,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TYnI",
@@ -498,6 +503,11 @@
     "issue": 208,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Thlc",
     "node_id": "I_kwDOUIzwRc8AAAABRp5wWA"
+  },
+  "greenhouse:coinbase:8211452": {
+    "issue": 408,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7fSyQ",
+    "node_id": "I_kwDOUIzwRc8AAAABR16LOQ"
   },
   "greenhouse:doctolib:5082357003": {
     "issue": 205,
