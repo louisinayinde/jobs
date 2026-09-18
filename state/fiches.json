@@ -2004,6 +2004,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7VG44",
     "node_id": "I_kwDOUIzwRc8AAAABRrkmRA"
   },
+  "weworkremotely:a-team:a-team-senior-independent-software-developer-90-170-hr": {
+    "issue": 441,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmbI",
+    "node_id": "I_kwDOUIzwRc8AAAABSBl21Q"
+  },
   "weworkremotely:base-com:base-com-full-stack-developer-bl-paczka": {
     "issue": 411,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7femI",
@@ -2024,6 +2029,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7fYBQ",
     "node_id": "I_kwDOUIzwRc8AAAABR1_I9g"
   },
+  "weworkremotely:evident-change:evident-change-senior-full-stack-software-engineer": {
+    "issue": 438,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmX0",
+    "node_id": "I_kwDOUIzwRc8AAAABSBly4g"
+  },
   "weworkremotely:huzzle:huzzle-full-stack-developer-python-react-ai": {
     "issue": 12,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVGY",
@@ -2039,20 +2049,55 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVC8",
     "node_id": "I_kwDOUIzwRc8AAAABRps-FA"
   },
+  "weworkremotely:lemon-io:lemon-io-senior-react-full-stack-developer-6": {
+    "issue": 435,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmVA",
+    "node_id": "I_kwDOUIzwRc8AAAABSBlvMg"
+  },
+  "weworkremotely:lemon-io:lemon-io-senior-react-native-developer-1": {
+    "issue": 434,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmUc",
+    "node_id": "I_kwDOUIzwRc8AAAABSBltyw"
+  },
   "weworkremotely:newrich-network:newrich-network-senior-full-stack-developer-php-laravel": {
     "issue": 412,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7fenw",
     "node_id": "I_kwDOUIzwRc8AAAABR2F7TA"
+  },
+  "weworkremotely:princeton-university:princeton-university-senior-peoplesoft-developer-analyst-ii": {
+    "issue": 439,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmYg",
+    "node_id": "I_kwDOUIzwRc8AAAABSBl0ZQ"
+  },
+  "weworkremotely:reddit:reddit-backend-software-engineer-pdp-experience": {
+    "issue": 437,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmWw",
+    "node_id": "I_kwDOUIzwRc8AAAABSBlx2w"
+  },
+  "weworkremotely:storetasker:storetasker-senior-shopify-developer-remote-flexible-3": {
+    "issue": 442,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmcg",
+    "node_id": "I_kwDOUIzwRc8AAAABSBl3ww"
   },
   "weworkremotely:sur:sur-full-stack-developer": {
     "issue": 409,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7fYAI",
     "node_id": "I_kwDOUIzwRc8AAAABR1_H1g"
   },
+  "weworkremotely:toptal:toptal-pt-ft-senior-roblox-developer-game-designer": {
+    "issue": 440,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmaE",
+    "node_id": "I_kwDOUIzwRc8AAAABSBl1eA"
+  },
   "weworkremotely:wing-assistant:wing-assistant-full-stack-developer-1": {
     "issue": 14,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7TVJM",
     "node_id": "I_kwDOUIzwRc8AAAABRptCNA"
+  },
+  "weworkremotely:yooli:yooli-full-time-software-engineer-position-react-and-rest-1": {
+    "issue": 436,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7qmV0",
+    "node_id": "I_kwDOUIzwRc8AAAABSBlwxQ"
   },
   "workable:hugging-face:5856207": {
     "issue": 427,
