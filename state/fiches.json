@@ -1589,10 +1589,20 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7c4_4",
     "node_id": "I_kwDOUIzwRc8AAAABRzVPtg"
   },
+  "himalayas:engine:senior-software-engineer-infrastructure": {
+    "issue": 459,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7u9t0",
+    "node_id": "I_kwDOUIzwRc8AAAABSHbL_g"
+  },
   "himalayas:enumerate:php-react-software-engineer": {
     "issue": 394,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ZOnI",
     "node_id": "I_kwDOUIzwRc8AAAABRvlOyA"
+  },
+  "himalayas:ergomed:edc-developer-medidata-rave-and-zelta-v1-0-8335549873": {
+    "issue": 456,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7u9r8",
+    "node_id": "I_kwDOUIzwRc8AAAABSHbJmg"
   },
   "himalayas:ewor-gmbh:saas-full-stack-developer-100-remote-m-f-d": {
     "issue": 413,
@@ -1629,6 +1639,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ZOlo",
     "node_id": "I_kwDOUIzwRc8AAAABRvlM4A"
   },
+  "himalayas:motorola-solutions:sr-software-engineer-java-api-microservices": {
+    "issue": 458,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7u9tI",
+    "node_id": "I_kwDOUIzwRc8AAAABSHbK1w"
+  },
   "himalayas:nebius:senior-embedded-software-engineer-5057950075": {
     "issue": 396,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7aSiE",
@@ -1638,6 +1653,11 @@
     "issue": 402,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7bmCo",
     "node_id": "I_kwDOUIzwRc8AAAABRx-KrQ"
+  },
+  "himalayas:nrg:sr-software-engineer-ai-engineer-virtual-wa-us-00000": {
+    "issue": 457,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7u9sY",
+    "node_id": "I_kwDOUIzwRc8AAAABSHbKJw"
   },
   "himalayas:nvidia:senior-software-engineer-gnn": {
     "issue": 447,
