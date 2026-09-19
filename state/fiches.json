@@ -1474,6 +1474,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7aSgs",
     "node_id": "I_kwDOUIzwRc8AAAABRwt-yg"
   },
+  "himalayas:anteelo:ios-developer": {
+    "issue": 444,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7sOWA",
+    "node_id": "I_kwDOUIzwRc8AAAABSD21pA"
+  },
   "himalayas:bjak:backend-developer-1659992721": {
     "issue": 425,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7iPfQ",
@@ -1549,6 +1554,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7W7Ik",
     "node_id": "I_kwDOUIzwRc8AAAABRtcwiw"
   },
+  "himalayas:dine-development-corporation:power-apps-developer": {
+    "issue": 448,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7sOX8",
+    "node_id": "I_kwDOUIzwRc8AAAABSD24ZQ"
+  },
   "himalayas:dysrupit:senior-dynamics-mpos-developer": {
     "issue": 433,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7pRYU",
@@ -1584,6 +1594,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ryHQ",
     "node_id": "I_kwDOUIzwRc8AAAABSDJv_g"
   },
+  "himalayas:leidos:java-web-application-developer": {
+    "issue": 446,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7sOXU",
+    "node_id": "I_kwDOUIzwRc8AAAABSD229w"
+  },
   "himalayas:mercury-insurance:senior-guidewire-developer-policycenter-1276389619": {
     "issue": 393,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7ZOlo",
@@ -1599,6 +1614,11 @@
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7bmCo",
     "node_id": "I_kwDOUIzwRc8AAAABRx-KrQ"
   },
+  "himalayas:nvidia:senior-software-engineer-gnn": {
+    "issue": 447,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7sOXw",
+    "node_id": "I_kwDOUIzwRc8AAAABSD23mw"
+  },
   "himalayas:smart-apartment-data:angular-frontend-developer-4k-to-4-5k-usd-monthly": {
     "issue": 206,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7Thjo",
@@ -1608,6 +1628,11 @@
     "issue": 414,
     "item": "PVTI_lAHOBKl0zs4BjuxHzg7gInY",
     "node_id": "I_kwDOUIzwRc8AAAABR2rkAw"
+  },
+  "himalayas:teya:senior-backend-engineer": {
+    "issue": 445,
+    "item": "PVTI_lAHOBKl0zs4BjuxHzg7sOWw",
+    "node_id": "I_kwDOUIzwRc8AAAABSD22ew"
   },
   "himalayas:wpromote:senior-software-engineer-i-full-stack": {
     "issue": 363,
